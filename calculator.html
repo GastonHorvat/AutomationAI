@@ -143,7 +143,7 @@
                     </form>
                  </div>
 
-                <div id="resultsSection" style="display: none; margin-top: 3rem;">
+                 <div id="resultsSection" style="display: none; margin-top: 3rem;">
                     <div class="text-center">
                         <h3 class="section-heading text-uppercase">Estimación de Materiales y Costos</h3>
                         <p class="text-muted">Resultados basados en los datos ingresados. Son estimaciones y pueden variar.</p>
@@ -155,24 +155,39 @@
                                     <th>Material</th>
                                     <th>Unidad</th>
                                     <th>Cantidad Estimada</th>
-                                    <th>Precio Unitario (Est.)</th>
-                                    <th>Costo Parcial (Est.)</th>
-                                    <th>Acción</th>
+                                    <th>Precio Unitario</th> 
+                                    <th>Costo Parcial</th> 
+                                    <th>Eliminar</th> 
                                 </tr>
                             </thead>
                             <tbody id="resultsBody">
-                                </tbody>
+                                <!-- Las filas se llenan con JS -->
+                            </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="4" class="text-end fw-bold">Costo Total Estimado:</td>
+                                    <td colspan="4" class="text-end fw-bold">Total:</td>
                                     <td id="totalCost" class="fw-bold"></td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                     <div class="text-center mt-4">
-                         <button onclick="window.print();" class="btn btn-secondary"><i class="fas fa-print me-2"></i>Imprimir Resultados</button>
+                
+                    <!-- --- INICIO: DIV de Botones Modificado --- -->
+                    <div class="row mt-4 align-items-center">
+                        <div class="col text-start">
+                            <!-- Botón Imprimir a la izquierda (estilo secundario) -->
+                            <button onclick="window.print();" class="btn btn-secondary"><i class="fas fa-print me-2"></i>Imprimir Resultados</button>
+                        </div>
+                        <div class="col text-center">
+                            <!-- Botón Encargar Pedido centrado y protagónico -->
+                            <button type="button" id="requestOrderBtn" class="btn btn-success btn-lg text-uppercase"><i class="fas fa-shopping-cart me-2"></i>Encargar Pedido</button>
+                        </div>
+                        <div class="col">
+                            <!-- Columna vacía a la derecha para balancear el centrado -->
+                        </div>
                     </div>
+                    <!-- --- FIN: DIV de Botones Modificado --- -->
+                
                 </div>
             </div>
         </section>

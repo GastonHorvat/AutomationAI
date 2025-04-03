@@ -230,10 +230,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         results.forEach(material => {
             const row = document.createElement('tr');
-                row.innerHTML = `
+            row.innerHTML = `
                 <td>${material.name}</td>
                 <td>${material.unit}</td>
-                <td>${material.quantity.toFixed(2)}</td>
+                <td><input type="number" class="form-control form-control-sm quantity-input" value="${material.quantity.toFixed(0)}" step="1" min="0" data-price="${material.price}" style="max-width: 100px;"></td>
                 <td>${formatCurrency(material.price)}</td>
                 <td class="partial-cost">${formatCurrency(material.partialCost)}</td>
                 <td>
@@ -285,5 +285,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    // --- Event Listener for Updating Quantities ---
+    resultsBody.addEventListener('change', function(event) {
+        // Check if the changed element is a quantity input
+        if (event.target.classList.contains('quantity-input')) {
+            const inputElement = event.target;
+            const currentRow = inputElement.closest('tr');
+            const partialCostCell = currentRow.querySelector('.partial-cost'); // Celda de costo parcial
+            const deleteButton = currentRow.querySelector('.delete-material-btn'); // Botón de borrar
 
+            const newQuantity = parseFloat(inputElement.value);
+            const unitPrice = parseFloat(inputElement.getAttribute('data-price'));
+
+            if (!isNaN(newQuantity) && newQuantity >= 0 && !isNaN(unitPrice)) {
+                // Calculate new partial cost
+                const newPartialCost = newQuantity * unitPrice;
+
+                // Update the partial cost cell in the table
+                partialCostCell.textContent = formatCurrency(newPartialCost);
+
+                // Update the data-cost attribute on the delete button for consistency
+                deleteButton.setAttribute('data-cost', newPartialCost);
+
+                // Recalculate the total cost
+                recalculateTotalCost();
+
+            } else {
+                // Handle invalid input (optional: revert to old value or show error)
+                alert("Cantidad inválida. Por favor ingrese un número positivo.");
+                // Consider reverting: inputElement.value = (newPartialCost / unitPrice).toFixed(2); // Revert (needs old value stored)
+            }
+        }
+    });
+
+    // --- Helper Function to Recalculate Total ---
+    function recalculateTotalCost() {
+        let newTotal = 0;
+        const allPartialCostCells = resultsBody.querySelectorAll('td.partial-cost'); // Selecciona todas las celdas de costo parcial
+
+        allPartialCostCells.forEach(cell => {
+            const costText = cell.textContent.replace(/[^0-9.-]+/g,""); // Limpia el texto
+            const cost = parseFloat(costText);
+            if (!isNaN(cost)) {
+                newTotal += cost;
+            }
+        });
+
+        totalCostElement.textContent = formatCurrency(newTotal);
+    }
 }); // End DOMContentLoaded
