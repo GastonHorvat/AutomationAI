@@ -230,12 +230,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         results.forEach(material => {
             const row = document.createElement('tr');
-            row.innerHTML = `
+                row.innerHTML = `
                 <td>${material.name}</td>
                 <td>${material.unit}</td>
                 <td>${material.quantity.toFixed(2)}</td>
                 <td>${formatCurrency(material.price)}</td>
-                <td>${formatCurrency(material.partialCost)}</td>
+                <td class="partial-cost">${formatCurrency(material.partialCost)}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm delete-material-btn" data-cost="${material.partialCost}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
             `;
             resultsBody.appendChild(row);
             currentTotalCost += material.partialCost;
@@ -250,5 +255,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Simple ARS formatting, adjust as needed
         return `$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
     }
+
+    // --- Event Listener for Deleting Materials ---
+    resultsBody.addEventListener('click', function(event) {
+        // Check if the clicked element is a delete button or its icon
+        const deleteButton = event.target.closest('.delete-material-btn');
+
+        if (deleteButton) {
+            const rowToRemove = deleteButton.closest('tr');
+            const costToRemove = parseFloat(deleteButton.getAttribute('data-cost'));
+
+            // Get current total cost
+            const currentTotalText = totalCostElement.textContent.replace(/[^0-9.-]+/g,""); // Remove currency symbols and commas
+            let currentTotal = parseFloat(currentTotalText);
+
+            // Subtract the cost and update the total
+            if (!isNaN(costToRemove) && !isNaN(currentTotal)) {
+                const newTotal = currentTotal - costToRemove;
+                totalCostElement.textContent = formatCurrency(newTotal);
+            }
+
+            // Remove the row from the table
+            rowToRemove.remove();
+
+            // Optional: Check if table body is empty after removal
+            if (resultsBody.rows.length === 0) {
+                resultsBody.innerHTML = '<tr><td colspan="6" class="text-center">No quedan materiales en la lista.</td></tr>'; // Updated colspan to 6
+                totalCostElement.textContent = formatCurrency(0);
+            }
+        }
+    });
 
 }); // End DOMContentLoaded
