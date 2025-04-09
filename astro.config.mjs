@@ -8,9 +8,8 @@ export default defineConfig({
   output: 'static', // Correcto para GitHub Pages
 
   // --- Propiedad 'site' para tu dominio personalizado ---
-  // ¡Esta es la URL final donde vivirá el sitio!
   site: 'https://automationai.solutions',
-  // --- FIN Propiedad 'site' ---
+
 
   // --- Integraciones ---
   integrations: [
