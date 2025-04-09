@@ -12,11 +12,6 @@ export default defineConfig({
   site: 'https://automationai.solutions',
   // --- FIN Propiedad 'site' ---
 
-  // --- SIN 'base' ---
-  // No necesitas 'base' porque el sitio está en la raíz del dominio personalizado,
-  // no en una subcarpeta como /AutomationAI/
-  // base: '/AutomationAI/', // <<< ELIMINA O COMENTA ESTA LÍNEA
-
   // --- Integraciones ---
   integrations: [
     icon() // <<< Asegúrate que la integración esté aquí
