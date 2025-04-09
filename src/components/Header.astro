@@ -1,0 +1,167 @@
+
+<header>
+  <div class="container">
+    {/* --- Logo como Imagen --- */}
+    <a href="/" class="logo-link">
+        <img src="/img/AutomationAI_logo.png" alt="AutomationAI Logo" class="logo-image"/> {/* <<< CAMBIA TU_LOGO.png Y EL ALT TEXT */}
+    </a>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/solutions">Solutions</a></li>
+        <li><a href="/approach">Approach</a></li>
+        <li><a href="/about">About</a></li>
+        {/* Elemento "Resources" con dropdown */}
+        <li class="nav-item dropdown">
+          {/* Enlace principal que no lleva a ningún lado, solo activa el menú */}
+          {/* O podría llevar a /resources si queremos que también sea una página */}
+          <a href="/resources" aria-haspopup="true" aria-expanded="false">Resources</a>
+          <ul class="dropdown-menu" aria-label="Resources submenu">
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/tools">AI Tools</a></li>
+          </ul>
+        </li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .logo-link {
+    display: inline-block; /* Para que el enlace envuelva la imagen */
+    text-decoration: none;
+  }
+
+  .logo-image {
+    display: block; /* Evita espacio extra debajo de la imagen */
+    width: auto; /* Mantiene la proporción */
+  }
+  
+  header {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0; /* Pégalo en la parte superior */
+    left: 0; /* Asegura que empiece desde la izquierda */
+    width: 100%; /* Asegura que ocupe todo el ancho al pegarse */
+    z-index: 1000; /* Un valor alto para asegurar que esté sobre otro contenido */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #333;
+    text-decoration: none;
+  }
+
+  /* Estilos base para la lista de navegación */
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0; /* Quitamos margen por defecto de ul */
+    padding: 0; /* Quitamos padding por defecto de ul */
+  }
+
+  /* Estilos base para CADA elemento de la lista */
+  .nav-list li {
+    position: relative; /* Necesario para posicionar el dropdown */
+  }
+
+  .nav-list li a {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    display: block; /* Asegura que ocupe espacio para hover */
+    padding: 0.5rem 0; /* Un poco de espacio vertical */
+  }
+
+  .nav-list li a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  /* Estilos específicos para el Dropdown */
+  .dropdown-menu {
+  display: none; /* <<< ¡ASEGÚRATE QUE ESTÉ ESTA LÍNEA! */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.5rem 0;
+  margin: 0;
+  list-style: none;
+  min-width: 160px;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Mostrar el dropdown al hacer hover sobre el 'li' padre */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block; /* <<< ESTA LÍNEA LO MUESTRA AL HACER HOVER */
+}
+
+  .dropdown-menu li a {
+    padding: 0.5rem 1rem; /* Espaciado interno de los items del dropdown */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    color: #333; /* Color de texto para items del dropdown */
+  }
+
+  .dropdown-menu li a:hover {
+    background-color: #f8f8f8; /* Color de fondo al pasar el ratón */
+    color: var(--primary-color);
+  }
+
+  /* Mostrar el dropdown al hacer hover sobre el 'li' padre */
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+  }
+
+  /* Podríamos añadir un pequeño triángulo/indicador al lado de Resources */
+  .nav-item.dropdown > a::after {
+    content: ' ▼'; /* Pequeño triángulo hacia abajo */
+    font-size: 0.7em; /* Más pequeño */
+    display: inline-block;
+    margin-left: 0.3em;
+  }
+
+</style>
+
+ {
+ /* Podríamos añadir JavaScript aquí para manejar clicks/taps */
+ /*
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dropdowns = document.querySelectorAll('.nav-item.dropdown');
+
+    dropdowns.forEach(dropdown => {
+      const link = dropdown.querySelector('a[aria-haspopup="true"]');
+
+      // Ejemplo básico para toggle con click (necesitaría más lógica para cerrar)
+      link.addEventListener('click', (event) => {
+        // Prevenir navegación si el enlace principal solo abre menú
+        // event.preventDefault();
+        const isOpen = link.getAttribute('aria-expanded') === 'true';
+        link.setAttribute('aria-expanded', !isOpen);
+        // Aquí podríamos añadir/quitar una clase CSS para mostrar/ocultar
+        // en lugar de depender solo de :hover
+      });
+    });
+  });
+ </script>
+ */
+ }

@@ -1,0 +1,70 @@
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import WhatWeDoSection from '../components/WhatWeDoSection.astro';
+import WhyUsSection from '../components/WhyUsSection.astro';
+import HowItWorksSection from '../components/HowItWorksSection.astro';
+import FinalCTASection from '../components/FinalCTASection.astro';
+---
+<Layout title="AutomationAI Solutions | Intelligent Automation & Custom AI">
+
+  <HeroSection />
+
+  <section class="what-we-do-wrapper section-padding">
+    <div class="container">
+      <WhatWeDoSection />
+    </div>
+  </section>
+
+  <section class="why-us-wrapper section-padding">
+    <div class="container">
+       <WhyUsSection />
+    </div>
+  </section>
+
+  <section class="how-it-works-wrapper section-padding">
+    <div class="container">
+       <HowItWorksSection />
+    </div>
+  </section>
+
+  {/* --- Final CTA Section --- */}
+  <section class="final-cta-wrapper section-padding">
+    <div class="container">
+      <FinalCTASection />
+    </div>
+  </section>
+  {/* --- Fin Final CTA Section --- */}
+
+</Layout>
+
+{/* Estilos para esta página */}
+<style>
+  .section-padding {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+  }
+
+  .what-we-do-wrapper {
+       background-color: #f8f9fa; /* Fondo claro */
+  }
+
+   .why-us-wrapper {
+       background-color: #fff; /* Fondo blanco */
+   }
+
+   /* --- Añadido estilo faltante --- */
+   .how-it-works-wrapper {
+       background-color: #f8f9fa; /* Fondo claro (alternando) */
+   }
+
+   /* --- Añadido estilo faltante --- */
+   .final-cta-wrapper {
+       background-color: var(--primary-color); /* Color primario de fondo */
+       /* O un gradiente si prefieres */
+       /* background: linear-gradient(to right, var(--primary-color), #AlgúnOtroColor); */
+   }
+</style>
+
+{/* Nota: La definición de .container debe estar en global.css */}

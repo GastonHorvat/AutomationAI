@@ -1,0 +1,106 @@
+---
+// src/components/HeroSection.astro
+// No necesitamos lógica JS aquí por ahora
+---
+
+<section class="hero-section">
+    <div class="hero-overlay"></div> {/* Capa semitransparente para legibilidad */}
+    <div class="hero-container container">
+      <h1>Unlock Your Business Potential with Intelligent Automation</h1>
+      <p>
+        We partner with ambitious businesses to design and implement tailored
+        Artificial Intelligence solutions, streamlining processes and driving
+        measurable growth.
+      </p>
+      <a href="/solutions" class="cta-button">Discover Our Solutions</a>
+    </div>
+  </section>
+  
+  <style>
+    .hero-section {
+      position: relative; /* Necesario para la superposición absoluta */
+      background-image: url('/img/unsplash.jpg'); /* Apunta a tu imagen en public/img */
+      background-size: cover; /* Cubre todo el área */
+      background-position: center center; /* Centra la imagen */
+      background-repeat: no-repeat;
+      background-color: #333; /* Color de respaldo si la imagen no carga */
+      padding: 8rem 1rem; /* Padding vertical generoso, horizontal básico */
+      text-align: center; /* Centra el texto */
+      color: white; /* Texto blanco por defecto (ajustar si la imagen es muy clara) */
+      overflow: hidden; /* Evita desbordamientos */
+    }
+  
+    .hero-overlay {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* Superposición negra semitransparente */
+      /* Ajusta la opacidad (0.5) según tu imagen para asegurar contraste */
+      z-index: 1; /* Detrás del contenido */
+    }
+  
+    .hero-container {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin-left: auto; /* Asegura el centrado del contenedor en sí */
+    margin-right: auto; /* Asegura el centrado del contenedor en sí */
+    padding: 0 1rem; /* Padding lateral dentro del contenedor */
+    text-align: center; /* <<< ¡AÑADE O ASEGÚRATE DE QUE ESTÉ ESTA LÍNEA! */
+  }
+  
+    .hero-section h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem); /* Tamaño de fuente responsive */
+      font-weight: 700; /* O el peso que prefieras */
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: white; /* Asegura blanco aunque global.css diga otra cosa */
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Sombra sutil */
+    }
+  
+    .hero-section p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem); /* Tamaño de fuente responsive */
+      margin-bottom: 2.5rem;
+      opacity: 0.9; /* Un poco menos prominente */
+      max-width: 600px; /* Limita ancho del párrafo */
+      margin-left: auto; /* Centra el párrafo si es más estrecho */
+      margin-right: auto;
+      color: white; /* Asegura blanco */
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Sombra sutil */
+    }
+  
+    .cta-button {
+      display: inline-block;
+      background-color: var(--primary-color); /* Usa el color primario de tus variables globales */
+      color: white;
+      padding: 0.9rem 2rem; /* Padding generoso */
+      border-radius: 6px; /* Bordes redondeados */
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: transform 0.2s ease, background-color 0.2s ease; /* Transición suave */
+      border: none; /* Quitamos borde por si acaso */
+    }
+  
+    .cta-button:hover {
+      background-color: #cc0000; /* Un rojo más oscuro para hover (ajusta si tu primario es azul) */
+       /* O usa una variable si tienes : var(--primary-color-dark) */
+      transform: scale(1.05); /* Efecto ligero de zoom al pasar el ratón */
+    }
+  
+    /* Heredamos la clase .container de global.css para centrar y max-width si es necesario */
+    /* Pero hero-container ya lo maneja, así que es redundante aquí */
+    /* Si no tienes .container en global.css, puedes añadir aquí: */
+    /*
+    .container {
+       max-width: 1100px;
+       margin-left: auto;
+       margin-right: auto;
+       padding-left: 1rem;
+       padding-right: 1rem;
+     }
+    */
+  </style>

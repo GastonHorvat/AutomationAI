@@ -1,0 +1,142 @@
+---
+// src/components/WhatWeDoSection.astro - VERSIÓN CON ASTRO IMAGE
+
+import { Image } from 'astro:assets'; // Importa el componente Image
+
+// --- Importa las imágenes desde src/assets ---
+// Asegúrate que las rutas y nombres sean EXACTOS
+import automationImage from '../../src/assets/images/automation-neon.png'; // Asumo que la primera era .jpg? Ajusta si es .png
+import analyticsImage from '../../src/assets/images/analytics-neon.png';
+import customerImage from '../../src/assets/images/customer-neon.png';
+import customImage from '../../src/assets/images/custom-neon.png';
+
+
+// --- Define los datos de los servicios usando las imágenes importadas ---
+const services = [
+  {
+    imageData: automationImage, // Referencia a la imagen importada
+    imageAlt: "Neon abstract representing process automation",
+    title: "Intelligent Process Automation",
+    description: "Streamline workflows, eliminate repetitive tasks, reduce manual errors, and boost efficiency, freeing up your time for what truly matters.",
+    keyAreas: ["RPA & BPM Enhancement", "Document Processing", "Workflow Optimization"],
+    link: "/solutions#automation" // Enlace opcional a la página de soluciones
+  },
+  {
+    imageData: analyticsImage,
+    imageAlt: "Neon style data visualization for analytics insights",
+    title: "Data Analytics & Insights",
+    description: "Uncover hidden patterns, predict future trends, and make data-driven decisions with advanced AI analytics, turning information into action.",
+    keyAreas: ["Predictive Modeling", "BI Dashboards", "Customer Segmentation"],
+    link: "/solutions#analytics"
+  },
+  {
+    imageData: customerImage,
+    imageAlt: "Abstract neon communication flow for customer experience",
+    title: "AI-Powered Customer Experience",
+    description: "Enhance customer satisfaction with personalized interactions, automated reminders, and intelligent 24/7 support solutions.",
+    keyAreas: ["Chatbots & Voice AI", "Personalization Engines", "Sentiment Analysis"],
+    link: "/solutions#customer-experience"
+  },
+  {
+    imageData: customImage,
+    imageAlt: "Glowing neon puzzle pieces for custom AI development",
+    title: "Custom AI Development",
+    description: "Build unique, tailor-made AI applications designed to solve your specific business challenges and provide a competitive edge.",
+    keyAreas: ["Bespoke Model Training", "API Integrations", "Proof-of-Concepts"],
+    link: "/solutions#custom-development"
+  }
+];
+---
+
+{/* --- Template HTML (Usa <Image /> ahora) --- */}
+<div class="what-we-do-content">
+    <h2 class="section-title">What We Do</h2>
+    <p class="section-subtitle">
+      Leveraging Artificial Intelligence to solve real-world business problems, regardless of your company's size.
+    </p>
+    <div class="services-grid">
+      {services.map(service => (
+        <div class="service-card">
+          {/* --- Usamos el componente Image de Astro --- */}
+          {service.imageData && (
+              <div class="service-image-container">
+                  <Image
+                      src={service.imageData} {/* Pasa la imagen importada */}
+                      alt={service.imageAlt}
+                      widths={[300, 600, 900]} /* Define anchos para optimización */
+                      sizes="(max-width: 640px) 90vw, (max-width: 992px) 45vw, 30vw" /* Ayuda al navegador a elegir */
+                      loading="lazy"
+                      decoding="async"
+                      class="service-image"
+                      format="webp" /* Opcional: Fuerza WebP para mejor compresión */
+                      quality={80} /* Opcional: Ajusta calidad (75-85 suele ser bueno) */
+                  />
+                   {/* Capa de overlay */}
+                   <div class="image-overlay"></div>
+              </div>
+          )}
+          {/* Ya no necesitamos la sección de icono placeholder */}
+
+          {/* --- Contenido Textual (sin cambios) --- */}
+          <div class="service-text-content">
+              <h3 class="service-title">{service.title}</h3>
+              <p class="service-description">{service.description}</p>
+              {service.keyAreas && service.keyAreas.length > 0 && (
+                <ul class="key-areas">
+                  {service.keyAreas.map(area => <li>✓ {area}</li>)}
+                </ul>
+              )}
+              {/* <a href={service.link} class="learn-more">Learn More →</a> */}
+          </div>
+        </div>
+      ))}
+    </div>
+</div>
+
+{/* --- CSS (Sin cambios respecto a la versión anterior con imágenes) --- */}
+<style>
+  .section-title { text-align: center; margin-bottom: 1rem; font-size: 2.2rem; }
+  .section-subtitle { text-align: center; font-size: 1.1rem; color: #555; max-width: 650px; margin: 0 auto 3rem auto; }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .service-card {
+    background-color: #1a1a1a; color: #f0f0f0; border-radius: 12px;
+    border: 1px solid #333; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative;
+  }
+   .service-card:hover {
+       transform: translateY(-6px);
+       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+   }
+
+   .service-image-container {
+       position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden;
+   }
+   .service-image {
+       display: block; width: 100%; height: 100%; object-fit: cover;
+       transition: transform 0.3s ease;
+   }
+    .service-card:hover .service-image { transform: scale(1.05); }
+
+   .image-overlay {
+       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+       background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+       z-index: 1; pointer-events: none;
+   }
+
+  .service-text-content {
+      padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;
+  }
+
+  .service-title { font-size: 1.4rem; margin-top: 0; margin-bottom: 0.8rem; color: #fff; font-weight: 600; }
+  .service-description { color: #dcdcdc; line-height: 1.6; margin-bottom: 1.2rem; flex-grow: 1; }
+
+   .key-areas { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; color: #b0b0b0; }
+   .key-areas li { margin-bottom: 0.4rem; }
+
+</style>

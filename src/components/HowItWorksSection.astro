@@ -1,0 +1,137 @@
+---
+// src/components/HowItWorksSection.astro
+import { Icon } from 'astro-icon/components';
+
+const steps = [
+  { iconName: "mdi:magnify", title: "1. Discovery & Analysis", description: "We start by deeply understanding your business goals, challenges, and existing processes..." },
+  { iconName: "mdi:lightbulb-on-outline", title: "2. Solution Design", description: "Based on the discovery phase, we craft a tailored AI strategy and propose a clear roadmap..." },
+  { iconName: "mdi:cogs", title: "3. Implementation & Integration", description: "Our expert team builds and integrates the AI solution seamlessly into your workflow..." },
+  { iconName: "mdi:chart-line", title: "4. Support & Growth", description: "We provide ongoing support and collaborate with you to identify future opportunities..." }
+];
+---
+
+<div class="how-it-works-content">
+  <h2 class="section-title">Our Simple Process</h2>
+  <p class="section-subtitle">
+    From initial idea to successful implementation and beyond, we guide you every step of the way.
+  </p>
+  <div class="steps-container">
+    {steps.map((step, index) => (
+      <div class="step-card">
+        {/* Número del paso destacado */}
+        <div class="step-number">{index + 1}</div>
+        <div class="step-icon">
+          <Icon name={step.iconName} size={40} />
+        </div>
+        <h3 class="step-title">{step.title}</h3>
+        <p class="step-description">{step.description}</p>
+        {/* Flecha conectora (solo visible en desktop) */}
+        {index < steps.length - 1 && (
+          <div class="step-arrow">
+             <Icon name="mdi:arrow-right-thin" size={40} /> {/* Volvemos a la flecha */}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .section-title { text-align: center; margin-bottom: 1rem; font-size: 2.2rem; color: #333; }
+  .section-subtitle { text-align: center; font-size: 1.1rem; color: #555; max-width: 650px; margin: 0 auto 3.5rem auto; }
+
+  .steps-container {
+    display: grid; grid-template-columns: 1fr; gap: 3.5rem; position: relative;
+  }
+
+  .step-card {
+    background-color: #fff; padding: 2rem 1.5rem; border-radius: 10px;
+    border: 1px solid #e0e0e0; text-align: center; position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; padding-top: 3rem; /* Espacio para el número */
+  }
+   .step-card:hover { transform: translateY(-5px); box-shadow: 0 7px 20px rgba(0,0,0,0.08); }
+
+   .step-number {
+       position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%);
+       background-color: var(--primary-color); color: white; width: 3rem; height: 3rem;
+       border-radius: 50%; display: flex; align-items: center; justify-content: center;
+       font-size: 1.4rem; font-weight: bold; border: 3px solid #fff;
+       box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 2;
+   }
+
+  .step-icon { margin-top: 1rem; margin-bottom: 1rem; color: var(--primary-color); line-height: 1; }
+  .step-title { font-size: 1.2rem; margin-top: 0; margin-bottom: 0.8rem; color: #222; font-weight: 600; }
+  .step-description { color: #555; line-height: 1.6; font-size: 0.95rem; margin-bottom: 0; }
+
+   /* Flecha conectora (oculta por defecto) */
+   .step-arrow {
+      display: none;
+      color: #bbb; /* Color más suave para la flecha */
+      position: absolute;
+      top: 50%; /* Centrada verticalmente */
+      transform: translateY(-50%);
+      z-index: 0; /* Detrás de la siguiente tarjeta */
+   }
+
+  /* Desktop: 4 columnas con flechas */
+  @media (min-width: 992px) {
+    .steps-container {
+       grid-template-columns: repeat(4, 1fr);
+       gap: 4rem; /* Espacio para la flecha */
+       align-items: start;
+    }
+    /* Muestra y posiciona la flecha */
+    .step-arrow {
+       display: block;
+       right: -2rem; /* A la mitad del gap de 4rem */
+    }
+    /* Oculta la flecha del último elemento */
+     .step-card:last-child .step-arrow { display: none; }
+  }
+
+  /* Tablets: 2 columnas sin flechas */
+  @media (min-width: 641px) and (max-width: 991px) {
+     .steps-container { grid-template-columns: repeat(2, 1fr); gap: 3rem 2rem; align-items: stretch; }
+     .step-arrow { display: none; }
+   }
+
+   /* Móvil: 1 columna sin flechas (ya está por defecto) */
+   @media (max-width: 640px) {
+      /* gap y padding-top ya están definidos arriba */
+      .step-arrow { display: none; }
+   }
+
+/* En <style> de HowItWorksSection.astro */
+
+/* ... */
+
+.step-card {
+    /* ... (otros estilos) ... */
+    display: flex; /* Asegura que sea un contenedor flex */
+    flex-direction: column; /* Apila los elementos internos verticalmente */
+}
+
+/* ... */
+
+.step-description {
+    /* ... (otros estilos) ... */
+    flex-grow: 1; /* <<< ASEGÚRATE QUE ESTÉ ESTO */
+                 /* Hace que la descripción ocupe el espacio vertical restante */
+}
+
+/* ... */
+
+/* Ajustes para Tablets (2 columnas) */
+@media (min-width: 641px) and (max-width: 991px) {
+   .steps-container {
+       grid-template-columns: repeat(2, 1fr);
+       gap: 3rem 2rem;
+       align-items: stretch; /* <<< ASEGÚRATE QUE ESTÉ ESTO */
+                             /* Intenta que todos los items del grid tengan la misma altura */
+   }
+   /* ... */
+ }
+
+/* ... */
+
+</style>

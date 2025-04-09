@@ -1,0 +1,107 @@
+---
+// src/components/ToolCard.astro
+import type { Tool } from '../pages/tools.astro'; // Asume que el tipo Tool está exportado
+
+// --- NUEVO: Prop para recibir el mapa de colores ---
+// Creamos un tipo para este mapa: { tagName: colorHex, ... }
+type TagColorMap = Record<string, string>;
+
+export interface Props {
+  tool: Tool;
+  tagColorsMap?: TagColorMap; // Hacemos opcional por si se usa en otro lado sin colores
+}
+
+const { tool, tagColorsMap = {} } = Astro.props; // Default a objeto vacío
+const tagsString = tool.tags?.join(',') || '';
+
+// Función auxiliar para obtener el color o un default
+function getTagColor(tagName: string): string {
+    return tagColorsMap[tagName] || '#e9ecef'; // Devuelve color mapeado o gris por defecto
+}
+---
+
+<div class="tool-card" data-tags={tagsString}>
+  <h3>
+    <a href={tool.link} target="_blank" rel="noopener noreferrer">{tool.name}</a>
+  </h3>
+  <p class="tool-description">{tool.description}</p>
+  {tool.tags && tool.tags.length > 0 && (
+    <div class="tool-tags">
+      {/* --- Modificado: Aplica color inline --- */}
+      {tool.tags.map(tag => (
+        <span
+          class="tag"
+          style={`--tag-bg-color: ${getTagColor(tag)};`} 
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
+
+<style>
+  /* Estilos para la tarjeta completa */
+  .tool-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem; /* Padding general interno */
+    background-color: #fff;
+    transition: box-shadow 0.2s ease-in-out;
+    height: 100%; /* Intenta igualar alturas en grid/flex */
+    display: flex; /* Habilita flexbox para layout interno */
+    flex-direction: column; /* Apila Título, Descripción, Tags verticalmente */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra base sutil */
+  }
+  .tool-card:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1); /* Sombra más pronunciada al pasar */
+  }
+
+  /* Estilos para el título H3 */
+  .tool-card h3 {
+    margin-top: 0; /* Sin espacio extra arriba */
+    margin-bottom: 0.75rem; /* Espacio bajo el título */
+    font-size: 1.3rem; /* Ajusta tamaño según preferencia */
+    line-height: 1.3;
+  }
+  /* Estilo para el enlace dentro del título */
+  .tool-card h3 a {
+    color: var(--primary-color); /* Usa color primario */
+    text-decoration: none;
+  }
+  .tool-card h3 a:hover {
+    text-decoration: underline;
+  }
+
+  /* Estilos para la descripción */
+  .tool-description {
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    flex-grow: 1; /* Ocupa espacio vertical disponible empujando tags abajo */
+    margin-bottom: 1rem; /* Espacio entre descripción y bloque de tags */
+  }
+
+  /* Contenedor de los tags */
+  .tool-tags {
+    /* margin-top: auto; <= Quitamos esto, el flex-grow de arriba lo maneja */
+    margin-top: 1rem; /* Espacio explícito sobre los tags */
+    display: flex; /* Habilita Flexbox */
+    flex-wrap: wrap; /* Permite que los tags pasen a la siguiente línea */
+    gap: 0.5rem; /* <<< AÑADIDO: Espacio uniforme (vertical y horizontal) entre tags */
+    /* align-items: flex-start; <= Quitado baseline, start es más simple */
+  }
+
+  /* Estilos para cada tag individual */
+  .tag {
+    display: inline-block; /* O block, flexbox lo maneja */
+    background-color: var(--tag-bg-color, #e9ecef); /* Usa variable CSS con fallback */
+    color: #334155; /* Texto oscuro */
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px; /* Bordes ligeramente redondeados */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    line-height: 1.4; /* Asegura altura consistente */
+    /* Sin márgenes aquí, gap se encarga */
+  }
+</style>

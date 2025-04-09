@@ -1,0 +1,108 @@
+---
+// src/components/WhyUsSection.astro
+import { Icon } from 'astro-icon/components';
+
+// Mismos datos que antes
+const points = [
+  { iconName: "mdi:puzzle-edit-outline", title: "Custom-Fit Solutions", description: "No one-size-fits-all templates. We dive deep into your unique challenges to design AI strategies that deliver precise, measurable results for YOUR business." },
+  { iconName: "mdi:account-group-outline", title: "Expert & Passionate Team", description: "Founded by AI enthusiasts, our core strength lies in deep technical expertise combined with a genuine dedication to helping you succeed." },
+  { iconName: "mdi:storefront-outline", title: "AI Power for All Sizes", description: "We believe powerful AI shouldn't be exclusive. We craft accessible and impactful solutions for small businesses, freelancers, and enterprises alike." },
+  { iconName: "mdi:rocket-launch-outline", title: "Future-Ready Partnership", description: "We're invested in your long-term growth, constantly exploring AI advancements to ensure your solutions remain effective, scalable, and ahead of the curve." }
+];
+---
+
+<div class="why-us-content">
+  <h2 class="section-title">The AutomationAI Advantage</h2>
+  <p class="section-subtitle">
+    Beyond just technology, we focus on partnership, tangible results, and solutions truly tailored to your needs.
+  </p>
+  <div class="why-us-grid">
+    {points.map(point => (
+      <div class="point-card">
+        {/* Contenedor Flex para Icono + Texto */}
+        <div class="card-inner-content">
+          <div class="point-icon">
+            <Icon name={point.iconName} size={44} /> {/* Icono un poco más pequeño */}
+          </div>
+          <div class="point-text">
+            <h3 class="point-title">{point.title}</h3>
+            <p class="point-description">{point.description}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Títulos y subtítulos (sin cambios) */
+  .section-title { text-align: center; margin-bottom: 1rem; font-size: 2.2rem; color: #333; }
+  .section-subtitle { text-align: center; font-size: 1.1rem; color: #555; max-width: 650px; margin: 0 auto 3.5rem auto; }
+
+  /* Cuadrícula (sin cambios) */
+  .why-us-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
+
+  /* --- Estilos Tarjeta REVISADOS --- */
+  .point-card {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    /* Borde superior de color */
+    border-top: 4px solid var(--primary-color); /* Ajusta grosor (4px) si quieres */
+    padding: 2rem; /* Mantenemos padding */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .point-card:hover {
+     transform: translateY(-5px);
+     box-shadow: 0 6px 18px rgba(0,0,0,0.09); /* Sombra un poco más notable */
+  }
+
+  /* NUEVO: Contenedor Flex interno */
+  .card-inner-content {
+      display: flex;
+      align-items: flex-start; /* Alinea items arriba */
+      gap: 1.5rem; /* Espacio entre icono y texto */
+      text-align: left; /* Texto alineado a la izquierda */
+  }
+
+  .point-icon {
+    /* Quitamos margen inferior, el gap se encarga */
+    /* margin-bottom: 1.5rem; */
+    color: var(--primary-color);
+    line-height: 1;
+    flex-shrink: 0; /* Evita que el icono se encoja */
+    /* Centrado vertical (opcional, si prefieres icono centrado con texto) */
+    /* align-self: center; */
+  }
+
+  /* Contenedor para Título y Descripción */
+  .point-text {
+      /* Ocupa el espacio restante */
+      flex-grow: 1;
+  }
+
+  .point-title {
+    font-size: 1.25rem; /* Un poco más pequeño al estar al lado */
+    margin-top: 0;
+    margin-bottom: 0.6rem; /* Menos espacio bajo el título */
+    color: #222;
+    font-weight: 600;
+  }
+
+  .point-description {
+    color: #555;
+    line-height: 1.6; /* Ajustamos si es necesario */
+    font-size: 0.95rem;
+    margin-bottom: 0;
+  }
+
+  /* Responsive (sin cambios en estructura, solo gap) */
+  @media (max-width: 768px) {
+    .why-us-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .section-subtitle { margin-bottom: 2.5rem; }
+    .point-card { padding: 1.5rem; }
+    /* Opcional: Centrar contenido en móvil si se ve mejor */
+    /* .card-inner-content { flex-direction: column; align-items: center; text-align: center; } */
+    /* .point-icon { margin-bottom: 1rem; } */
+  }
+</style>

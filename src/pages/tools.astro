@@ -1,0 +1,408 @@
+---
+// src/pages/tools.astro
+import Layout from '../layouts/Layout.astro'; // Ajusta ruta
+import ToolCard from '../components/ToolCard.astro'; // Ajusta ruta
+import { Icon } from 'astro-icon/components';
+
+// --- 1. Tipos ---
+interface AirtableFields { Name: string; CategoryNameText?: string; SubcategoryNameText?: string; Description: string; Link: string; Tags?: string[]; }
+interface AirtableRecord { id: string; createdTime: string; fields: AirtableFields; }
+export interface Tool { name: string; category: string; subcategory: string; description: string; link: string; tags?: string[]; }
+
+// --- 2. Variables de Entorno y Fetch ---
+const apiKey = import.meta.env.AIRTABLE_API_KEY;
+const baseId = import.meta.env.AIRTABLE_BASE_ID;
+const tableIdOrName = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_TABLE_NAME;
+
+// Inicialización
+let tools: Tool[] = [];
+let fetchError: string | null = null;
+let uniqueTags: string[] = [];
+let categories: string[] = [];
+interface GroupedToolsSimple { [category: string]: Tool[]; }
+let groupedToolsSimple: GroupedToolsSimple = {};
+let tagsWithColors: { name: string; color: string }[] = [];
+let tagColorMap: Record<string, string> = {};
+
+// Tu Paleta de Colores
+const tagColors = ['#BA68C8','#F0F4C3','#FBE9E7','#A7FFEB','#FFD54F','#ECEFF1','#FF8A65','#90A4AE','#FFF8E1','#DCEDC8','#FFF3E0','#4DB6AC','#FFD180','#FFAB91','#CE93D8','#E8EAF6','#F4FF81','#FF80AB','#F5F5F5','#F3E5F5','#F44336','#FFF176','#F1F8E9','#E1F5FE','#4FC3F7','#F8BBD0','#FFF9C4','#F9FBE7','#E3F2FD','#84FFFF','#64B5F6','#B9F6CA','#DCE775','#B2DFDB','#F06292','#FFECB3','#8C9EFF','#F48FB1','#E0F7FA','#FAFAFA','#F0F4C3','#FFFDE7','#E6EE9C','#FFB74D','#9575CD','#B3E5FC','#E1BEE7','#81C784','#D1C4E9','#FFCCBC','#D7CCC8','#FCE4EC','#FFCDD2','#CFD8DC','#AED581','#4DB6AC','#A1887F','#FBE9E7','#EA80FC','#FFE0B2','#FF9E80','#FFCDD2','#F5F5F5','#E0E0E0','#EDE7F6','#4DD0E1','#DCEDC8','#FF8A80','#E0F7FA','#7986CB','#81D4FA','#EDEDFA','#82B1FF','#B388FF','#AEEDC8','#E0E0E0'];
+
+// --- Fetch y Procesamiento ---
+if (apiKey && baseId && tableIdOrName) {
+  const airtableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableIdOrName)}`;
+  const fetchOptions = { headers: { Authorization: `Bearer ${apiKey}` } };
+  try {
+    const response = await fetch(airtableUrl, fetchOptions);
+    if (!response.ok) throw new Error(`Airtable API Error (${response.status}): ${await response.text()}`);
+    const data = await response.json();
+    tools = data.records
+      .map((record: AirtableRecord) => ({
+        name: record.fields.Name,
+        category: record.fields.CategoryNameText || 'Uncategorized',
+        subcategory: record.fields.SubcategoryNameText || '',
+        description: record.fields.Description,
+        link: record.fields.Link,
+        tags: record.fields.Tags || [],
+      }))
+      .filter(tool => tool.name && tool.category && tool.description && tool.link);
+
+    const allTags = tools.flatMap(tool => tool.tags || []);
+    uniqueTags = [...new Set(allTags)].sort();
+    tagsWithColors = uniqueTags.map((tag, index) => ({ name: tag, color: tagColors[index % tagColors.length] }));
+    tagsWithColors.forEach(tc => { tagColorMap[tc.name] = tc.color; }); // Poblar mapa
+
+    categories = [...new Set(tools.map(tool => tool.category))].sort();
+
+    groupedToolsSimple = tools.reduce((acc, tool) => {
+      const category = tool.category;
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(tool);
+      return acc;
+    }, {} as GroupedToolsSimple);
+
+  } catch (error: any) { fetchError = error.message || "An unknown error occurred."; console.error(fetchError); }
+} else { fetchError = "Airtable environment variables not set."; console.error(fetchError); }
+---
+
+<Layout title="AI Tools Directory">
+  <div class="content-container">
+    <h1>AI Tools Directory</h1>
+    <p class="intro-text">
+      Explore a curated list of Artificial Intelligence tools. Use the filters below...
+      {tools.length > 0 && ` Currently showcasing ${tools.length} tools.`}
+    </p>
+
+    {/* --- Sección de Filtros Combinados --- */}
+    {!fetchError && (categories.length > 0 || uniqueTags.length > 0) && (
+      <div class="filter-controls">
+        {/* Filtro TAGS */}
+        {uniqueTags.length > 0 && (
+          <div class="filter-section collapsible" data-filter-type="tags">
+            <div class="filter-header" role="button" tabindex="0">
+              <div class="filter-summary"><strong>Filter by Tags:</strong> <span class="selected-items-summary">Show All</span></div>
+              <button class="toggle-filters" type="button" aria-expanded="false" aria-controls="filter-options-tags"><Icon name="mdi:chevron-down" size={24} class="toggle-icon"/><span class="sr-only">Toggle Tag Filters</span></button>
+            </div>
+            <div class="filter-options-wrapper" id="filter-options-tags" hidden>
+              <div class="filter-options-container">
+                <button class="filter-button active" type="button" data-filter-value="all">Show All</button>
+                {tagsWithColors.map(tagInfo => ( <button class="filter-button tag-button" type="button" data-filter-value={tagInfo.name} style={`--tag-bg-color: ${tagInfo.color};`}>{tagInfo.name}</button> ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Filtro CATEGORÍAS */}
+        {categories.length > 0 && (
+          <div class="filter-section collapsible" data-filter-type="categories">
+            <div class="filter-header" role="button" tabindex="0">
+               <div class="filter-summary"><strong>Filter by Category:</strong> <span class="selected-items-summary">Show All</span></div>
+               <button class="toggle-filters" type="button" aria-expanded="false" aria-controls="filter-options-categories"><Icon name="mdi:chevron-down" size={24} class="toggle-icon"/><span class="sr-only">Toggle Category Filters</span></button>
+            </div>
+            <div class="filter-options-wrapper" id="filter-options-categories" hidden>
+              <div class="filter-options-container">
+                <button class="filter-button active" type="button" data-filter-value="all">Show All</button>
+                {categories.map(category => ( <button class="filter-button category-button" type="button" data-filter-value={category}>{category}</button> ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+
+    {/* Mensaje de Error */}
+    {fetchError && ( <div class="error-message"><h2>Oops!</h2><p>{fetchError}</p></div> )}
+
+    {/* --- Renderizado por Categorías (<section>) --- */}
+    {!fetchError && categories.length > 0 ? (
+      <div class="categories-container">
+        {categories.map(category => (
+          <section class="category-section" data-category={category}>
+            <div class="category-header-simple"><h2>{category}</h2></div>
+            <div class="tools-grid">
+              {/* Renderizamos todas las tools de la categoría */}
+              {groupedToolsSimple[category]?.map(tool => (
+                  <div class="tool-card-wrapper">
+                     {/* Pasa el mapa de colores */}
+                     <ToolCard tool={tool} tagColorsMap={tagColorMap} />
+                  </div>
+              )) || <p>No tools currently in this category.</p>}
+            </div>
+          </section>
+        ))}
+        <p id="no-results-message" class="no-results" hidden>No tools match the current filters.</p>
+      </div>
+    ) : !fetchError ? ( <p>No tools found.</p> ) : null}
+
+
+    {/* Placeholder */}
+    <section class="future-section"> {/* ... */} </section>
+
+  </div> {/* Fin .content-container */}
+</Layout>
+
+{/* --- SCRIPT FINAL Y CORREGIDO --- */}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Selectores ---
+    const allToolCardWrappers = document.querySelectorAll('.tool-card-wrapper');
+    const categorySections = document.querySelectorAll('section.category-section');
+    const filterControlDiv = document.querySelector('.filter-controls');
+    const noResultsMessage = document.getElementById('no-results-message');
+    const allFilterHeaders = filterControlDiv?.querySelectorAll<HTMLElement>('.filter-header'); // Todos los headers de filtro
+
+    // --- Comprobación Inicial ---
+    if (!filterControlDiv) return; // Salir si no hay controles
+
+    // --- Estado ---
+    let selectedTags: string[] = [];
+    let selectedCategories: string[] = [];
+
+    // --- Función Principal de Filtrado ---
+    function applyAllFilters() {
+        let visibleCategories = new Set<string>();
+        let hasVisibleTools = false;
+
+        allToolCardWrappers.forEach(cardWrapper => {
+            if (!(cardWrapper instanceof HTMLElement)) return;
+            const card = cardWrapper.querySelector<HTMLElement>('.tool-card');
+            if (!card) return;
+
+            const cardTags = card.getAttribute('data-tags')?.split(',') || [];
+            const cardCategory = cardWrapper.closest('section.category-section')?.getAttribute('data-category') || 'Uncategorized';
+
+            const tagMatch = selectedTags.length === 0 || cardTags.some(tag => selectedTags.includes(tag));
+            const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(cardCategory);
+            const shouldShow = tagMatch && categoryMatch;
+
+            cardWrapper.classList.toggle('hidden-by-filter', !shouldShow);
+            if (shouldShow) {
+                visibleCategories.add(cardCategory);
+                hasVisibleTools = true;
+            }
+        });
+
+        // Ocultar/Mostrar Secciones de Categoría (<section>)
+        categorySections.forEach(section => {
+             if (!(section instanceof HTMLElement)) return;
+             const categoryName = section.getAttribute('data-category');
+             const shouldShowSection = categoryName ? visibleCategories.has(categoryName) : false;
+             section.style.display = shouldShowSection ? 'block' : 'none';
+        });
+
+        // Mensaje "No Results"
+        if (noResultsMessage) noResultsMessage.hidden = hasVisibleTools;
+
+        // Actualizar UI de ambos filtros
+        updateFilterUI('tags', selectedTags);
+        updateFilterUI('categories', selectedCategories);
+    }
+
+    // --- Función para Actualizar UI de un Filtro ---
+    function updateFilterUI(filterType: 'tags' | 'categories', selectedItems: string[]) {
+        const filterSectionElement = filterControlDiv?.querySelector(`.filter-section[data-filter-type="${filterType}"]`);
+        if (!filterSectionElement) return;
+        const summarySpan = filterSectionElement.querySelector<HTMLSpanElement>('.selected-items-summary');
+        const filterButtons = filterSectionElement.querySelectorAll<HTMLButtonElement>('.filter-button');
+
+        if (summarySpan) {
+             summarySpan.textContent = selectedItems.length === 0 ? 'Show All' : selectedItems.join(', ');
+        }
+        filterButtons.forEach(button => {
+            if (!button) return;
+            const value = button.getAttribute('data-filter-value');
+            button.classList.toggle('active', (value === 'all' && selectedItems.length === 0) || (value !== 'all' && value !== null && selectedItems.includes(value)));
+        });
+    }
+
+     // --- Función para Manejar Clic en Botones de Filtro ---
+    function handleFilterButtonClick(event: MouseEvent, filterType: 'tags' | 'categories') {
+        const button = event.currentTarget;
+        if (!(button instanceof HTMLButtonElement)) return;
+        const value = button.getAttribute('data-filter-value');
+        if (value === null) return;
+
+        let selectedArray = (filterType === 'tags') ? selectedTags : selectedCategories;
+        if (value === 'all') { selectedArray.length = 0; }
+        else {
+            const index = selectedArray.indexOf(value);
+            if (index > -1) { selectedArray.splice(index, 1); } else { selectedArray.push(value); }
+        }
+        applyAllFilters();
+    }
+
+    // --- Función para Toggle de Acordeones de Filtro ---
+    function toggleFilterAccordion(targetSection: HTMLElement) {
+        const wrapper = targetSection.querySelector<HTMLElement>('.filter-options-wrapper');
+        const button = targetSection.querySelector<HTMLButtonElement>('.toggle-filters');
+        const header = targetSection.querySelector<HTMLElement>('.filter-header');
+
+        if (!wrapper || !button || !header) return;
+
+        const isOpen = wrapper.hidden; // Estado al que va a cambiar
+
+        // --- Lógica de Acordeón Exclusivo ---
+        if (isOpen) { // Si vamos a ABRIR esta sección...
+            // ...cerramos TODAS las demás secciones de filtro primero
+            allFilterHeaders?.forEach(hdr => {
+                const otherSection = hdr.closest<HTMLElement>('.filter-section.collapsible');
+                if (otherSection && otherSection !== targetSection) {
+                    const otherWrapper = otherSection.querySelector<HTMLElement>('.filter-options-wrapper');
+                    const otherButton = otherSection.querySelector<HTMLButtonElement>('.toggle-filters');
+                    const otherHeader = otherSection.querySelector<HTMLElement>('.filter-header');
+                    if (otherWrapper && otherButton && otherHeader) {
+                        otherWrapper.hidden = true; // Ciérrala
+                        otherButton.setAttribute('aria-expanded', 'false');
+                        otherSection.classList.remove('is-open');
+                        const otherIcon = otherButton.querySelector<SVGElement>('.toggle-icon svg');
+                        if (otherIcon) otherIcon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                        // Aplica estilo cerrado al header
+                        otherHeader.style.paddingBottom = '1rem';
+                    }
+                }
+            });
+        }
+
+        
+        // Abre/cierra la sección ACTUAL
+        wrapper.hidden = !isOpen;
+        button.setAttribute('aria-expanded', String(isOpen));
+        const icon = button.querySelector<SVGElement>('.toggle-icon svg');
+        if (icon) icon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        targetSection.classList.toggle('is-open', isOpen);
+
+        // Actualiza borde/padding del header actual
+        header.style.paddingBottom = !isOpen ? '1rem' : '0';
+    }
+
+    // --- Añadir Event Listeners ---
+    allFilterHeaders?.forEach(header => {
+        header.addEventListener('click', (event) => {
+             // Evitar toggle si el clic vino de un botón DENTRO del header
+             // O si vino del propio botón de toggle (ya que tiene su propio listener)
+            if (event.target instanceof Element && event.target.closest('button')) return;
+
+            const section = header.closest<HTMLElement>('.filter-section.collapsible');
+            if(section) toggleFilterAccordion(section); // Llama a la función principal de toggle
+        });
+        // Listener específico para el BOTÓN de toggle dentro del header
+         const toggleBtn = header.querySelector<HTMLButtonElement>('.toggle-filters');
+         if(toggleBtn){
+             toggleBtn.addEventListener('click', (e) => {
+                  e.stopPropagation(); // IMPORTANTE: Detiene que el clic se propague al header
+                  const section = header.closest<HTMLElement>('.filter-section.collapsible');
+                  if(section) toggleFilterAccordion(section); // Llama a la función principal de toggle
+             });
+         }
+    });
+    filterControlDiv?.querySelectorAll('.filter-section[data-filter-type="tags"] .filter-button').forEach(button => { button.addEventListener('click', (e) => handleFilterButtonClick(e as MouseEvent, 'tags')); });
+    filterControlDiv?.querySelectorAll('.filter-section[data-filter-type="categories"] .filter-button').forEach(button => { button.addEventListener('click', (e) => handleFilterButtonClick(e as MouseEvent, 'categories')); });
+
+});
+</script>
+
+<style>
+  /* --- Estilos Generales --- */
+  .intro-text { font-size: 1.1rem; color: #555; margin-bottom: 2rem; max-width: 700px; }
+  .error-message { background-color: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
+  .error-message h2 { margin-top: 0; color: #cc0000; border-bottom: none;}
+  .error-message pre { background-color: #f8f8f8; padding: 0.5rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; color: #333;}
+  .future-section { margin-top: 5rem; padding: 2rem; background-color: #f8f8f8; border: 1px dashed #ddd; border-radius: 8px; }
+  .future-section h2 { margin-top: 0; border-bottom: none; }
+  .tool-card-wrapper.hidden-by-filter { display: none !important; }
+  .no-results { text-align: center; color: #777; font-style: italic; margin-top: 3rem; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+  /* .container, .section-padding en global.css */
+
+  /* --- Filtros --- */
+  .filter-controls { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  @media (min-width: 768px) { .filter-controls { grid-template-columns: 1fr 1fr; } }
+  .filter-section {
+    background-color: #f8f9fa; /* Mantenemos fondo claro */
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8); /* Sombra sutil */
+  }
+  .filter-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: margin-bottom 0s ease, padding-bottom 0.1s ease;  }
+  .filter-summary strong { font-weight: 600; color: #333; margin-right: 0.5em; flex-shrink: 0; }
+  .filter-summary span.selected-items-summary { color: var(--primary-color); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
+  .toggle-filters { background: none; border: none; padding: 0.25rem; cursor: pointer; color: #6c757d; line-height: 0; }
+  .toggle-filters svg { transition: transform 0.2s ease-in-out; }
+
+  .filter-options-wrapper { /* Padding/border gestionado por JS */ }
+  .filter-options-wrapper[hidden] { display: none; }
+  .filter-options-container { display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 1rem; }
+
+  /* --- ESTILOS BOTONES DE FILTRO (RESTAURADOS/VERIFICADOS) --- */
+  .filter-button {
+      border: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 15px; /* Bordes redondeados tipo píldora */
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(0, 0, 0, 0.08); /* Borde sutil */
+      line-height: 1.4;
+      white-space: nowrap; /* Evita que botones largos se partan */
+  }
+
+  /* Botón Tag específico (usa variable) */
+  .tag-button {
+      background-color: var(--tag-bg-color, #e9ecef); /* Usa variable con fallback */
+      color: #334155; /* Texto oscuro para colores claros */
+  }
+  .tag-button:hover:not(.active) {
+      filter: brightness(95%); /* Oscurece ligeramente al pasar */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+
+  /* Botón Categoría específico (estilo base gris) */
+  .category-button {
+      background-color: #e9ecef;
+      color: #495057;
+  }
+  .category-button:hover:not(.active) {
+      background-color: #ced4da; /* Gris más oscuro al pasar */
+  }
+
+  /* Botón Activo (Común a ambos tipos) */
+  .filter-button.active {
+      background-color: var(--primary-color); /* Color primario */
+      color: white; /* Texto blanco */
+      font-weight: bold;
+      filter: none; /* Quitar filtro brightness */
+      box-shadow: none; /* Quitar sombra */
+      border-color: transparent; /* Quitar borde si se quiere */
+  }
+  /* --- FIN ESTILOS BOTONES --- */
+
+  /* --- Categorías de Herramientas (<section>) --- */
+  .categories-container { padding-top: 2rem; }
+  .category-section { margin-bottom: 2.5rem; padding-bottom: 2.5rem; }
+  .category-section:last-of-type { border-bottom: none; margin-bottom: 3rem; }
+  .category-header-simple {
+      margin-bottom: 1.5rem;
+  }
+  .category-header-simple h2 {
+    width: 100%;
+    margin: 0;
+    /* border-bottom: none; */ /* Comenta o elimina esto si lo pusiste */
+    font-size: 1.8rem; /* Ajusta tamaño si es necesario */
+    color: #333;
+    font-weight: 700; /* Más peso */
+    border-bottom: 3px solid var(--primary-color); /* La línea azul/roja */
+    padding-bottom: 0.5rem; /* Espacio entre texto y línea */
+    display: inline-block; /* Para que el borde no ocupe todo el ancho */
+    margin-bottom: 1rem; /* Espacio debajo de la línea, antes del grid */
+  }
+
+  /* --- Grid y Wrapper de Tarjetas --- */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Siempre 3 columnas */
+    gap: 1.5rem;
+}
+@media (max-width: 992px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .tools-grid { grid-template-columns: 1fr; } }
+  
+</style>

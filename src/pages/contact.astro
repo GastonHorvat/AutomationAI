@@ -1,0 +1,172 @@
+---
+// src/pages/contact.astro
+import Layout from '../layouts/Layout.astro';
+
+// Reemplaza esto con TU endpoint de Formspree
+const formspreeEndpoint = "https://formspree.io/f/mdkepdwk";
+---
+
+<Layout title="Contact Us">
+  <div class="content-container">
+    <h1>Get in Touch</h1>
+    <p class="intro-text">
+      Have a question about our AI solutions or want to discuss a project?
+      Fill out the form below or email us directly. We'd love to hear from you!
+    </p>
+
+    <div class="contact-wrapper">
+      {/* Sección del Formulario */}
+      <div class="contact-form">
+        <h2>Send us a Message</h2>
+        <form action={formspreeEndpoint} method="POST">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="company">Company (Optional):</label>
+            <input type="text" id="company" name="company" />
+          </div>
+          <div class="form-group">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="6" required></textarea>
+          </div>
+          {/* Campo oculto para redirección (opcional, mira docs de Formspree) */}
+          {/* <input type="hidden" name="_next" value="https://yoursite.com/thank-you"> */}
+          {/* Campo oculto anti-spam (opcional pero recomendado) */}
+          <input type="text" name="_gotcha" style="display:none" />
+
+          <button type="submit" class="cta-button">Send Message</button>
+        </form>
+      </div>
+
+      {/* Sección de Información de Contacto (Opcional) */}
+      <div class="contact-info">
+        <h2>Contact Information</h2>
+        <p>Prefer to reach out directly?</p>
+        <ul>
+          <li>
+            <strong>Email:</strong>
+            <a href="mailto:info@automationai.com.ar">info@automationai.com.ar</a>
+          </li>
+          {/* Añade Teléfono, Dirección si aplica */}
+          <!--
+          <li><strong>Phone:</strong> [Your Phone Number]</li>
+          <li><strong>Address:</strong> [Your Address]</li>
+          -->
+        </ul>
+        <p>We typically respond within 24-48 business hours.</p>
+      </div>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .intro-text {
+    font-size: 1.1rem; color: #555; margin-bottom: 3rem; max-width: 700px;
+  }
+
+  .contact-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Formulario ocupa más espacio */
+    gap: 3rem; /* Espacio entre formulario e info */
+    margin-top: 3rem;
+  }
+
+  .contact-form h2, .contact-info h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit; /* Hereda la fuente del body */
+    line-height: 1.5;
+  }
+   .form-group textarea {
+     resize: vertical; /* Permite redimensionar solo verticalmente */
+   }
+
+  .cta-button { /* Reutilizamos la clase del Hero */
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.9rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    border: none;
+    cursor: pointer; /* Indica que es clickeable */
+  }
+  .cta-button:hover {
+    background-color: #cc0000; /* Ajusta hover color */
+    transform: scale(1.05);
+  }
+
+
+  .contact-info {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    height: fit-content; /* Ajusta altura al contenido */
+  }
+   .contact-info ul {
+     list-style: none;
+     padding: 0;
+     margin-top: 1rem;
+   }
+    .contact-info li {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    .contact-info strong {
+        display: block;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+    .contact-info a {
+       color: var(--primary-color);
+       text-decoration: none;
+    }
+    .contact-info a:hover {
+       text-decoration: underline;
+    }
+
+
+  /* Responsive: Apilar formulario e info en móvil */
+  @media (max-width: 840px) {
+    .contact-wrapper {
+      grid-template-columns: 1fr; /* 1 columna */
+      gap: 2.5rem; /* Reducir gap */
+    }
+     .contact-info {
+         /* Ordenar info después del formulario en móvil */
+         /* grid-row: 2; (Forma alternativa) */
+     }
+  }
+</style>

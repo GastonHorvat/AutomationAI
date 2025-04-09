@@ -1,0 +1,210 @@
+---
+// src/components/Footer.astro
+const currentYear = new Date().getFullYear();
+const companyName = "AutomationAI Solutions";
+// Asume que tienes un logo blanco en public/img/logo-white.png
+// Si no, cambia 'useLogo' a false o ajusta la ruta/nombre
+const useLogo = true;
+const logoSrc = "/img/AutomationAI_logo_white.png"; // O '/img/TU_LOGO_BLANCO.png', etc.
+const logoAlt = `${companyName} Logo`;
+---
+
+<footer class="site-footer">
+  <div class="footer-content container"> {/* Usamos la clase .container global */}
+
+    {/* Columna 1: Logo y Descripción */}
+    <div class="footer-column about">
+      {useLogo && (
+        <img src={logoSrc} alt={logoAlt} class="footer-logo" />
+      )}
+      <p class="footer-tagline">
+        Driving business transformation through intelligent automation.
+      </p>
+    </div>
+
+    {/* Columna 2: Navegación Principal */}
+    <div class="footer-column links">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/solutions">Solutions</a></li>
+        <li><a href="/approach">Approach</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+
+    {/* Columna 3: Recursos y Social */}
+    <div class="footer-column links">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/tools">AI Tools</a></li>
+        {/* Placeholders para Redes Sociales */}
+        <li><a href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="#" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  {/* Barra Inferior: Copyright y Legal */}
+  <div class="footer-bottom">
+    <div class="container">
+      <p class="copyright">
+        © {currentYear} {companyName}. All rights reserved.
+      </p>
+      <div class="legal-links">
+        <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Terms of Service</a>
+        {/* Crear estas páginas /privacy-policy y /terms-of-service será importante */}
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: #222;
+    color: #ccc;
+    /* Reducimos un poco el padding superior */
+    padding-top: 3rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .footer-content {
+    /* Aseguramos que usemos la clase container global para el padding */
+    /* La clase .container debe tener: max-width, margin: auto, padding: 0 1rem (o 1.5rem) */
+    /* NO añadimos padding aquí directamente si ya lo tiene .container */
+    display: flex;
+    flex-wrap: wrap;
+    /* Usamos gap para espaciado entre columnas en lugar de sólo space-between */
+    gap: 2rem;
+    padding-bottom: 2.5rem; /* Reducimos un poco el padding inferior */
+  }
+
+  .footer-column {
+    flex: 1;
+    min-width: 200px;
+    /* Añadimos un padding interno mínimo por si el container no lo da */
+    /* padding: 0 0.5rem; */ /* Prueba sin esto primero, si sigue pegado, descomenta */
+  }
+
+  .footer-column.about {
+    flex-basis: 30%;
+    /* Damos prioridad a esta columna si hay espacio extra */
+    flex-grow: 2;
+  }
+
+  .footer-logo {
+    height: 35px;
+    width: auto;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .footer-tagline {
+    color: #aaa;
+    margin: 0;
+  }
+
+  .footer-column h4 {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-column ul li {
+    margin-bottom: 0.6rem;
+  }
+
+  .footer-column ul a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-column ul a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  /* --- Barra Inferior REVISADA --- */
+  .footer-bottom {
+    background-color: #1a1a1a;
+    padding: 1.5rem 0; /* Un poco más de padding vertical */
+    border-top: 1px solid #333;
+     /* Quitamos el margin-top, el padding del footer-content ya da espacio */
+  }
+
+  .footer-bottom .container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que envuelva si no cabe */
+    /* Cambiamos space-between por flex-start y usamos gap */
+    justify-content: flex-start; /* Alinea items al inicio */
+    align-items: center;
+    gap: 1.5rem; /* Espacio consistente entre copyright y links */
+  }
+
+  .copyright {
+    color: #aaa;
+    margin: 0;
+     /* Hacemos que ocupe el espacio disponible si está solo en una línea */
+    flex-grow: 1;
+  }
+
+  .legal-links {
+    /* Quitamos margin-left auto, gap se encarga del espacio */
+    /* margin-left: auto; */
+    text-align: right; /* Alinea texto a la derecha dentro de su contenedor */
+    flex-shrink: 0; /* Evita que se encoja demasiado */
+  }
+
+  .legal-links a {
+  color: #aaa;
+  text-decoration: none;
+  margin: 0 0.5rem; /* << AÑADE ESTA LÍNEA (0 vertical, 0.5rem horizontal) */
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+   .legal-links a:hover {
+    color: #fff;
+    text-decoration: underline;
+   }
+
+  /* Responsive: Mantenemos la lógica de apilar */
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .footer-column.about {
+      flex-basis: auto;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+     /* Centramos todo en la barra inferior en móvil */
+     .footer-bottom .container {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 0.8rem; /* Menos gap en móvil */
+    }
+    .legal-links {
+        margin-left: 0; /* Reseteamos margen */
+        text-align: center; /* Aseguramos centro */
+    }
+     .legal-links a {
+        margin: 0 0.5rem; /* Espacio horizontal en móvil */
+     }
+  }
+</style>

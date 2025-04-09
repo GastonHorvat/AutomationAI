@@ -1,0 +1,40 @@
+---
+// src/layouts/Layout.astro
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css'; // Importamos los estilos globales
+
+// Definimos qué 'props' (propiedades) puede recibir este Layout
+// Por ahora, solo el título de la página
+export interface Props {
+	title: string;
+}
+
+// Obtenemos el valor de la prop 'title' que nos pasará la página
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en"> {}
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" /> {/* TODO: Añadir descripción por defecto o pasarla como prop */}
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.ico" /> {/* Asegúrate de tener un favicon.ico en /public */}
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | AutomationAI Solutions</title> {/* Título dinámico */}
+	</head>
+	<body>
+    {/* Aquí usamos el componente Header */}
+		<Header />
+
+    {/* El contenido principal de cada página se insertará aquí */}
+		<main>
+			<slot />
+		</main>
+
+    {/* Aquí usamos el componente Footer */}
+		<Footer />
+	</body>
+</html>
+

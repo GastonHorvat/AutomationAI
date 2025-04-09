@@ -1,0 +1,345 @@
+---
+// src/pages/about.astro
+import Layout from '../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import experts from '../../src/assets/images/experts.png';
+import bridge from '../../src/assets/images/bridge.png';
+// Importa una imagen conceptual para la sección "Story" si la tienes
+// import storyImage from '../assets/images/about-story-concept.png'; // Ejemplo
+// Importa una imagen para la sección "Team" si la tienes
+// import teamImage from '../assets/images/about-team-concept.png'; // Ejemplo
+
+const coreValues = [
+  { iconName: "mdi:handshake-outline", title: "Honesty & Transparency", text: "Clear communication and ethical practices are the foundation of every partnership." },
+  { iconName: "mdi:target-arrow", title: "Commitment to Results", text: "We focus on delivering tangible outcomes and a rapid return on your investment." },
+  { iconName: "mdi:lightbulb-on-outline", title: "Practical Innovation", text: "Leveraging cutting-edge AI that makes real-world sense for your business needs." },
+  { iconName: "mdi:account-heart-outline", title: "Client-Centric Focus", text: "Your success is our success. We tailor solutions specifically for your goals." }
+];
+
+// Texto del cliente ejemplo para reutilizar
+const clientExample = "Imagine ditching 8 hours of monthly invoice entry for a simple photo upload via Telegram – that's a real impact we delivered, freeing up entrepreneurs instantly.";
+const missionText = "To demystify AI and deliver practical, high-impact automation and intelligence solutions that provide rapid ROI and tangible benefits for small and medium-sized businesses.";
+const visionText = "To be the leading, trusted partner empowering SMBs to not just survive, but thrive in the age of AI, ensuring technology serves their growth and levels the playing field.";
+---
+
+<Layout title="About AutomationAI | Making AI Accessible & Practical">
+  {/* --- Sección Hero Reimaginada --- */}
+  <section class="about-hero-v2 section-padding text-center">
+    <div class="container narrow-container">
+      <span class="hero-eyebrow">Our Story & Purpose</span>
+      <h1>We're Not Just AI Experts,<br/> We're Your <span class="highlight">AI Growth Partners</span>.</h1>
+      <p class="page-subtitle large-subtitle">
+        Tired of manual processes draining your time? Feeling the pressure of the AI revolution?
+        We founded AutomationAI Solutions to make intelligent automation a powerful, accessible tool for businesses like yours.
+      </p>
+    </div>
+  </section>
+
+  {/* --- Nuestra Historia - Layout Más Dinámico --- */}
+  <section class="our-story-v2 section-padding">
+    <div class="container">
+       <h2 class="section-title-alt">The Spark: <span class="highlight">Bridging the AI Divide</span> for SMBs</h2>
+       <div class="story-layout-v2">
+          {/* Columna 1: Texto */}
+          <div class="story-text">
+              <p>It started during an AI master's program in Spain. We saw the incredible potential, but also a frustrating reality: powerful AI tools were often out of reach for the small and medium-sized businesses that could benefit most.</p>
+              <blockquote class="impact-quote">
+                  "{clientExample}"
+                  <cite>- Real Client Impact</cite>
+              </blockquote>
+              <p>Witnessing these tangible "quick wins" became our driving force. We believe practical AI can revolutionize how SMBs operate, and we're here to make that happen.</p>
+              <p class="mission-link"><strong>Our Mission:</strong> To demystify AI and deliver high-impact solutions with rapid ROI. <a href="#mission-vision">Learn more below</a>.</p>
+          </div>
+           {/* Columna 2: Imagen Conceptual */}
+          <div class="story-image">
+                {<Image src={bridge} alt="Connecting SMBs to AI" class="team-img-element" widths={[400, 800]} sizes="(max-width: 768px) 90vw, 45vw" format="webp"/>}
+              </div>
+          </div>
+       </div>
+    </div>
+  </section>
+
+
+  {/* ====================================================================== */}
+  {/* --- NUEVA SECCIÓN: Misión, Visión y Valores (Estilo Inspirado) --- */}
+  {/* ====================================================================== */}
+  <section id="foundation" class="foundation-section section-padding bg-gradient"> {/* Fondo gradiente */}
+    <div class="container">
+        <h2 class="section-title-alt text-center">Our Foundation</h2> {/* Título general */}
+        <div class="foundation-grid">
+
+            {/* Columna Misión */}
+            <div class="foundation-item mission-item">
+                 <div class="foundation-icon"><Icon name="mdi:bullseye-arrow" size={52}/></div>
+                 <h3 class="foundation-title">Our Mission</h3>
+                 <p class="foundation-text">{missionText}</p>
+            </div>
+
+            {/* Columna Visión */}
+            <div class="foundation-item vision-item">
+                <div class="foundation-icon"><Icon name="mdi:binoculars" size={52}/></div>
+                <h3 class="foundation-title">Our Vision</h3>
+                <p class="foundation-text">{visionText}</p>
+            </div>
+
+            {/* Columna Valores */}
+            <div class="foundation-item values-item">
+                 <div class="foundation-icon"><Icon name="mdi:cards-heart-outline" size={52}/></div>
+                 <h3 class="foundation-title">Our Core Values</h3>
+                 {/* Sub-grid o lista para los valores */}
+                 <div class="values-subgrid">
+                     {coreValues.map(value => (
+                        <div class="value-subitem">
+                            <Icon name={value.iconName} size={28} class="value-subicon"/>
+                            <div class="value-subtext">
+                                <strong>{value.title}</strong>
+                                <p>{value.text}</p>
+                            </div>
+                        </div>
+                     ))}
+                 </div>
+            </div>
+
+        </div> {/* Fin .foundation-grid */}
+    </div> {/* Fin .container */}
+  </section>
+  {/* ====================================================================== */}
+  {/* --- FIN NUEVA SECCIÓN --- */}
+  {/* ====================================================================== */}
+
+  {/* --- Nuestro Equipo - Más Visual --- */}
+  <section class="our-team-v2 section-padding bg-light-gray">
+     <div class="container team-layout">
+         <div class="team-image">
+             {<Image src={experts} alt="AutomationAI team concept" class="team-img-element" widths={[400, 800]} sizes="(max-width: 768px) 90vw, 45vw" format="webp"/>}
+         </div>
+        <div class="team-text">
+            <h2 class="section-title-alt">Experience Meets <span class="highlight">AI Expertise</span></h2>
+            <p>We're more than just AI graduates; we're seasoned problem-solvers. Our diverse team blends advanced AI knowledge from our master's program with <strong>20+ years</strong> of real-world software industry experience.</p>
+            <p>This unique mix means we understand both the technology and your business challenges, allowing us to build practical, effective solutions. <strong>We speak tech and business fluently.</strong></p>
+            {/* Futuro: Botón a página de equipo detallada */}
+            {/* <a href="/team" class="cta-button-secondary">Meet the Team (Coming Soon)</a> */}
+        </div>
+     </div>
+  </section>
+
+  {/* --- CTA Final (Reutiliza componente o estilo similar) --- */}
+  <section class="final-cta-about section-padding bg-gradient"> {/* Fondo Gradiente */}
+     <div class="container text-center narrow-container">
+        <h2>Ready to See How AI Can <span class="highlight">Specifically Help You?</span></h2>
+        <p>No obligations, just possibilities. Let's explore how AI can make a real difference in your business.</p>
+        <div class="cta-buttons">
+          <a href="/approach" class="cta-button-secondary">Learn Our Approach</a>
+          <a href="/contact" class="cta-button-primary">Get Your Free Consultation</a>
+        </div>
+     </div>
+  </section>
+
+</Layout>
+
+<style>
+    /* --- Estilos Generales (Asegúrate que estos globales existan) --- */
+    :global(.section-padding) { padding-top: 5rem; padding-bottom: 5rem; } /* Aumentamos padding */
+    :global(.container) { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    :global(.narrow-container) { max-width: 800px; } /* Contenedor más estrecho para texto */
+    :global(.text-center) { text-align: center; }
+    :global(.bg-light-gray) { background-color: #f8f9fa; }
+    :global(.bg-white) { background-color: #fff; }
+    :global(.highlight) { color: var(--primary-color); /* O tu color secundario */ font-weight: 600; }
+
+    h1 { font-size: clamp(2.5rem, 6vw, 3.8rem); margin-bottom: 1rem; line-height: 1.2; color:#222; }
+    h2 { font-size: clamp(2rem, 5vw, 2.8rem); margin-bottom: 1.5rem; color:#333; line-height: 1.3; }
+    h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight:600; color:#222; }
+    .page-subtitle { font-size: 1.15rem; color: #555; max-width: 800px; margin: 0 auto; line-height: 1.7; }
+    .large-subtitle { font-size: 1.3rem; max-width: 750px; margin-top:1.5rem; }
+    .section-subtitle { font-size: 1.1rem; color: #666; max-width: 700px; margin: 0 auto 3.5rem auto; }
+    .section-title-alt { /* Estilo alternativo para H2 */
+        text-align: center;
+        margin-bottom: 3rem;
+        font-weight: 700;
+    }
+
+    /* --- Hero V2 --- */
+    .about-hero-v2 { background-color: #fff; }
+    .hero-eyebrow {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+    .about-hero-v2 h1 { color: #222; } /* Titulo oscuro sobre fondo blanco */
+
+    /* --- Our Story V2 --- */
+    .story-layout-v2 { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
+    @media (min-width: 768px) { .story-layout-v2 { grid-template-columns: 1.5fr 1fr; gap: 4rem;} } /* Más espacio al texto */
+    .story-text h2 { margin-top: 0; text-align: left; margin-bottom: 1.5rem; }
+    .story-text p { color: #444; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.05rem;}
+    .story-text strong { font-weight: 600; color: #333;} /* Resaltado más sutil */
+    .impact-quote {
+        border-left: 4px solid var(--primary-color);
+        margin: 2rem 0 2rem 1rem;
+        padding: 0.5rem 0 0.5rem 1.5rem;
+        font-style: italic;
+        font-size: 1.1rem;
+        color: #555;
+    }
+    .impact-quote cite { display: block; margin-top: 0.5rem; font-style: normal; font-size: 0.9rem; color: #888; }
+    .story-image { /* Contenedor de la imagen */ }
+    .image-placeholder { border-radius: 12px; padding: 4rem 1rem; text-align: center; color: #aaa; border: 1px dashed #ddd;}
+    .image-placeholder svg { margin: 0 auto 1rem auto; display:block; }
+    .story-img-element { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+
+    .value-icon { color: var(--primary-color); flex-shrink: 0; margin-top: 0.1em; /* Alineación fina icono */ }
+    .value-text-content { flex-grow: 1; }
+    .value-title { margin-top: 0; margin-bottom: 0.5rem; font-size: 1.15rem;}
+    .value-text { font-size: 0.95rem; color: #666; line-height: 1.6; margin-bottom:0; }
+
+    /* --- Our Team V2 --- */
+    .team-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
+    @media (min-width: 768px) { .team-layout { grid-template-columns: 1fr 1.5fr; gap: 4rem; } } /* Texto más ancho */
+    .team-text h2 { margin-top: 0; text-align: left; }
+    .team-text p { color: #444; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.05rem; }
+    .team-text strong { font-weight: 700; color: #333; }
+    .team-image { order: -1; } /* Imagen a la izquierda en móvil por defecto */
+    @media (min-width: 768px) { .team-image { order: 0; } } /* Imagen a la izquierda en desktop */
+    .team-img-element { /* Estilos para imagen real si la usas */ display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+
+
+    /* --- Final CTA V2 --- */
+    .final-cta-about { /* Hereda fondo de bg-gradient */ text-align: center; }
+    .final-cta-about h2 { color: #333; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 0.75rem; }
+    .final-cta-about p { margin-bottom: 2.5rem; font-size: 1.1rem; color:#555; }
+    .cta-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; }
+    .cta-button-primary, .cta-button-secondary { /* Estilos ya definidos en global o aquí */
+        padding: 0.9rem 2rem; border-radius: 6px; text-decoration: none;
+        font-weight: bold; font-size: 1rem; transition: all 0.2s ease; border: 2px solid transparent;
+    }
+    .cta-button-primary { background-color: var(--primary-color); color: white; }
+    .cta-button-primary:hover { background-color: transparent; color: var(--primary-color); border-color: var(--primary-color); }
+    .cta-button-secondary { background-color: #e9ecef; color: #495057; }
+    .cta-button-secondary:hover { background-color: #ced4da; color: #343a40; }
+
+ /* ====================================================================== */
+    /* --- NUEVOS ESTILOS: Foundation Section (Misión, Visión, Valores) --- */
+    /* ====================================================================== */
+    .foundation-section {
+        /* background viene de :global(.bg-gradient) */
+        border-top: 1px solid #ddd; /* Separador sutil */
+        border-bottom: 1px solid #ddd;
+    }
+    .foundation-section .section-title-alt { /* Título "Our Foundation" */
+        color: #333; /* Asegura color oscuro sobre gradiente claro */
+        margin-bottom: 3.5rem;
+    }
+    .foundation-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* 1 columna por defecto */
+        gap: 3rem; /* Espacio entre items */
+    }
+    @media (min-width: 992px) { /* 3 columnas en desktop */
+        .foundation-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem; /* Ajusta gap para 3 columnas */
+        }
+    }
+
+    .foundation-item {
+        background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco semi-transparente */
+        backdrop-filter: blur(5px); /* Efecto cristal esmerilado */
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    /* Estilo ligeramente diferente para Valores */
+    .values-item {
+         background-color: rgba(255, 255, 255, 0.8); /* Un poco menos transparente */
+         align-items: stretch; /* Que el contenido interno ocupe */
+         text-align: left; /* Texto de valores alineado izquierda */
+    }
+
+
+    .foundation-icon {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.5); /* Círculo semi-transparente detrás */
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .values-item .foundation-icon { /* Icono de valores más pequeño */
+        width: 60px; height: 60px; margin-bottom: 1rem; align-self: center;
+    }
+
+
+    .foundation-title { /* Para H3: Mission, Vision, Values */
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #2d3748; /* Un gris azulado oscuro */
+        font-weight: 700;
+    }
+     .values-item .foundation-title {
+         text-align: center; /* Centrar el título "Our Core Values" */
+     }
+
+    .foundation-text { /* Para párrafos de Misión y Visión */
+        color: #4a5568; /* Gris medio */
+        line-height: 1.7;
+        font-size: 1rem;
+        margin-bottom: 0;
+        flex-grow: 1; /* Para que Misión/Visión ocupen espacio */
+    }
+
+    /* Sub-grid para los valores individuales */
+    .values-subgrid {
+        margin-top: 1.5rem;
+        display: grid;
+        gap: 1.5rem; /* Espacio entre valores */
+    }
+
+    .value-subitem {
+        display: flex;
+        align-items: flex-start; /* Icono arriba */
+        gap: 1rem; /* Espacio icono-texto */
+        padding-top: 1rem;
+        border-top: 1px dashed #ccc; /* Separador punteado */
+    }
+    .value-subitem:first-child { border-top: none; padding-top: 0;} /* Sin separador arriba del primero */
+
+    .value-subicon {
+        color: var(--primary-color); /* Icono del valor con color */
+        flex-shrink: 0;
+        margin-top: 0.15em; /* Alineación fina */
+    }
+    .value-subtext { flex-grow: 1; }
+    .value-subtext strong {
+        display: block;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+    .value-subtext p {
+        font-size: 0.9rem;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    /* ====================================================================== */
+    /* --- FIN NUEVOS ESTILOS --- */
+    /* ====================================================================== */
+
+</style>
