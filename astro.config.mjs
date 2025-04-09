@@ -1,28 +1,25 @@
 // astro.config.mjs
-// @ts-check  // Puedes mantener esto si usas JSDoc o comentarios TS
+// @ts-check
 import { defineConfig } from "astro/config";
 import icon from "astro-icon"; // Importa la integración
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static', // Correcto para sitios estáticos como GitHub Pages
+  output: 'static', // Correcto para GitHub Pages
 
-  // --- Propiedades para GitHub Pages ---
-  // 'site' es la URL base donde vivirá tu sitio desplegado.
-  // Reemplaza 'GastonHorvat' con tu usuario/org si es diferente.
+  // --- Propiedad 'site' para tu dominio personalizado ---
+  // ¡Esta es la URL final donde vivirá el sitio!
   site: 'https://automationai.solutions',
+  // --- FIN Propiedad 'site' ---
 
-  // 'base' es el nombre de tu repositorio si NO es el repo especial <username>.github.io
-  // Debe empezar y terminar con un slash si se define.
-  base: '/AutomationAI/',
-  // --- Fin Propiedades GitHub Pages ---
+  // --- SIN 'base' ---
+  // No necesitas 'base' porque el sitio está en la raíz del dominio personalizado,
+  // no en una subcarpeta como /AutomationAI/
+  // base: '/AutomationAI/', // <<< ELIMINA O COMENTA ESTA LÍNEA
 
   // --- Integraciones ---
   integrations: [
-    icon() // <<< Añade la integración aquí dentro del array
-    // Puedes añadir otras integraciones aquí si las necesitas, separadas por comas
-    // Ejemplo: sitemap(), tailwind(), react(), etc.
+    icon() // <<< Asegúrate que la integración esté aquí
   ]
   // --- Fin Integraciones ---
-
 });
