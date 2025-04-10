@@ -7,8 +7,8 @@ backend:
 
 publish_mode: editorial_workflow
 
-media_folder: "src/assets/images/blog" # O public/uploads/blog
-public_folder: "/src/assets/images/blog" # O /uploads/blog
+media_folder: "public/uploads/blog"
+public_folder: "/uploads/blog"
 
 collections:
   - name: "blog"
