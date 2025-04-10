@@ -2,7 +2,7 @@
 title: ¿La IA sustituirá a los pilotos de Avion?
 publishDate: 2025-04-10T10:41:00.000Z
 author: AutomationAI Team
-image: https://iaalrescate.com/wp-content/uploads/2025/04/1avion.jpg
+image: /src/assets/images/blog/descarga.jpeg
 description: Artificial intelligence is reshaping the future of aviation. This
   article explores the technical, political, and human challenges of autonomous
   aircraft, the role of pilot unions, and the debate over whether algorithms can
