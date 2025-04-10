@@ -37,13 +37,21 @@ jobs:
         with:
           path: ./dist
 
-  deploy:
+eploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # --- NUEVO PASO DE DEBUG ---
+      - name: Debug Context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log(JSON.stringify(github, null, 2));
+      # --- FIN PASO DE DEBUG ---
+
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v3 # Mantenemos v3
