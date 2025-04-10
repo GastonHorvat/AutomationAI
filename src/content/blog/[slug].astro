@@ -1,0 +1,282 @@
+---
+// src/pages/blog/[slug].astro
+import { type CollectionEntry, getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro'; // Ajusta la ruta si es necesario
+
+// 1. getStaticPaths: Define qué rutas generar en build time
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => {
+    return !data.draft; // Solo genera páginas para posts NO borradores
+  });
+  return posts.map(entry => ({
+    params: { slug: entry.slug }, // El slug del archivo .md se convierte en el parámetro de la URL
+    props: { entry },          // Pasamos la entrada completa del post como prop
+  }));
+}
+
+// 2. Obtener las props (la entrada del post) para esta página específica
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+const { entry } = Astro.props;
+const { Content } = await entry.render(); // Obtiene el componente para renderizar el Markdown/MDX
+
+// Helper para formatear fechas (puedes moverlo a un archivo utils si lo usas mucho)
+function formatDate(date: Date): string {
+  return new Date(date).toLocaleDateString('en-US', { // Cambia locale si es necesario
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+// TODO: Calcular tiempo estimado de lectura (opcional)
+// function calculateReadingTime(content) { ... }
+// const readingTime = calculateReadingTime(entry.body); // entry.body tiene el markdown crudo
+---
+
+{/* Usamos el título y descripción del post para el SEO de esta página */}
+<Layout title={`${entry.data.title} | AutomationAI Blog`} description={entry.data.description}>
+
+  <article class="post-detail-article section-padding">
+    <div class="container narrow-container">
+
+      {/* --- Encabezado del Post --- */}
+      <header class="post-header">
+        {/* Categoría */}
+        <a href={`/blog/category/${entry.data.category.toLowerCase()}/`} class="post-category">
+          {entry.data.category}
+        </a>
+        {/* Título */}
+        <h1 class="post-title">{entry.data.title}</h1>
+        {/* Meta Info */}
+        <div class="post-meta">
+          <span>By {entry.data.author}</span>
+          <span class="separator">|</span>
+          <time datetime={entry.data.publishDate.toISOString()}>
+            {formatDate(entry.data.publishDate)}
+          </time>
+          {/* <span class="separator">|</span> */}
+          {/* <span class="reading-time">{readingTime} min read</span> */}
+        </div>
+      </header>
+
+      {/* --- Imagen Destacada (si existe) --- */}
+      {entry.data.image && (
+        <div class="post-featured-image">
+          <Image
+            src={entry.data.image}
+            alt={`Featured image for ${entry.data.title}`}
+            widths={[768, 1024, 1536]} // Anchos para imágenes de contenido
+            sizes="(max-width: 800px) 90vw, 800px" // Ajusta según el ancho del contenedor
+            format="webp"
+            loading="eager" {/* La imagen principal debe cargarse rápido */}
+            decoding="async"
+          />
+        </div>
+      )}
+
+      {/* --- Contenido Principal del Post --- */}
+      <div class="post-content prose">
+        <Content /> {/* Renderiza el contenido Markdown/MDX */}
+      </div>
+
+      {/* --- Tags y Otros Metadatos (Footer del Post) --- */}
+      <footer class="post-footer">
+        {entry.data.tags && entry.data.tags.length > 0 && (
+          <div class="post-tags">
+            <strong>Tags:</strong>
+            {entry.data.tags.map(tag => (
+              <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="tag-link">
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* TODO: Añadir botones de compartir */}
+        {/* <div class="share-buttons"> ... </div> */}
+
+        {/* TODO: Añadir navegación post anterior/siguiente */}
+        {/* <nav class="post-navigation"> ... </nav> */}
+      </footer>
+
+    </div>
+  </article>
+
+</Layout>
+
+{/* ====================================================================== */}
+{/* --- ESTILOS CSS para el Post Individual --- */}
+{/* ====================================================================== */}
+<style>
+  .post-detail-article {
+    background-color: var(--white, #ffffff); /* Fondo blanco para el contenido */
+  }
+
+  .post-header {
+    margin-bottom: 2.5rem;
+    text-align: center; /* Centrar el encabezado */
+    border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
+    padding-bottom: 2rem;
+  }
+
+  .post-category {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color, #007bff);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-decoration: none;
+  }
+  .post-category:hover {
+    text-decoration: underline;
+  }
+
+  .post-title {
+    font-size: clamp(2.2rem, 6vw, 3.5rem); /* Título grande */
+    color: var(--text-dark, #1A2B48);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .post-meta {
+    font-size: 0.95rem;
+    color: var(--text-light, #6c757d);
+  }
+  .post-meta .separator {
+    margin: 0 0.5em;
+  }
+  .post-meta time { /* Estilo específico si es necesario */ }
+  .reading-time { /* Estilo para tiempo de lectura */ }
+
+  .post-featured-image {
+    margin-bottom: 3rem;
+    border-radius: 8px; /* Opcional: redondear imagen */
+    overflow: hidden; /* Asegura que la imagen respete el borde redondeado */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07); /* Sombra sutil */
+  }
+  .post-featured-image img { /* Para asegurar que la imagen se muestre bien */
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* --- Estilos para el Contenido Markdown --- */
+  .post-content {
+    /* Estos estilos aseguran buena legibilidad */
+    font-size: 1.1rem; /* Tamaño de fuente base del contenido */
+    line-height: 1.8;
+    color: var(--text-dark, #1A2B48);
+  }
+
+  /* Estilos específicos para elementos generados por Markdown */
+  /* Astro aplica la clase 'prose' por defecto, pero podemos refinarla */
+  .prose :global(h2),
+  .prose :global(h3),
+  .prose :global(h4) {
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .prose :global(h2) { font-size: 1.8em; border-bottom: 1px solid var(--border-color-soft, #eee); padding-bottom: 0.3em; }
+  .prose :global(h3) { font-size: 1.5em; }
+  .prose :global(h4) { font-size: 1.2em; }
+
+  .prose :global(p) { margin-bottom: 1.25em; }
+  .prose :global(ul),
+  .prose :global(ol) { margin-bottom: 1.25em; padding-left: 1.5em; }
+  .prose :global(li) { margin-bottom: 0.5em; }
+  .prose :global(li > p) { margin-bottom: 0.5em; } /* Párrafos dentro de listas */
+
+  .prose :global(a) { color: var(--primary-color, #007bff); text-decoration: underline; }
+  .prose :global(a:hover) { text-decoration: none; }
+
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(em) { font-style: italic; }
+
+  .prose :global(blockquote) {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0.8em 1.5em;
+    border-left: 4px solid var(--primary-color, #007bff);
+    background-color: var(--bg-light-gray, #f8f9fa);
+    font-style: italic;
+    color: var(--text-medium, #4A5568);
+    margin-bottom: 1.5em;
+  }
+  .prose :global(blockquote p) { margin-bottom: 0; }
+
+  .prose :global(code) { /* Código inline */
+    background-color: rgba(0, 123, 255, 0.08);
+    color: var(--text-dark, #1A2B48);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .prose :global(pre) { /* Bloques de código */
+    background-color: #282c34; /* Fondo oscuro para código */
+    color: #abb2bf; /* Texto claro */
+    padding: 1.5em;
+    border-radius: 8px;
+    overflow-x: auto; /* Scroll horizontal si es necesario */
+    margin-bottom: 1.5em;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .prose :global(pre code) { /* Resetear estilo de código inline dentro de pre */
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .prose :global(img) { /* Imágenes dentro del contenido */
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 2em 0;
+  }
+  /* Nota: Las imágenes markdown normales no serán optimizadas por <Image> */
+  /* Para optimización, necesitarías usar el componente <Image> directamente en MDX */
+
+  /* --- Footer del Post --- */
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color-soft, #e2e8f0);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem; /* Espacio antes de botones de compartir/nav */
+  }
+  .post-tags strong {
+    font-weight: 600;
+    color: var(--text-dark, #1A2B48);
+    margin-right: 0.5rem;
+  }
+  .tag-link { /* Reutiliza estilo de .card-tag o define uno nuevo */
+    display: inline-block;
+    background-color: var(--bg-light-gray, #f8f9fa);
+    color: var(--text-light, #6c757d);
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .tag-link:hover {
+    background-color: var(--primary-color, #007bff);
+    color: var(--white, #ffffff);
+  }
+
+</style>
