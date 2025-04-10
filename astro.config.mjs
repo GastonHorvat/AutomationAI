@@ -13,7 +13,7 @@ export default defineConfig({
 
   // --- Integraciones ---
   integrations: [
-    icon() // <<< Asegúrate que la integración esté aquí
+    icon(), // <<< Asegúrate que la integración esté aquí
   ]
   // --- Fin Integraciones ---
 });

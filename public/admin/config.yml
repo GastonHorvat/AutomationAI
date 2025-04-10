@@ -1,0 +1,28 @@
+# public/admin/config.yml
+
+backend:
+  name: github
+  repo: GastonHorvat/AutomationAI
+  branch: main # o la rama que uses
+
+publish_mode: editorial_workflow
+
+media_folder: "src/assets/images/blog" # O public/uploads/blog
+public_folder: "/src/assets/images/blog" # O /uploads/blog
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string", required: true }
+      - { label: "Publish Date", name: "publishDate", widget: "datetime", required: true }
+      - { label: "Author", name: "author", widget: "string", default: "AutomationAI Team", required: true }
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
+      - { label: "Description / Excerpt", name: "description", widget: "text", required: true }
+      - { label: "Category", name: "category", widget: "select", options: ["IA", "Negocios", "Tutoriales", "Casos de Éxito", "Opinión"], required: true }
+      - { label: "Tags", name: "tags", widget: "list", allow_add: true, required: false }
+      - { label: "Draft", name: "draft", widget: "boolean", default: true, required: false }
+      - { label: "Body", name: "body", widget: "markdown", required: true }

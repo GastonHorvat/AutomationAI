@@ -8,6 +8,6 @@ category: IA
 tags:
   - artificial intelligence
   - future of transportation
-draft: true
+draft: false
 ---
 Texto principal aca
