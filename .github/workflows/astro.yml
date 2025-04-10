@@ -30,28 +30,34 @@ jobs:
         run: npm install
 
       - name: Build project
+        # Añade las variables de entorno aquí si son necesarias para el build
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          AIRTABLE_TABLE_ID: ${{ secrets.AIRTABLE_TABLE_ID }} # O AIRTABLE_TABLE_NAME
         run: npm run build
 
       - name: Upload build to GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v2 # Mantenemos v2 por ahora
         with:
           path: ./dist
 
-eploy:
+  # --- CORREGIDO: 'deploy' ---
+  deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # --- NUEVO PASO DE DEBUG ---
-      - name: Debug Context
-        uses: actions/github-script@v7
-        with:
-          script: |
-            console.log(JSON.stringify(github, null, 2));
+      # --- PASO DE DEBUG ELIMINADO (Opcional) ---
+      # - name: Debug Context
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       console.log(JSON.stringify(github, null, 2));
       # --- FIN PASO DE DEBUG ---
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3 # Mantenemos v3
+        uses: actions/deploy-pages@v2 # <<< VOLVEMOS A v2
