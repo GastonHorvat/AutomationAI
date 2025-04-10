@@ -70,23 +70,23 @@ const visionText = "To be the leading, trusted partner empowering SMBs to not ju
         <div class="foundation-grid">
 
             {/* Columna Misión */}
-            <div class="foundation-item mission-item">
+            <div class="foundation-item mission-item card-hover-effect"> {/* Añadimos clase para hover */}
                  <div class="foundation-icon"><Icon name="mdi:bullseye-arrow" size={52}/></div>
                  <h3 class="foundation-title">Our Mission</h3>
                  <p class="foundation-text">{missionText}</p>
             </div>
 
             {/* Columna Visión */}
-            <div class="foundation-item vision-item">
+            <div class="foundation-item vision-item card-hover-effect"> {/* Añadimos clase para hover */}
                 <div class="foundation-icon"><Icon name="mdi:binoculars" size={52}/></div>
                 <h3 class="foundation-title">Our Vision</h3>
                 <p class="foundation-text">{visionText}</p>
             </div>
 
             {/* Columna Valores */}
-            <div class="foundation-item values-item">
-                 <div class="foundation-icon"><Icon name="mdi:cards-heart-outline" size={52}/></div>
-                 <h3 class="foundation-title">Our Core Values</h3>
+            <div class="foundation-item values-item card-hover-effect"> {/* <-- Añade la clase aquí */}
+                <div class="foundation-icon"><Icon name="mdi:cards-heart-outline" size={52}/></div>
+                <h3 class="foundation-title">Our Core Values</h3>
                  {/* Sub-grid o lista para los valores */}
                  <div class="values-subgrid">
                      {coreValues.map(value => (
@@ -103,7 +103,7 @@ const visionText = "To be the leading, trusted partner empowering SMBs to not ju
 
         </div> {/* Fin .foundation-grid */}
     </div> {/* Fin .container */}
-  </section>
+</section>
   {/* ====================================================================== */}
   {/* --- FIN NUEVA SECCIÓN --- */}
   {/* ====================================================================== */}
@@ -147,6 +147,7 @@ const visionText = "To be the leading, trusted partner empowering SMBs to not ju
     :global(.bg-light-gray) { background-color: #f8f9fa; }
     :global(.bg-white) { background-color: #fff; }
     :global(.highlight) { color: var(--primary-color); /* O tu color secundario */ font-weight: 600; }
+    :global(.bg-gradient) {background: linear-gradient(135deg, rgba(15, 23, 34, 0.5) 0%, rgba(240, 245, 255, 0.8) 100%);}
 
     h1 { font-size: clamp(2.5rem, 6vw, 3.8rem); margin-bottom: 1rem; line-height: 1.2; color:#222; }
     h2 { font-size: clamp(2rem, 5vw, 2.8rem); margin-bottom: 1.5rem; color:#333; line-height: 1.3; }
@@ -227,117 +228,163 @@ const visionText = "To be the leading, trusted partner empowering SMBs to not ju
     /* --- NUEVOS ESTILOS: Foundation Section (Misión, Visión, Valores) --- */
     /* ====================================================================== */
     .foundation-section {
-        /* background viene de :global(.bg-gradient) */
-        border-top: 1px solid #ddd; /* Separador sutil */
-        border-bottom: 1px solid #ddd;
-    }
-    .foundation-section .section-title-alt { /* Título "Our Foundation" */
-        color: #333; /* Asegura color oscuro sobre gradiente claro */
-        margin-bottom: 3.5rem;
-    }
+    border-top: 1px solid rgba(0, 0, 0, 0.05); /* Separador muy sutil */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Para posibles efectos futuros */
+}
+
+.foundation-section .section-title-alt {
+    color: #1A2B48; /* Un azul oscuro/grisáceo, ajusta a tu H2 principal */
+    margin-bottom: 4rem; /* Más espacio */
+    position: relative; /* Para posible pseudo-elemento decorativo */
+}
+/* Opcional: Línea decorativa bajo el título */
+.foundation-section .section-title-alt::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color); /* Tu azul principal */
+    margin: 0.75rem auto 0; /* Espacio y centrado */
+    border-radius: 2px;
+}
+
+
+.foundation-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 columna por defecto */
+    gap: 2rem; /* Espacio entre items */
+}
+@media (min-width: 768px) { /* 2 columnas en tablet */
     .foundation-grid {
-        display: grid;
-        grid-template-columns: 1fr; /* 1 columna por defecto */
-        gap: 3rem; /* Espacio entre items */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
     }
-    @media (min-width: 992px) { /* 3 columnas en desktop */
-        .foundation-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2.5rem; /* Ajusta gap para 3 columnas */
-        }
+}
+@media (min-width: 1024px) { /* 3 columnas en desktop */
+    .foundation-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem; /* Ajusta gap para 3 columnas */
     }
+     /* Hacemos que la tarjeta de valores ocupe más si es necesario en 2 columnas */
+     /* .values-item { grid-column: span 2; } */ /* Descomenta si pruebas layout 2 cols */
+}
 
-    .foundation-item {
-        background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco semi-transparente */
-        backdrop-filter: blur(5px); /* Efecto cristal esmerilado */
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        border-radius: 10px;
-        padding: 2rem;
-        text-align: center;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    /* Estilo ligeramente diferente para Valores */
-    .values-item {
-         background-color: rgba(255, 255, 255, 0.8); /* Un poco menos transparente */
-         align-items: stretch; /* Que el contenido interno ocupe */
-         text-align: left; /* Texto de valores alineado izquierda */
-    }
+.foundation-item {
+    background-color: rgba(255, 255, 255, 0.85); /* Blanco un poco más opaco */
+    backdrop-filter: blur(8px); /* Efecto cristal más pronunciado */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px; /* Bordes más redondeados */
+    padding: 2rem 2.5rem; /* Más padding */
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 50, 100, 0.08); /* Sombra más suave y azulada */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; /* Transición suave */
+}
 
+/* Efecto hover sutil para Misión y Visión */
+.card-hover-effect:hover {
+    transform: translateY(-8px); /* Levanta la tarjeta */
+    box-shadow: 0 15px 40px rgba(0, 60, 120, 0.12); /* Sombra más pronunciada */
+}
 
-    .foundation-icon {
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-        background-color: rgba(255, 255, 255, 0.5); /* Círculo semi-transparente detrás */
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .values-item .foundation-icon { /* Icono de valores más pequeño */
-        width: 60px; height: 60px; margin-bottom: 1rem; align-self: center;
-    }
+/* Estilo específico para la tarjeta de Valores */
+.values-item {
+     background-color: rgba(255, 255, 255, 0.95); /* Casi opaca para legibilidad */
+     align-items: stretch; /* Que el contenido interno ocupe */
+     text-align: left; /* Texto de valores alineado izquierda */
+     /* Podríamos darle un borde sutil diferente si quisiéramos */
+     /* border-left: 4px solid var(--primary-color); */
+     /* padding-left: 2.25rem; */
+}
 
+.foundation-icon {
+    color: var(--primary-color); /* Usa tu variable de color primario */
+    margin-bottom: 1.5rem;
+    background: linear-gradient(145deg, var(--primary-color), #0056b3); /* Gradiente en el icono */
+    border-radius: 50%;
+    width: 70px; /* Ligeramente más pequeño */
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Sombra del color primario */
+    flex-shrink: 0; /* Evita que se encoja */
+}
+.foundation-icon > svg { /* Para asegurar tamaño del icono dentro del círculo */
+    color: #fff; /* Icono blanco sobre fondo azul */
+    width: 50%; /* Ajusta según el icono */
+    height: 50%;
+}
 
-    .foundation-title { /* Para H3: Mission, Vision, Values */
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 1rem;
-        color: #2d3748; /* Un gris azulado oscuro */
-        font-weight: 700;
-    }
-     .values-item .foundation-title {
-         text-align: center; /* Centrar el título "Our Core Values" */
-     }
+/* Icono principal de Valores, alineado al centro */
+.values-item .foundation-icon {
+    align-self: center;
+    margin-bottom: 1rem;
+}
 
-    .foundation-text { /* Para párrafos de Misión y Visión */
-        color: #4a5568; /* Gris medio */
-        line-height: 1.7;
-        font-size: 1rem;
-        margin-bottom: 0;
-        flex-grow: 1; /* Para que Misión/Visión ocupen espacio */
-    }
+.foundation-title { /* Para H3: Mission, Vision, Values */
+    font-size: 1.6rem; /* Más grande */
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #1A2B48; /* Azul oscuro/grisáceo consistente */
+    font-weight: 700;
+    line-height: 1.3;
+}
+ .values-item .foundation-title {
+     text-align: center; /* Centrar el título "Our Core Values" */
+ }
 
-    /* Sub-grid para los valores individuales */
-    .values-subgrid {
-        margin-top: 1.5rem;
-        display: grid;
-        gap: 1.5rem; /* Espacio entre valores */
-    }
+.foundation-text { /* Para párrafos de Misión y Visión */
+    color: #4A5568; /* Gris medio */
+    line-height: 1.7;
+    font-size: 1rem;
+    margin-bottom: 0;
+    flex-grow: 1; /* Para que Misión/Visión ocupen espacio vertical */
+}
 
-    .value-subitem {
-        display: flex;
-        align-items: flex-start; /* Icono arriba */
-        gap: 1rem; /* Espacio icono-texto */
-        padding-top: 1rem;
-        border-top: 1px dashed #ccc; /* Separador punteado */
-    }
-    .value-subitem:first-child { border-top: none; padding-top: 0;} /* Sin separador arriba del primero */
+/* Sub-grid para los valores individuales */
+.values-subgrid {
+    margin-top: 2rem; /* Más espacio antes de la lista */
+    display: grid;
+    gap: 1.8rem; /* Espacio entre valores */
+}
 
-    .value-subicon {
-        color: var(--primary-color); /* Icono del valor con color */
-        flex-shrink: 0;
-        margin-top: 0.15em; /* Alineación fina */
-    }
-    .value-subtext { flex-grow: 1; }
-    .value-subtext strong {
-        display: block;
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 0.25rem;
-    }
-    .value-subtext p {
-        font-size: 0.9rem;
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 0;
-    }
+.value-subitem {
+    display: flex;
+    align-items: flex-start; /* Icono arriba */
+    gap: 1rem; /* Espacio icono-texto */
+    padding-top: 1.5rem; /* Más espacio */
+    border-top: 1px solid #e2e8f0; /* Separador más suave (gris claro) */
+}
+.value-subitem:first-child { border-top: none; padding-top: 0;} /* Sin separador arriba del primero */
+
+.value-subicon {
+    color: var(--primary-color); /* Icono del valor con color primario */
+    flex-shrink: 0;
+    margin-top: 0.1em; /* Alineación fina */
+    /* Opcional: darles un fondo circular pequeño */
+    /* background-color: rgba(0, 123, 255, 0.1); */
+    /* border-radius: 50%; */
+    /* padding: 5px; */
+    /* width: 28px; height: 28px; */ /* Asegurar tamaño si se usa fondo */
+}
+.value-subtext { flex-grow: 1; }
+.value-subtext strong {
+    display: block;
+    font-size: 1.1rem; /* Ligeramente más grande */
+    font-weight: 600;
+    color: #2D3748; /* Gris azulado oscuro */
+    margin-bottom: 0.35rem;
+}
+.value-subtext p {
+    font-size: 0.95rem; /* Un poco más grande */
+    color: #5a687f; /* Gris ligeramente más oscuro/azulado */
+    line-height: 1.6;
+    margin-bottom: 0;
+}
     /* ====================================================================== */
     /* --- FIN NUEVOS ESTILOS --- */
     /* ====================================================================== */
