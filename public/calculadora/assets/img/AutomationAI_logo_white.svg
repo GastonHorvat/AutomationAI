@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="280.36783"
+   height="65.760933"
+   viewBox="0 0 280.36783 65.760933"
+   sodipodi:docname="AutomationAI_logo_white.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     showguides="true"
+     inkscape:zoom="11.313709"
+     inkscape:cx="160.20388"
+     inkscape:cy="48.348426"
+     inkscape:window-width="3123"
+     inkscape:window-height="1828"
+     inkscape:window-x="1377"
+     inkscape:window-y="485"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g1">
+    <sodipodi:guide
+       position="531,366.76093"
+       orientation="0,-1"
+       id="guide1"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g1"
+     transform="translate(-52.47681,-55.637825)">
+    <text
+       xml:space="preserve"
+       style="font-size:37.3333px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none"
+       x="123.45861"
+       y="40.55891"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         x="123.45861"
+         y="40.55891"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic'">AutomationAI</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none"
+       x="119.97971"
+       y="42.93475"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         x="119.97971"
+         y="42.93475" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none"
+       x="194.81854"
+       y="37.080009"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         x="194.81854"
+         y="37.080009">AutomationAI</tspan></text>
+    <g
+       id="g3">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:43.3897px;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:1.20527"
+         x="121.54198"
+         y="92.531227"
+         id="text4"
+         transform="scale(0.90785086,1.1015025)"><tspan
+           sodipodi:role="line"
+           id="tspan4"
+           x="121.54198"
+           y="92.531227"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:43.3897px;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.20527"><tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic Bold';letter-spacing:-1.69943px;fill:#ffffff;fill-opacity:1;stroke-width:1.20527"
+   id="tspan12">utomatio</tspan><tspan
+   id="tspan15"
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'SF Old Republic';-inkscape-font-specification:'SF Old Republic Bold';letter-spacing:-0.301317px;fill:#ffffff;fill-opacity:1;stroke-width:1.20527">nA</tspan>I</tspan></text>
+      <g
+         id="g2">
+        <path
+           style="fill:#1920ff;fill-opacity:1;stroke-width:1.14011"
+           d="m 71.567996,105.41615 -3.726949,7.47824 46.645973,0.001 -3.72696,-7.47971 z"
+           id="path11" />
+        <path
+           style="fill:#ff1919;fill-opacity:1;stroke-width:1.14011"
+           d="M 91.165324,66.095876 73.118196,102.30715 h 36.091674 l -3.74642,-7.519128 -9.240203,0.02775 -11.162706,0.04089 6.098301,-12.253451 4.590915,9.084581 8.157013,-0.02482 z"
+           id="path4" />
+      </g>
+    </g>
+  </g>
+</svg>
