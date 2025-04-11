@@ -50,7 +50,7 @@ function formatDate(date: Date): string {
           <article class="post-card">
             {/* Imagen Destacada (si existe) */}
             {post.data.image ? (
-              <a href={`/blog/${post.slug}/`} class="card-image-link">
+              <a href={`/blog/${post.data.slug || post.slug}/`} class="card-image-link">
                 <Image
                   src={post.data.image}
                   alt={post.data.title || 'Blog post image'}
@@ -75,7 +75,7 @@ function formatDate(date: Date): string {
 
               {/* Título */}
               <h2 class="card-title">
-                <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+                <a href={`/blog/${post.data.slug || post.slug}/`}>{post.data.title}</a>
               </h2>
 
               {/* Extracto / Descripción */}
