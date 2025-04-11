@@ -10,7 +10,7 @@ export async function getStaticPaths() {
     return !data.draft; // Solo genera páginas para posts NO borradores
   });
   return posts.map(entry => ({
-    params: { slug: entry.slug }, // El slug del archivo .md se convierte en el parámetro de la URL
+    params: { slug: entry.data.slug || entry.slug },// El slug del archivo .md se convierte en el parámetro de la URL
     props: { entry },          // Pasamos la entrada completa del post como prop
   }));
 }

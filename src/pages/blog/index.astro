@@ -54,9 +54,9 @@ function formatDate(date: Date): string {
                 <Image
                   src={post.data.image}
                   alt={post.data.title || 'Blog post image'}
-				  width={1200}  // Reemplaza 1200 por el ancho real
-				  height={800} // Reemplaza 800 por el alto real
-                  sizes="(max-width: 600px) 90vw, (max-width: 992px) 45vw, 30vw" // Ajusta según tu grid
+				          width={1200}
+				          height={800}
+                  sizes="(max-width: 600px) 90vw, (max-width: 992px) 45vw, 30vw"
                   format="webp"
                   class="card-image"
                   loading="lazy"
