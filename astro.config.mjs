@@ -6,7 +6,13 @@ import icon from "astro-icon"; // Importa la integración
 // https://astro.build/config
 export default defineConfig({
   output: 'static', // Correcto para GitHub Pages
-
+  vite: {
+    define: {
+      'import.meta.env.AIRTABLE_API_KEY': JSON.stringify(process.env.AIRTABLE_API_KEY),
+      'import.meta.env.AIRTABLE_BASE_ID': JSON.stringify(process.env.AIRTABLE_BASE_ID),
+      'import.meta.env.AIRTABLE_TABLE_ID': JSON.stringify(process.env.AIRTABLE_TABLE_ID),
+    },
+  },
   // --- Propiedad 'site' para tu dominio personalizado ---
   site: 'https://automationai.solutions',
 

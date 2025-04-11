@@ -8,7 +8,7 @@ description: Imagina un mundo donde los aviones despegan, navegan y aterrizan
   artificial está transformando industrias a una velocidad de vértigo, y la
   aviación no será una excepción.
 category: IA
-draft: true
+draft: false
 slug: "pilotosia"
 ---
 

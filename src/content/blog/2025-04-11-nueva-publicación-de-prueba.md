@@ -4,7 +4,7 @@ publishDate: 2025-04-11T16:28:00.000Z
 author: AutomationAI Team
 description: Aca la descripcion
 category: IA
-draft: true
+draft: false
 slug: prueba1
 ---
 **Aca el titulo**
