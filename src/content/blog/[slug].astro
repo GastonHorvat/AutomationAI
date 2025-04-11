@@ -65,13 +65,10 @@ function formatDate(date: Date): string {
       {/* --- Imagen Destacada (si existe) --- */}
       {entry.data.image && (
         <div class="post-featured-image">
-          <Image
+          <img
             src={entry.data.image}
             alt={`Featured image for ${entry.data.title}`}
-            widths={[768, 1024, 1536]} // Anchos para imágenes de contenido
-            sizes="(max-width: 800px) 90vw, 800px" // Ajusta según el ancho del contenedor
-            format="webp"
-            loading="eager" {/* La imagen principal debe cargarse rápido */}
+            loading="eager"
             decoding="async"
           />
         </div>
