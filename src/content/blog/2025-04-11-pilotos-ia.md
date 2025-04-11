@@ -9,7 +9,7 @@ description: Imagina un mundo donde los aviones despegan, navegan y aterrizan
   aviación no será una excepción.
 category: IA
 draft: true
-slug: pilotosia
+slug: "pilotosia"
 ---
 
 
