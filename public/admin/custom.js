@@ -20,7 +20,7 @@ window.CMS.registerEventListener({
     let seoTitle = data.get('seoTitle');
     let seoDescription = data.get('seoDescription');
 
-    if (!slug && title) {
+    if (title) {
       slug = slugify(title);
       data = data.set('slug', slug);
     }
