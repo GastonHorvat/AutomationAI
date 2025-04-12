@@ -5,7 +5,6 @@ backend:
   repo: GastonHorvat/AutomationAI
   branch: main
 
-local_backend: true
 local_backend:
   url: http://localhost:8081/api/v1
 
@@ -36,7 +35,6 @@ collections:
       - { label: "Draft", name: "draft", widget: "boolean", default: true, required: false }
       - { label: "Slug", name: "slug", widget: "string", required: true, hint: "URL sin espacios, tildes ni caracteres especiales (solo minúsculas, números y guiones)", pattern: ["^[a-z0-9-]+$", "Solo minúsculas, números y guiones permitidos"] }
       - { label: "Body", name: "body", widget: "markdown", required: true }
-
       - { label: "SEO Title", name: "seoTitle", widget: "string", required: false }
       - { label: "SEO Description", name: "seoDescription", widget: "text", required: false }
       - { label: "SEO Keywords", name: "seoKeywords", widget: "list", allow_add: true, required: false }
