@@ -2,14 +2,15 @@
 title: Pilotos IA
 publishDate: 2025-04-11T16:12:00.000Z
 author: AutomationAI Team
+image: /uploads/blog/descarga.jpeg
 description: Imagina un mundo donde los aviones despegan, navegan y aterrizan
   sin un piloto humano al mando. No, no es la trama de una película de ciencia
   ficción, es una realidad que se aproxima a pasos agigantados. La inteligencia
   artificial está transformando industrias a una velocidad de vértigo, y la
   aviación no será una excepción.
 category: IA
-draft: false
-slug: "pilotosia"
+draft: true
+slug: pilotosia
 ---
 
 
