@@ -4,6 +4,8 @@ import Layout from '../layouts/Layout.astro'; // Ajusta ruta
 import ToolCard from '../components/ToolCard.astro'; // Ajusta ruta
 import { Icon } from 'astro-icon/components';
 
+console.log("--- Iniciando build de /tools.astro ---"); // Log inicial
+
 // --- 1. Tipos ---
 interface AirtableFields { Name: string; CategoryNameText?: string; SubcategoryNameText?: string; Description: string; Link: string; Tags?: string[]; }
 interface AirtableRecord { id: string; createdTime: string; fields: AirtableFields; }
@@ -13,6 +15,10 @@ export interface Tool { name: string; category: string; subcategory: string; des
 const apiKey = import.meta.env.AIRTABLE_API_KEY;
 const baseId = import.meta.env.AIRTABLE_BASE_ID;
 const tableIdOrName = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_TABLE_NAME;
+
+console.log("API Key presente:", !!apiKey);
+console.log("Base ID:", baseId);
+console.log("Table ID:", tableIdOrName);
 
 // Inicialización
 let tools: Tool[] = [];
@@ -29,10 +35,12 @@ const tagColors = ['#BA68C8','#F0F4C3','#FBE9E7','#A7FFEB','#FFD54F','#ECEFF1','
 
 // --- Fetch y Procesamiento ---
 if (apiKey && baseId && tableIdOrName) {
+  console.error("¡ERROR FATAL! Faltan variables de entorno de Airtable.");
   const airtableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableIdOrName)}`;
   const fetchOptions = { headers: { Authorization: `Bearer ${apiKey}` } };
   try {
     const response = await fetch(airtableUrl, fetchOptions);
+    console.log(`Intentando conectar a Airtable. Base: ${baseId}, Tabla: ${tableIdOrName}`);
     if (!response.ok) throw new Error(`Airtable API Error (${response.status}): ${await response.text()}`);
     const data = await response.json();
     tools = data.records
@@ -45,6 +53,8 @@ if (apiKey && baseId && tableIdOrName) {
         tags: record.fields.Tags || [],
       }))
       .filter(tool => tool.name && tool.category && tool.description && tool.link);
+
+      console.log(`Fetch de Airtable exitoso. Número de registros obtenidos: ${tools.length}`);
 
     const allTags = tools.flatMap(tool => tool.tags || []);
     uniqueTags = [...new Set(allTags)].sort();
@@ -62,6 +72,7 @@ if (apiKey && baseId && tableIdOrName) {
 
   } catch (error: any) { fetchError = error.message || "An unknown error occurred."; console.error(fetchError); }
 } else { fetchError = "Airtable environment variables not set."; console.error(fetchError); }
+console.log(`Terminando frontmatter de /tools.astro. Herramientas cargadas: ${tools.length}. ¿Hubo error?: ${!!fetchError}`);
 ---
 
 <Layout title="AI Tools Directory">
