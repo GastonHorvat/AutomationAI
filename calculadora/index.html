@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Calculadora de materiales de construcción para estimar costos de obra." />
+        <meta name="author" content="AutomationAI Solutions" />
+        <title>Calculadora de Materiales - AutomationAI Solutions</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script> <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+        <link href="css/styles.css" rel="stylesheet" />
+        <style>
+            /* Estilos adicionales específicos para la calculadora si son necesarios */
+            #calculatorForm, #resultsSection {
+                margin-top: 2rem; /* Espacio superior */
+            }
+            .results-table {
+                margin-top: 1.5rem;
+            }
+            .results-table th, .results-table td {
+                padding: 0.75rem;
+                vertical-align: middle;
+            }
+             /* Estilo para deshabilitar visualmente */
+            .disabled-overlay {
+                position: relative;
+            }
+            .disabled-overlay::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.7); /* Semi-transparente blanco */
+                z-index: 10;
+                cursor: not-allowed;
+                 display: none; /* Oculto por defecto */
+            }
+             .calculator-locked::after {
+                 display: block; /* Mostrar overlay cuando está bloqueado */
+            }
+            #emailPrompt {
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 0.25rem;
+                margin-bottom: 1.5rem;
+            }
+        </style>
+    </head>
+    <body id="page-top">
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="index.html#page-top"><img src="assets/img/AutomationAI_logo_white.svg" alt="AutomationAI Logo" /></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars ms-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="index.html#services">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.html#portfolio">Portfolio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.html#about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.html#team">Team</a></li>
+                         <li class="nav-item"><a class="nav-link" href="calculator.html">Calculator</a></li> <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <header class="masthead" style="padding-top: 10rem; padding-bottom: 4rem; background-image: url('assets/img/fondocalculadora.png'); background-size: cover; background-position: center center; background-repeat: no-repeat;">
+            <div class="container">
+                <div class="masthead-heading text-uppercase" style="font-size: 2.5em; color: #ffffff;">Calculadora de Materiales</div>
+                <div class="masthead-subheading" style="color: #FFFFff;">Estima los materiales y costos para tu proyecto.</div>
+            </div>
+        </header>
+
+        <section class="page-section" id="calculator">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Ingresa los Datos</h2>
+                    <h3 class="section-subheading text-muted">Completa tu email para activar la calculadora y luego ingresa los detalles del proyecto.</h3>
+                </div>
+
+                <div id="emailPrompt">
+                     <form id="emailForm" class="row g-3 justify-content-center align-items-center">
+                         <div class="col-md-5">
+                             <label for="userEmail" class="visually-hidden">Email</label>
+                             <input type="email" class="form-control form-control-lg" id="userEmail" placeholder="tuemail@ejemplo.com" required>
+                         </div>
+                         <div class="col-auto">
+                             <button type="submit" class="btn btn-primary btn-lg">Desbloquear Calculadora</button>
+                         </div>
+                         <div id="emailError" class="col-12 text-center text-danger mt-2" style="display: none;">Por favor, ingresa un email válido.</div>
+                     </form>
+                 </div>
+
+
+                <div id="calculatorWrapper" class="disabled-overlay calculator-locked">
+                    <form id="calculatorForm">
+                        <div class="row justify-content-center gx-4 gy-3">
+                            <div class="col-md-6 col-lg-3">
+                                <label for="constructionType" class="form-label">Tipo de Construcción</label>
+                                <select class="form-select" id="constructionType" required>
+                                    <option selected disabled value="">Selecciona...</option>
+                                    <option value="vivienda_unifamiliar">Vivienda Unifamiliar</option>
+                                    <option value="edificio">Edificio Multifamiliar</option>
+                                    <option value="galpon">Galpón Industrial</option>
+                                    <option value="reforma">Reforma</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <label for="elementType" class="form-label">Elemento a Calcular</label>
+                                <select class="form-select" id="elementType" required>
+                                    <option selected disabled value="">Selecciona...</option>
+                                    <option value="pared">Pared / Muro</option>
+                                    <option value="losa">Losa / Entrepiso</option>
+                                    <option value="revoque_grueso">Revoque Grueso</option>
+                                    <option value="revoque_fino">Revoque Fino</option>
+                                    <option value="contrapiso">Contrapiso</option>
+                                    <option value="carpeta">Carpeta de Nivelación</option>
+                                    </select>
+                            </div>
+
+                             <div class="col-md-6 col-lg-3">
+                                <label for="materialType" class="form-label">Tipo de Material/Estructura</label>
+                                <select class="form-select" id="materialType" required disabled>
+                                    <option selected disabled value="">Selecciona Elemento primero...</option>
+                                    </select>
+                            </div>
+
+
+                            <div class="col-md-6 col-lg-3">
+                                <label for="dimensions" class="form-label">Dimensiones (<span id="dimensionUnit">m²</span>)</label>
+                                <input type="number" class="form-control" id="dimensions" step="0.01" min="0.1" placeholder="Ej: 50.5" required>
+                            </div>
+
+                            <div class="col-12 text-center" style="margin-top: 4rem;">
+                                <button type="submit" class="btn btn-primary btn-xl text-uppercase">Calcular Materiales</button>
+                            </div>
+                        </div>
+                    </form>
+                 </div>
+
+                 <div id="resultsSection" style="display: none; margin-top: 3rem;">
+                    <div class="text-center">
+                        <h3 class="section-heading text-uppercase">Estimación de Materiales y Costos</h3>
+                        <p class="text-muted">Resultados basados en los datos ingresados. Son estimaciones y pueden variar.</p>
+                    </div>
+                    <div class="table-responsive results-table">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Unidad</th>
+                                    <th>Cantidad Estimada</th>
+                                    <th>Precio Unitario</th> 
+                                    <th>Costo Parcial</th> 
+                                    <th>Eliminar</th> 
+                                </tr>
+                            </thead>
+                            <tbody id="resultsBody">
+                                <!-- Las filas se llenan con JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Total:</td>
+                                    <td id="totalCost" class="fw-bold"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                
+                    <!-- --- INICIO: DIV de Botones Modificado --- -->
+                    <div class="row mt-4 align-items-center">
+                        <div class="col text-start">
+                            <!-- Botón Imprimir a la izquierda (estilo secundario) -->
+                            <button onclick="window.print();" class="btn btn-secondary"><i class="fas fa-print me-2"></i>Imprimir Resultados</button>
+                        </div>
+                        <div class="col text-center">
+                            <!-- Botón Encargar Pedido centrado y protagónico -->
+                            <button type="button" id="requestOrderBtn" class="btn btn-success btn-lg text-uppercase"><i class="fas fa-shopping-cart me-2"></i>Encargar Pedido</button>
+                        </div>
+                        <div class="col">
+                            <!-- Columna vacía a la derecha para balancear el centrado -->
+                        </div>
+                    </div>
+                    <!-- --- FIN: DIV de Botones Modificado --- -->
+                
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-lg-start">Copyright &copy; AutomationAI Solutions 2025</div> <div class="col-lg-4 my-3 my-lg-0">
+                        <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>
+                        <a class="link-dark text-decoration-none" href="#!">Terms of Use</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/scripts.js"></script> <script src="js/calculator.js"></script>
+    </body>
+</html>
