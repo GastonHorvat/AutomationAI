@@ -35,7 +35,6 @@ const tagColors = ['#BA68C8','#F0F4C3','#FBE9E7','#A7FFEB','#FFD54F','#ECEFF1','
 
 // --- Fetch y Procesamiento ---
 if (apiKey && baseId && tableIdOrName) {
-  console.error("¡ERROR FATAL! Faltan variables de entorno de Airtable.");
   const airtableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableIdOrName)}`;
   const fetchOptions = { headers: { Authorization: `Bearer ${apiKey}` } };
   try {
