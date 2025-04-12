@@ -3,7 +3,11 @@
 backend:
   name: github
   repo: GastonHorvat/AutomationAI
-  branch: main # o la rama que uses
+  branch: main
+
+local_backend: true
+local_backend:
+  url: http://localhost:8081/api/v1
 
 publish_mode: editorial_workflow
 
