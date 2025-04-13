@@ -1,16 +1,160 @@
 ---
-// Ejemplo para src/pages/solutions.astro
-import Layout from '../layouts/Layout.astro';
+// src/pages/resources.astro
+import Layout from '../layouts/Layout.astro'; // Ajusta la ruta si es necesario
+import { Icon } from 'astro-icon/components'; // Lo mantenemos por si quieres iconos en otro lado
 ---
-<Layout title="Resources">
-  <h1>Resources</h1>
-  <p>Explore our insights and helpful tools related to AI.</p>
 
-  <h2>Our Content & Tools</h2>
-  <ul>
-    <li><a href="/blog">Read our Blog</a> - Insights, articles, and news about AI.</li>
-    <li><a href="/tools">Discover AI Tools</a> - A curated list of useful AI tools.</li>
-  </ul>
+<Layout title="AI & Automation Resources | AutomationAI" description="Explore insights, tutorials, and tools from AutomationAI to help you leverage AI and automation for business growth and efficiency.">
 
-  {/* Puedes añadir más contenido introductorio aquí */}
+  <div class="content-container">
+    {/* --- Encabezado de la Página Centrado --- */}
+    <section class="intro-section section-padding text-center">
+      <h1>AI & Automation Resources</h1>
+      <p class="page-subtitle">
+        Dive deeper into the world of artificial intelligence and automation. Explore our curated resources designed to provide practical insights, expert knowledge, and tools to help you drive business transformation and efficiency.
+      </p>
+    </section>
+    {/* --- Grid para las Tarjetas de Recursos --- */}
+    <div class="resource-grid">
+
+      {/* Tarjeta 1: Blog */}
+      <article class="resource-card">
+        <div class="card-icon">
+          <Icon name="mdi:post-outline" size={48} /> {/* Icono de Blog */}
+        </div>
+        <h2 class="card-title">AutomationAI Insights Blog</h2>
+        <p class="card-description">
+          Stay updated with the latest trends, practical tutorials, success stories, and expert perspectives on leveraging AI and automation for business growth.
+        </p>
+        {/* CTA sin icono */}
+        <a href="/blog" class="cta-button">
+          Visit the Blog
+        </a>
+      </article>
+
+      {/* Tarjeta 2: AI Tools */}
+      <article class="resource-card">
+        <div class="card-icon">
+           <Icon name="mdi:toolbox-outline" size={48} /> {/* Icono de Herramientas */}
+        </div>
+        <h2 class="card-title">AI Tools Directory</h2>
+        <p class="card-description">
+          Discover a curated collection of powerful AI tools. We've selected and categorized tools to help you find the right solutions for your specific automation and AI needs.
+        </p>
+         {/* CTA sin icono */}
+        <a href="/tools" class="cta-button">
+          Explore AI Tools
+        </a>
+      </article>
+
+      {/* ... placeholders ... */}
+
+    </div> {/* Fin .resource-grid */}
+
+  </div> {/* Fin .content-container */}
 </Layout>
+
+{/* ====================================================================== */}
+{/* --- ESTILOS CSS --- */}
+{/* ====================================================================== */}
+<style>
+  /* --- Estilo para centrar el encabezado --- */
+  .page-header-centered {
+    text-align: center;
+    margin-bottom: 3rem; /* Espacio después del bloque centrado */
+  }
+  .page-header-centered h1 {
+     /* El H1 por defecto ya ocupa el ancho, así que text-align funciona */
+     margin-bottom: 1rem; /* Ajusta espacio si es necesario */
+  }
+  .page-header-centered .intro-text {
+    font-size: 1.1rem;
+    color: var(--text-medium, #555);
+    max-width: 750px;
+    margin-left: auto;   /* Centra el bloque si tiene max-width */
+    margin-right: auto;  /* Centra el bloque si tiene max-width */
+    margin-bottom: 0; /* Quitamos margen inferior porque lo tiene el contenedor padre */
+    line-height: 1.7;
+  }
+
+  .resource-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 3rem; /* Asegura espacio desde el header */
+  }
+
+  @media (min-width: 768px) {
+    .resource-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  .resource-card {
+    background-color: var(--white, #ffffff);
+    border: 1px solid var(--border-color-soft, #e2e8f0);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
+  }
+
+  .resource-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0, 60, 120, 0.12);
+  }
+
+  .card-icon {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    line-height: 0;
+  }
+  .card-icon :global(svg) {
+     margin: 0 auto;
+  }
+
+  .card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-dark, #1A2B48);
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .card-description {
+    font-size: 1rem;
+    color: var(--text-medium, #4A5568);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+  }
+
+  /* CTA sin icono */
+  .cta-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white !important;
+    padding: 0.8rem 1.8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: auto;
+    align-self: center;
+  }
+  .cta-button:hover {
+    background-color: #cc0000; /* Ajusta hover color */
+    transform: scale(1.05);
+    text-decoration: none;
+  }
+
+  /* Placeholder (igual que antes) */
+  .resource-card.placeholder { /* ... */ }
+</style>

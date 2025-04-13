@@ -46,65 +46,81 @@ function formatDate(date: Date): string {
     <div class="container">
       {/* Grid para las tarjetas de los posts */}
       <div class="posts-grid">
-        {publishedPosts.map(post => (
-          <article class="post-card">
-            {/* Imagen Destacada (si existe) */}
-            {post.data.image ? (
-              <a href={`/blog/${post.data.slug || post.slug}/`} class="card-image-link">
-                <Image
-                  src={post.data.image}
-                  alt={post.data.title || 'Blog post image'}
-				          width={1200}
-				          height={800}
-                  sizes="(max-width: 600px) 90vw, (max-width: 992px) 45vw, 30vw"
-                  format="webp"
-                  class="card-image"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-            ) : (
-              <div class="card-image-placeholder"></div> // Espacio si no hay imagen
-            )}
+        {publishedPosts.map(post => { // <--- Cambiado a llaves {}
 
-            <div class="card-content">
-              {/* Categoría */}
-              <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
-                {post.data.category}
-              </a>
+          // --- INICIO DEBUGGING ---
+          console.log(`--- Processing Post ---`);
+          console.log(`  Title: ${post.data.title}`);
+          console.log(`  Filename Slug (post.slug): ${post.slug}`);
+          console.log(`  Frontmatter Slug (post.data.slug): ${post.data.slug}`);
+          const finalSlug = post.data.slug || post.slug; // Calcula el slug a usar
+          console.log(`  Slug Used for Link: ${finalSlug}`);
+          const finalUrl = `/blog/${finalSlug}/`; // Calcula la URL (mantenemos la barra final por ahora)
+          console.log(`  Generated URL: ${finalUrl}`);
+          console.log(`-------------------------`);
+          // --- FIN DEBUGGING ---
 
-              {/* Título */}
-              <h2 class="card-title">
-                <a href={`/blog/${post.data.slug || post.slug}/`}>{post.data.title}</a>
-              </h2>
-
-              {/* Extracto / Descripción */}
-              <p class="card-excerpt">{post.data.description}</p>
-
-              {/* Meta Info (Autor y Fecha) */}
-              <div class="card-meta">
-                <span class="card-author">By {post.data.author}</span>
-                <span class="card-separator">|</span>
-                <time datetime={post.data.publishDate.toISOString()} class="card-date">
-                  {formatDate(post.data.publishDate)}
-                </time>
-              </div>
-
-              {/* Tags (si existen) */}
-              {post.data.tags && post.data.tags.length > 0 && (
-                <div class="card-tags">
-                  {post.data.tags.map(tag => (
-                    <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
-                      #{tag}
-                    </a>
-                  ))}
-                </div>
+          return ( // <--- Añadido return explícito
+            <article class="post-card">
+              {/* Imagen Destacada (si existe) */}
+              {post.data.image ? (
+                // Usamos la variable calculada 'finalUrl'
+                <a href={finalUrl} class="card-image-link">
+                  <Image
+                    src={post.data.image}
+                    alt={post.data.title || 'Blog post image'}
+                    width={1200}
+                    height={800}
+                    sizes="(max-width: 600px) 90vw, (max-width: 992px) 45vw, 30vw"
+                    format="webp"
+                    class="card-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              ) : (
+                <div class="card-image-placeholder"></div> // Espacio si no hay imagen
               )}
-            </div>
-          </article>
-        ))}
-      </div>
 
+              <div class="card-content">
+                {/* Categoría */}
+                <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
+                  {post.data.category}
+                </a>
+
+                {/* Título */}
+                <h2 class="card-title">
+                   {/* Usamos la variable calculada 'finalUrl' */}
+                  <a href={finalUrl}>{post.data.title}</a>
+                </h2>
+
+                {/* Extracto / Descripción */}
+                <p class="card-excerpt">{post.data.description}</p>
+
+                {/* Meta Info (Autor y Fecha) */}
+                <div class="card-meta">
+                  <span class="card-author">By {post.data.author}</span>
+                  <span class="card-separator">|</span>
+                  <time datetime={post.data.publishDate.toISOString()} class="card-date">
+                    {formatDate(post.data.publishDate)}
+                  </time>
+                </div>
+
+                {/* Tags (si existen) */}
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="card-tags">
+                    {post.data.tags.map(tag => (
+                      <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
+                        #{tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+          ); // <--- Fin del return
+        })} {/* <--- Fin del map */}
+      </div>
       {/* TODO: Añadir Paginación aquí si hay muchos posts */}
 
     </div>

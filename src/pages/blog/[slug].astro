@@ -6,14 +6,45 @@ import Layout from '../../layouts/Layout.astro'; // Ajusta la ruta si es necesar
 
 // 1. getStaticPaths: Define qué rutas generar en build time
 export async function getStaticPaths() {
+  // --- INICIO LOGGING ---
+  console.log("--- [slug].astro: Running getStaticPaths ---"); // LOG 1: Inicio
+
   const posts = await getCollection('blog', ({ data }) => {
+    // Puedes descomentar esto si quieres ver CADA post que se revisa:
+    // console.log(`  Checking post (getCollection filter): ${data.title}, Draft: ${data.draft}`);
     return !data.draft; // Solo genera páginas para posts NO borradores
   });
-  return posts.map(entry => ({
-    params: { slug: entry.data.slug || entry.slug },// El slug del archivo .md se convierte en el parámetro de la URL
-    props: { entry },          // Pasamos la entrada completa del post como prop
-  }));
-}
+
+  console.log(`  Posts found by getCollection (non-draft): ${posts.length}`); // LOG 2: Posts encontrados
+
+  // Mapeamos los posts encontrados a la estructura que necesita Astro
+  const paths = posts.map(entry => {
+    // Determinamos qué slug usar (frontmatter o filename)
+    const slugToUse = entry.data.slug || entry.slug;
+
+    // LOG 3: Información por cada path que se va a generar
+    console.log(`    Mapping path for title: "${entry.data.title}", slug used: "${slugToUse}"`);
+
+    // Retornamos el objeto para este path específico
+    return {
+      params: { slug: slugToUse }, // El slug del archivo .md se convierte en el parámetro de la URL
+      props: { entry },          // Pasamos la entrada completa del post como prop
+    };
+  }); // Fin del map
+
+  // LOG 4: El array completo de paths que se retorna
+  console.log(`  Generated paths object:`, JSON.stringify(paths, null, 2));
+
+  console.log("--- [slug].astro: Finished getStaticPaths ---"); // LOG 5: Fin
+  // --- FIN LOGGING ---
+
+  // Retornamos el array de paths generados
+  return paths;
+} // Fin de getStaticPaths
+
+// -----------------------------------------------------------
+// El resto del archivo sigue igual:
+// -----------------------------------------------------------
 
 // 2. Obtener las props (la entrada del post) para esta página específica
 interface Props {
@@ -30,6 +61,8 @@ function formatDate(date: Date): string {
     day: 'numeric',
   });
 }
+
+// --- El resto del archivo (Layout, article, style, etc.) ---
 
 // TODO: Calcular tiempo estimado de lectura (opcional)
 // function calculateReadingTime(content) { ... }

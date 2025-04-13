@@ -2,7 +2,7 @@
 title: "Título del artículo"
 publishDate: 2025-04-12T02:59:58.198853Z
 author: AutomationAI Team
-image: /uploads/blog/imagen.png
+image: /uploads/blog/titulo-del-articulo.png
 description: Breve descripción del artículo
 category: IA
 tags:
@@ -10,7 +10,7 @@ tags:
   - etiquetas
   - IA
 draft: false
-slug: titulo-del-articulo
+slug: titulo-del-articulo #
 seoTitle: Título optimizado para SEO
 seoDescription: Descripción optimizada para buscadores
 seoKeywords:

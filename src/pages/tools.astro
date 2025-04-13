@@ -51,11 +51,11 @@ if (apiKey && baseId && tableIdOrName) {
         link: record.fields.Link,
         tags: record.fields.Tags || [],
       }))
-      .filter(tool => tool.name && tool.category && tool.description && tool.link);
+      .filter((tool: Tool) => tool.name && tool.category && tool.description && tool.link);
 
       console.log(`Fetch de Airtable exitoso. Número de registros obtenidos: ${tools.length}`);
 
-    const allTags = tools.flatMap(tool => tool.tags || []);
+    const allTags = tools.flatMap((tool: Tool) => tool.tags || []);
     uniqueTags = [...new Set(allTags)].sort();
     tagsWithColors = uniqueTags.map((tag, index) => ({ name: tag, color: tagColors[index % tagColors.length] }));
     tagsWithColors.forEach(tc => { tagColorMap[tc.name] = tc.color; }); // Poblar mapa
