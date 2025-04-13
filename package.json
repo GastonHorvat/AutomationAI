@@ -6,17 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "cms-proxy": "netlify-cms-proxy-server"
+    "astro": "astro"
   },
   "dependencies": {
     "astro": "^5.6.1",
     "astro-icon": "^1.1.5"
   },
   "devDependencies": {
-    "@iconify-json/mdi": "^1.2.3",
-    "decap-cms-app": "^3.6.2",
-    "decap-server": "^3.2.0",
-    "netlify-cms-proxy-server": "^1.3.24"
+    "@iconify-json/mdi": "^1.2.3"
   }
 }

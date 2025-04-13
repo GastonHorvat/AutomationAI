@@ -7,23 +7,15 @@ import Layout from '../../layouts/Layout.astro'; // Ajusta la ruta si es necesar
 // 1. getStaticPaths: Define qué rutas generar en build time
 export async function getStaticPaths() {
   // --- INICIO LOGGING ---
-  console.log("--- [slug].astro: Running getStaticPaths ---"); // LOG 1: Inicio
 
   const posts = await getCollection('blog', ({ data }) => {
-    // Puedes descomentar esto si quieres ver CADA post que se revisa:
-    // console.log(`  Checking post (getCollection filter): ${data.title}, Draft: ${data.draft}`);
     return !data.draft; // Solo genera páginas para posts NO borradores
   });
-
-  console.log(`  Posts found by getCollection (non-draft): ${posts.length}`); // LOG 2: Posts encontrados
 
   // Mapeamos los posts encontrados a la estructura que necesita Astro
   const paths = posts.map(entry => {
     // Determinamos qué slug usar (frontmatter o filename)
     const slugToUse = entry.data.slug || entry.slug;
-
-    // LOG 3: Información por cada path que se va a generar
-    console.log(`    Mapping path for title: "${entry.data.title}", slug used: "${slugToUse}"`);
 
     // Retornamos el objeto para este path específico
     return {
@@ -31,12 +23,6 @@ export async function getStaticPaths() {
       props: { entry },          // Pasamos la entrada completa del post como prop
     };
   }); // Fin del map
-
-  // LOG 4: El array completo de paths que se retorna
-  console.log(`  Generated paths object:`, JSON.stringify(paths, null, 2));
-
-  console.log("--- [slug].astro: Finished getStaticPaths ---"); // LOG 5: Fin
-  // --- FIN LOGGING ---
 
   // Retornamos el array de paths generados
   return paths;
