@@ -1,7 +1,7 @@
 ---
 // src/pages/contact.astro
 import Layout from '../layouts/Layout.astro';
-
+import { Mail, PhoneCall, MessageCircle, Send } from 'lucide';
 // Reemplaza esto con TU endpoint de Formspree
 const formspreeEndpoint = "https://formspree.io/f/mdkepdwk";
 ---
@@ -45,23 +45,41 @@ const formspreeEndpoint = "https://formspree.io/f/mdkepdwk";
       </div>
 
       {/* Sección de Información de Contacto (Opcional) */}
-      <div class="contact-info">
-        <h2>Contact Information</h2>
-        <p>Prefer to reach out directly?</p>
-        <ul>
+      <div class="contact-info space-y-4">
+        <h2 class="text-2xl font-bold">Contact Information</h2>
+        <p class="text-gray-700">Prefer to reach out directly?</p>
+      
+        <ul class="space-y-2">
           <li>
             <strong>Email:</strong>
-            <a href="mailto:info@automationai.com.ar">info@automationai.com.ar</a>
+            <a href="mailto:info@automationai.com.ar" class="text-blue-600 hover:underline">
+              info@automationai.com.ar
+            </a>
           </li>
-          {/* Añade Teléfono, Dirección si aplica */}
+          <li>
+            <strong>WhatsApp:</strong>
+            <a href="https://wa.me/5491137590568" target="_blank" class="text-green-600 hover:underline">
+              Message us on WhatsApp
+            </a>
+          </li>
+          <li>
+            <strong>Telegram:</strong>
+            <a href="https://t.me/+541137590568" target="_blank" class="text-blue-500 hover:underline">
+              Chat with us on Telegram
+            </a>
+          </li>
           <!--
-          <li><strong>Phone:</strong> [Your Phone Number]</li>
-          <li><strong>Address:</strong> [Your Address]</li>
+          <li>
+            <strong>Phone:</strong> [Your Phone Number]
+          </li>
+          <li>
+            <strong>Address:</strong> [Your Address]
+          </li>
           -->
         </ul>
-        <p>We typically respond within 24-48 business hours.</p>
+      
+        <p class="text-sm text-gray-600">We typically respond within 24–48 business hours.</p>
       </div>
-    </div>
 
   </div>
 </Layout>
