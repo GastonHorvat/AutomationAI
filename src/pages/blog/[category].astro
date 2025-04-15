@@ -1,0 +1,447 @@
+---
+// src/pages/blog/category/[category].astro - Versión Airtable con tipado
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Airtable from 'airtable';
+
+// Definiciones de tipos
+interface PathItem {
+  params: { category: string };
+  props: { categoryName: string };
+}
+
+interface AirtableAttachment {
+  id: string;
+  url: string;
+  filename: string;
+  size?: number;
+  type?: string;
+}
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    author: string;
+    publishDate: Date;
+    category: string;
+    tags: string[];
+    image: string | null;
+  };
+}
+
+// Define paths para categorías desde Airtable
+export async function getStaticPaths() {
+  console.log("--- CATEGORY: Running getStaticPaths from Airtable ---");
+  const paths: PathItem[] = [];
+  
+  try {
+    const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
+    const tableId = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_BLOG_TABLE_ID;
+    
+    if (!import.meta.env.AIRTABLE_API_KEY || !import.meta.env.AIRTABLE_BASE_ID || !tableId) {
+      console.error("¡ERROR! Faltan variables de entorno de Airtable");
+      return paths;
+    }
+    
+    // Obtener todos los posts publicados
+    const records = await base(tableId).select({
+      filterByFormula: "{Status} = 'Published'",
+      fields: ["Category"]
+    }).all();
+    
+    // Extraer categorías únicas
+    const categories = new Set<string>();
+    records.forEach(record => {
+      if (record.fields.Category && typeof record.fields.Category === 'string') {
+        categories.add(record.fields.Category);
+      }
+    });
+    
+    console.log(`Found ${categories.size} unique categories`);
+    
+    // Crear rutas para cada categoría
+    categories.forEach(category => {
+      paths.push({
+        params: { category: category.toLowerCase() },
+        props: { categoryName: category }
+      });
+    });
+    
+  } catch (error) {
+    console.error("Error fetching categories from Airtable:", error);
+  }
+  
+  return paths;
+}
+
+// Acceder a props y params
+const { categoryName } = Astro.props;
+const { category } = Astro.params;
+
+// Obtener posts para esta categoría
+console.log(`Fetching posts for category: ${categoryName}`);
+let categoryPosts: BlogPost[] = [];
+
+try {
+  const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
+  const tableId = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_BLOG_TABLE_ID;
+  
+  const records = await base(tableId).select({
+    filterByFormula: `AND({Status} = 'Published', {Category} = '${categoryName}')`,
+    sort: [{ field: "PublishDate", direction: "desc" }]
+  }).all();
+  
+  console.log(`Found ${records.length} posts in category ${categoryName}`);
+  
+  // Convertir a formato utilizable con procesamiento seguro
+  categoryPosts = records.map(record => {
+    // Helper para obtener un valor como string
+    const getStringValue = (fieldName: string): string => {
+      const value = record.fields[fieldName];
+      return typeof value === 'string' ? value : String(value || '');
+    };
+    
+    // Procesamiento seguro de la fecha
+    let publishDate: Date;
+    try {
+      const dateStr = getStringValue('PublishDate');
+      publishDate = dateStr ? new Date(dateStr) : new Date();
+    } catch (e) {
+      publishDate = new Date();
+    }
+    
+    // Procesamiento seguro de la imagen
+    let imageUrl: string | null = null;
+    if (record.fields.Image && 
+        Array.isArray(record.fields.Image) && 
+        record.fields.Image.length > 0 &&
+        typeof record.fields.Image[0] === 'object' &&
+        record.fields.Image[0] !== null &&
+        'url' in record.fields.Image[0]) {
+      imageUrl = (record.fields.Image[0] as AirtableAttachment).url;
+    }
+    
+    // Procesamiento seguro de tags
+    const tags: string[] = [];
+    if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
+      record.fields.Tags.forEach(tag => {
+        if (typeof tag === 'string') {
+          tags.push(tag);
+        }
+      });
+    }
+    
+    return {
+      id: record.id,
+      slug: getStringValue('Slug'),
+      data: {
+        title: getStringValue('Title') || "Sin título",
+        description: getStringValue('Description') || "",
+        author: getStringValue('Author') || "AutomationAI Team",
+        publishDate: publishDate,
+        category: getStringValue('Category') || "General",
+        tags: tags,
+        image: imageUrl
+      }
+    };
+  });
+  
+} catch (error) {
+  console.error(`Error fetching posts for category ${categoryName}:`, error);
+}
+
+// Helper para formatear fechas
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout title={`${categoryName} | AutomationAI Blog`} description={`Explore our articles about ${categoryName} - practical insights, tutorials, and tips from AutomationAI Solutions.`}>
+
+  {/* --- Encabezado de la Página de Categoría --- */}
+  <section class="category-hero section-padding bg-soft-gradient text-center">
+    <div class="container narrow-container">
+      <p class="breadcrumb"><a href="/blog/">Blog</a> / Category</p>
+      <h1 class="page-title">{categoryName}</h1>
+      <p class="page-subtitle">
+        Explore our latest articles and insights about {categoryName}.
+      </p>
+    </div>
+  </section>
+
+  {/* --- Listado de Posts --- */}
+  <section class="blog-list-section section-padding">
+    <div class="container">
+      {categoryPosts.length > 0 ? (
+        <div class="posts-grid">
+          {categoryPosts.map(post => {
+            const finalUrl = `/blog/${post.slug}/`;
+            return (
+              <article class="post-card">
+                {/* Imagen Destacada (si existe) */}
+                {post.data.image ? (
+                  <a href={finalUrl} class="card-image-link">
+                    <img
+                      src={post.data.image}
+                      alt={post.data.title || 'Blog post image'}
+                      class="card-image"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                ) : (
+                  <div class="card-image-placeholder"></div>
+                )}
+
+                <div class="card-content">
+                  {/* Categoría */}
+                  <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
+                    {post.data.category}
+                  </a>
+
+                  {/* Título */}
+                  <h2 class="card-title">
+                    <a href={finalUrl}>{post.data.title}</a>
+                  </h2>
+
+                  {/* Extracto / Descripción */}
+                  <p class="card-excerpt">{post.data.description}</p>
+
+                  {/* Meta Info (Autor y Fecha) */}
+                  <div class="card-meta">
+                    <span class="card-author">By {post.data.author}</span>
+                    <span class="card-separator">|</span>
+                    <time datetime={post.data.publishDate.toISOString()} class="card-date">
+                      {formatDate(post.data.publishDate)}
+                    </time>
+                  </div>
+
+                  {/* Tags (si existen) */}
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {post.data.tags.map((tag: string) => (
+                        <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
+                          #{tag}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="no-posts-message">
+          <h2>No posts found in this category</h2>
+          <p>Check back soon for new content or explore other categories.</p>
+          <a href="/blog/" class="back-button">Back to all posts</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  /* --- Estilos de la página de categoría --- */
+  .category-hero {
+    background: linear-gradient(180deg, var(--soft-gradient-start, #f8faff) 0%, var(--soft-gradient-end, #ffffff) 100%);
+  }
+  
+  .breadcrumb {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-light, #6c757d);
+  }
+  .breadcrumb a {
+    color: var(--primary-color, #007bff);
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  .page-title {
+    font-size: clamp(2.5rem, 7vw, 3.5rem);
+    margin-bottom: 1rem;
+    color: var(--text-dark, #1A2B48);
+    font-weight: 700;
+  }
+  
+  .page-subtitle {
+    font-size: clamp(1.1rem, 3vw, 1.3rem);
+    color: var(--text-medium, #4A5568);
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* --- Estilos Listado de Posts --- */
+  .blog-list-section {
+    background-color: var(--bg-light-gray, #f8f9fa);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .posts-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  /* --- Mensaje de No Posts --- */
+  .no-posts-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
+  }
+  .no-posts-message h2 {
+    font-size: 1.8rem;
+    color: var(--text-dark, #1A2B48);
+    margin-bottom: 1rem;
+  }
+  .no-posts-message p {
+    color: var(--text-medium, #4A5568);
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+  }
+  .back-button {
+    display: inline-block;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  .back-button:hover {
+    background-color: var(--primary-dark, #0056b3);
+  }
+
+  /* --- Tarjetas de Posts (mismo estilo que index.astro) --- */
+  .post-card {
+    background-color: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 60, 120, 0.1);
+  }
+
+  .card-image-link { display: block; }
+  .card-image {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
+  }
+  .card-image-placeholder {
+    height: 10px;
+    background-color: var(--primary-color, #007bff);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-category {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-color, #007bff);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+  }
+  .card-category:hover { text-decoration: underline; }
+
+  .card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark, #1A2B48);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+  .card-title a {
+    text-decoration: none;
+    color: inherit;
+  }
+  .card-title a:hover { color: var(--primary-color, #007bff); }
+
+  .card-excerpt {
+    font-size: 0.95rem;
+    color: var(--text-medium, #4A5568);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .card-meta {
+    font-size: 0.85rem;
+    color: var(--text-light, #6c757d);
+    margin-bottom: 0.75rem;
+    border-top: 1px solid var(--border-color-soft, #e2e8f0);
+    padding-top: 0.75rem;
+    margin-top: auto;
+  }
+  .card-separator { margin: 0 0.5em; }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color-soft, #e2e8f0);
+  }
+  .card-meta + .card-tags {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .card-tag {
+    display: inline-block;
+    background-color: var(--bg-light-gray, #f8f9fa);
+    color: var(--text-light, #6c757d);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .card-tag:hover {
+    background-color: var(--primary-color, #007bff);
+    color: var(--white, #ffffff);
+  }

@@ -1,21 +1,95 @@
 ---
-// src/pages/blog/index.astro
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets'; // Para optimizar imágenes
-import Layout from '../../layouts/Layout.astro'; // Ajusta la ruta si es necesario
+// src/pages/blog/index.astro - VERSIÓN OPTIMIZADA
+import { Image } from 'astro:assets'; 
+import Layout from '../../layouts/Layout.astro';
+import Airtable from 'airtable';
 
-// 1. Obtener todos los posts de la colección 'blog'
-const allPosts = await getCollection('blog');
+// Tipo para un post de blog procesado
+interface BlogPost {
+  id: string;
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    author: string;
+    publishDate: Date;
+    category: string;
+    tags: string[];
+    image: string | null;
+  };
+}
 
-// 2. Filtrar posts que NO sean borradores (draft: false)
-//    y Ordenar por fecha de publicación (más recientes primero)
-const publishedPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+// Obtener posts desde Airtable
+let publishedPosts: BlogPost[] = [];
 
-// Helper para formatear fechas (puedes hacerlo más sofisticado si quieres)
+try {
+  // Obtener variables de entorno
+  const apiKey = import.meta.env.AIRTABLE_API_KEY;
+  const baseId = import.meta.env.AIRTABLE_BASE_ID;
+  const tableId = import.meta.env.AIRTABLE_BLOG_TABLE_ID || import.meta.env.AIRTABLE_TABLE_ID;
+  
+  if (apiKey && baseId && tableId) {
+    // Inicializar Airtable y obtener registros
+    const base = new Airtable({ apiKey }).base(baseId);
+    const records = await base(tableId).select().all();
+    
+    // Filtrar posts publicados
+    const publishedRecords = records.filter(record => {
+      if (record.fields.Status && typeof record.fields.Status === 'string') {
+        return record.fields.Status.toLowerCase() === 'published';
+      }
+      return true;
+    });
+    
+    // Convertir a formato BlogPost
+    publishedPosts = publishedRecords.map(record => {
+      // Helper para obtener valores string
+      const getStringValue = (field: string): string => {
+        const value = record.fields[field];
+        return value ? String(value) : '';
+      };
+      
+      // Fecha de publicación
+      let publishDate = new Date();
+      
+      // Procesar imágenes
+      let imageUrl: string | null = null;
+      if (record.fields.Image && Array.isArray(record.fields.Image) && 
+          record.fields.Image.length > 0 && typeof record.fields.Image[0] === 'object' &&
+          record.fields.Image[0] !== null && 'url' in record.fields.Image[0]) {
+        imageUrl = record.fields.Image[0].url;
+      }
+      
+      // Procesar tags
+      const tags: string[] = [];
+      if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
+        record.fields.Tags.forEach((tag: any) => {
+          if (typeof tag === 'string') tags.push(tag);
+        });
+      }
+      
+      return {
+        id: record.id,
+        slug: getStringValue('Slug') || record.id,
+        data: {
+          title: getStringValue('Title') || 'Sin título',
+          description: getStringValue('Description') || '',
+          author: getStringValue('Author') || 'AutomationAI Team',
+          publishDate: publishDate,
+          category: getStringValue('Category') || 'General',
+          tags: tags,
+          image: imageUrl
+        }
+      };
+    });
+  }
+} catch (error) {
+  // Silenciar errores en producción
+}
+
+// Helper para formatear fechas
 function formatDate(date: Date): string {
-  return new Date(date).toLocaleDateString('en-US', { // Cambia 'en-US' a tu locale si prefieres
+  return date.toLocaleDateString('es-ES', { 
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -27,7 +101,7 @@ function formatDate(date: Date): string {
 
   {/* --- Encabezado de la Página del Blog --- */}
   <section class="blog-hero section-padding bg-soft-gradient text-center">
-    <div class="container narrow-container">
+    <div class="container">
       <h1 class="page-title">AutomationAI Insights</h1>
       <p class="page-subtitle">
         Your source for practical AI knowledge, automation tips, and business growth strategies.
@@ -38,124 +112,158 @@ function formatDate(date: Date): string {
   {/* --- Listado de Posts --- */}
   <section class="blog-list-section section-padding">
     <div class="container">
-      {/* Grid para las tarjetas de los posts */}
-      <div class="posts-grid">
-        {publishedPosts.map(post => { // <--- Cambiado a llaves {}
-          const finalSlug = post.data.slug || post.slug; // Calcula el slug a usar
-          const finalUrl = `/blog/${finalSlug}/`; // Calcula la URL (mantenemos la barra final por ahora)
-          return ( // <--- Añadido return explícito
-            <article class="post-card">
-              {/* Imagen Destacada (si existe) */}
-              {post.data.image ? (
-                // Usamos la variable calculada 'finalUrl'
-                <a href={finalUrl} class="card-image-link">
-                  <Image
-                    src={post.data.image}
-                    alt={post.data.title || 'Blog post image'}
-                    width={1200}
-                    height={800}
-                    sizes="(max-width: 600px) 90vw, (max-width: 992px) 45vw, 30vw"
-                    format="webp"
-                    class="card-image"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </a>
-              ) : (
-                <div class="card-image-placeholder"></div> // Espacio si no hay imagen
-              )}
-
-              <div class="card-content">
-                {/* Categoría */}
-                <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
-                  {post.data.category}
-                </a>
-
-                {/* Título */}
-                <h2 class="card-title">
-                   {/* Usamos la variable calculada 'finalUrl' */}
-                  <a href={finalUrl}>{post.data.title}</a>
-                </h2>
-
-                {/* Extracto / Descripción */}
-                <p class="card-excerpt">{post.data.description}</p>
-
-                {/* Meta Info (Autor y Fecha) */}
-                <div class="card-meta">
-                  <span class="card-author">By {post.data.author}</span>
-                  <span class="card-separator">|</span>
-                  <time datetime={post.data.publishDate.toISOString()} class="card-date">
-                    {formatDate(post.data.publishDate)}
-                  </time>
-                </div>
-
-                {/* Tags (si existen) */}
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="card-tags">
-                    {post.data.tags.map(tag => (
-                      <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
-                        #{tag}
-                      </a>
-                    ))}
-                  </div>
+      {publishedPosts.length > 0 ? (
+        <div class="posts-grid">
+          {publishedPosts.map(post => {
+            const finalUrl = `/blog/${post.slug}/`;
+            return (
+              <article class="post-card">
+                {/* Imagen Destacada (si existe) */}
+                {post.data.image ? (
+                  <a href={finalUrl} class="card-image-link">
+                    <img
+                      src={post.data.image}
+                      alt={post.data.title || 'Blog post image'}
+                      class="card-image"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                ) : (
+                  <div class="card-image-placeholder"></div>
                 )}
-              </div>
-            </article>
-          ); // <--- Fin del return
-        })} {/* <--- Fin del map */}
-      </div>
-      {/* TODO: Añadir Paginación aquí si hay muchos posts */}
 
+                <div class="card-content">
+                  {/* Categoría */}
+                  <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
+                    {post.data.category}
+                  </a>
+
+                  {/* Título */}
+                  <h2 class="card-title">
+                    <a href={finalUrl}>{post.data.title}</a>
+                  </h2>
+
+                  {/* Extracto / Descripción */}
+                  <p class="card-excerpt">{post.data.description}</p>
+
+                  {/* Meta Info (Autor y Fecha) */}
+                  <div class="card-meta">
+                    <span class="card-author">By {post.data.author}</span>
+                    <span class="card-separator">|</span>
+                    <time datetime={post.data.publishDate.toISOString()} class="card-date">
+                      {formatDate(post.data.publishDate)}
+                    </time>
+                  </div>
+
+                  {/* Tags (si existen) */}
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {post.data.tags.map((tag: string) => (
+                        <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
+                          #{tag}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="no-posts-message">
+          <h2>No posts found</h2>
+          <p>Check back soon for new content or verify your Airtable connection.</p>
+        </div>
+      )}
     </div>
   </section>
 
 </Layout>
 
-{/* ====================================================================== */}
-{/* --- ESTILOS CSS para el Blog --- */}
-{/* ====================================================================== */}
 <style>
-  /* --- Estilos Hero del Blog (Similares a otras páginas) --- */
+  /* --- Estilos Hero del Blog --- */
   .blog-hero {
-    /* Usa tu :global(.bg-soft-gradient) o define uno aquí */
     background: linear-gradient(180deg, var(--soft-gradient-start, #f8faff) 0%, var(--soft-gradient-end, #ffffff) 100%);
+    padding: 4rem 0 3rem;
+    margin-bottom: 2rem;
   }
-  .page-title { /* Puedes usar estilos de H1 globales o específicos */
+  
+  /* Contenedor para centrar contenido */
+  .container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  .section-padding {
+    padding: 3rem 0;
+  }
+  
+  .page-title {
     font-size: clamp(2.8rem, 7vw, 4rem);
     margin-bottom: 1rem;
     color: var(--text-dark, #1A2B48);
     font-weight: 700;
+    text-align: center;
   }
-  .page-subtitle { /* Estilo global o específico */
+  .page-subtitle {
     font-size: clamp(1.1rem, 3vw, 1.3rem);
     color: var(--text-medium, #4A5568);
     max-width: 650px;
     margin: 0 auto;
     line-height: 1.6;
+    text-align: center;
   }
 
   /* --- Estilos Listado de Posts --- */
   .blog-list-section {
-    background-color: var(--bg-light-gray, #f8f9fa); /* O blanco si prefieres */
+    background-color: var(--bg-light-gray, #f8f9fa);
+    padding: 4rem 0;
   }
 
   .posts-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Mobile: 1 columna */
-    gap: 2.5rem; /* Espacio entre tarjetas */
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin: 0 auto;
   }
 
-  @media (min-width: 640px) { /* Tablet: 2 columnas */
+  @media (min-width: 640px) {
     .posts-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (min-width: 1024px) { /* Desktop: 3 columnas */
+  @media (min-width: 1024px) {
     .posts-grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
     }
+  }
+
+  /* --- Mensaje de No Posts --- */
+  .no-posts-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    background-color: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .no-posts-message h2 {
+    font-size: 1.8rem;
+    color: var(--text-dark, #1A2B48);
+    margin-bottom: 1rem;
+  }
+  .no-posts-message p {
+    color: var(--text-medium, #4A5568);
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
   }
 
   /* --- Estilos Tarjeta de Post --- */
@@ -163,7 +271,7 @@ function formatDate(date: Date): string {
     background-color: var(--white, #ffffff);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
-    overflow: hidden; /* Para que la imagen no se salga */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
@@ -177,28 +285,28 @@ function formatDate(date: Date): string {
   .card-image {
     display: block;
     width: 100%;
-    height: 200px; /* Altura fija para la imagen */
-    object-fit: cover; /* Asegura que la imagen cubra el espacio sin distorsión */
+    height: 200px;
+    object-fit: cover;
     border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
   }
-  .card-image-placeholder { /* Espacio si no hay imagen */
-      height: 10px; /* Un pequeño espacio o borde superior */
-      background-color: var(--primary-color, #007bff); /* O un color neutro */
+  .card-image-placeholder {
+      height: 10px;
+      background-color: var(--primary-color, #007bff);
   }
 
   .card-content {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Para que el contenido ocupe espacio y meta/tags queden abajo */
+    flex-grow: 1;
   }
 
   .card-category {
     display: inline-block;
-    margin-bottom: 0.75rem;
+
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--primary-color, #007bff);
+    color: var(--primary-color, #1920ff);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     text-decoration: none;
@@ -216,10 +324,10 @@ function formatDate(date: Date): string {
   }
   .card-title a {
     text-decoration: none;
-    color: inherit; /* Hereda el color del h2 */
+    color: inherit;
   }
   .card-title a:hover {
-    color: var(--primary-color, #007bff);
+    color: var(--primary-color, #1920ff);
   }
 
   .card-excerpt {
@@ -227,35 +335,30 @@ function formatDate(date: Date): string {
     color: var(--text-medium, #4A5568);
     line-height: 1.6;
     margin-bottom: 1.5rem;
-    flex-grow: 1; /* Empuja meta/tags hacia abajo */
+    flex-grow: 1;
   }
 
   .card-meta {
     font-size: 0.85rem;
     color: var(--text-light, #6c757d);
-    margin-bottom: 0.75rem; /* Espacio antes de los tags */
+    margin-bottom: 0.75rem;
     border-top: 1px solid var(--border-color-soft, #e2e8f0);
     padding-top: 0.75rem;
-    margin-top: auto; /* Empuja hacia abajo */
+    margin-top: auto;
   }
   .card-separator { margin: 0 0.5em; }
-  .card-date { /* Estilos específicos para la fecha si son necesarios */ }
-  .card-author { /* Estilos específicos para el autor si son necesarios */ }
 
   .card-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      /* margin-top: auto;  Asegura que los tags estén al final si no hay meta */
-      padding-top: 0.5rem; /* Espacio si no hay meta */
-      border-top: 1px solid var(--border-color-soft, #e2e8f0); /* Asegura separador si no hay meta */
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-color-soft, #e2e8f0);
   }
-   /* Condición por si no hay meta info */
    .card-meta + .card-tags {
       border-top: none;
       padding-top: 0;
    }
-
 
   .card-tag {
     display: inline-block;
@@ -272,5 +375,4 @@ function formatDate(date: Date): string {
     background-color: var(--primary-color, #007bff);
     color: var(--white, #ffffff);
   }
-
 </style>
