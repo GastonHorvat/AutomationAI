@@ -4,7 +4,7 @@ import { Icon } from 'astro-icon/components';
 
 const steps = [
   { iconName: "mdi:magnify", title: "1. Discovery & Analysis", description: "We start by deeply understanding your business goals, challenges, and existing processes..." },
-  { iconName: "mdi:lightbulb-on-outline", title: "2. Solution Design", description: "Based on the discovery phase, we craft a tailored AI strategy and propose a clear roadmap..." },
+  { iconName: "mdi:lightbulb-on-outline", title: "2. Solution & Design", description: "Based on the discovery phase, we craft a tailored AI strategy and propose a clear roadmap..." },
   { iconName: "mdi:cogs", title: "3. Implementation & Integration", description: "Our expert team builds and integrates the AI solution seamlessly into your workflow..." },
   { iconName: "mdi:chart-line", title: "4. Support & Growth", description: "We provide ongoing support and collaborate with you to identify future opportunities..." }
 ];
@@ -41,13 +41,27 @@ const steps = [
   .section-subtitle { text-align: center; font-size: 1.1rem; color: #555; max-width: 650px; margin: 0 auto 3.5rem auto; }
 
   .steps-container {
-    display: grid; grid-template-columns: 1fr; gap: 3.5rem; position: relative;
+    display: grid;
+    grid-template-columns: 1fr; /* Móvil por defecto */
+    gap: 3.5rem;
+    position: relative;
+    /* align-items: stretch; <- Ya es el valor por defecto, no estrictamente necesario aquí */
   }
 
   .step-card {
-    background-color: #fff; padding: 2rem 1.5rem; border-radius: 10px;
-    border: 1px solid #e0e0e0; text-align: center; position: relative;
-    transition: transform 0.2s ease, box-shadow 0.2s ease; padding-top: 3rem; /* Espacio para el número */
+    background-color: #fff;
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding-top: 3rem; /* Espacio para el número */
+
+    /* === CORRECCIÓN 1: Hacer la tarjeta un contenedor flex vertical === */
+    display: flex;
+    flex-direction: column;
+    /* =============================================================== */
   }
    .step-card:hover { transform: translateY(-5px); box-shadow: 0 7px 20px rgba(0,0,0,0.08); }
 
@@ -59,79 +73,72 @@ const steps = [
        box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 2;
    }
 
-  .step-icon { margin-top: 1rem; margin-bottom: 1rem; color: var(--primary-color); line-height: 1; }
-  .step-title { font-size: 1.2rem; margin-top: 0; margin-bottom: 0.8rem; color: #222; font-weight: 600; }
-  .step-description { color: #555; line-height: 1.6; font-size: 0.95rem; margin-bottom: 0; }
+  .step-icon {
+    margin-top: 1rem; /* Ajusta si es necesario después de flex */
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    line-height: 1;
+    /* El icono NO debe crecer */
+  }
+  .step-title {
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    color: #222;
+    font-weight: 600;
+     /* El título NO debe crecer */
+  }
+  .step-description {
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 0; /* Importante para que no añada espacio extra abajo */
+
+    /* === CORRECCIÓN 2: Hacer que la descripción ocupe espacio === */
+    flex-grow: 1;
+    /* ========================================================= */
+  }
 
    /* Flecha conectora (oculta por defecto) */
    .step-arrow {
       display: none;
-      color: #bbb; /* Color más suave para la flecha */
+      color: #bbb;
       position: absolute;
-      top: 50%; /* Centrada verticalmente */
+      top: 50%;
       transform: translateY(-50%);
-      z-index: 0; /* Detrás de la siguiente tarjeta */
+      z-index: 0;
    }
 
   /* Desktop: 4 columnas con flechas */
   @media (min-width: 992px) {
     .steps-container {
        grid-template-columns: repeat(4, 1fr);
-       gap: 4rem; /* Espacio para la flecha */
-       align-items: start;
+       gap: 4rem;
+
+       /* === CORRECCIÓN 3: Asegurar que las tarjetas se estiren === */
+       align-items: stretch; /* Cambiado de 'start' a 'stretch' */
+       /* ===================================================== */
     }
-    /* Muestra y posiciona la flecha */
     .step-arrow {
        display: block;
-       right: -2rem; /* A la mitad del gap de 4rem */
+       right: -2rem;
     }
-    /* Oculta la flecha del último elemento */
      .step-card:last-child .step-arrow { display: none; }
   }
 
   /* Tablets: 2 columnas sin flechas */
   @media (min-width: 641px) and (max-width: 991px) {
-     .steps-container { grid-template-columns: repeat(2, 1fr); gap: 3rem 2rem; align-items: stretch; }
+     .steps-container {
+         grid-template-columns: repeat(2, 1fr);
+         gap: 3rem 2rem;
+         align-items: stretch; /* Bien, ya estaba stretch aquí */
+     }
      .step-arrow { display: none; }
    }
 
    /* Móvil: 1 columna sin flechas (ya está por defecto) */
    @media (max-width: 640px) {
-      /* gap y padding-top ya están definidos arriba */
       .step-arrow { display: none; }
+      /* No se necesita align-items para una sola columna */
    }
-
-/* En <style> de HowItWorksSection.astro */
-
-/* ... */
-
-.step-card {
-    /* ... (otros estilos) ... */
-    display: flex; /* Asegura que sea un contenedor flex */
-    flex-direction: column; /* Apila los elementos internos verticalmente */
-}
-
-/* ... */
-
-.step-description {
-    /* ... (otros estilos) ... */
-    flex-grow: 1; /* <<< ASEGÚRATE QUE ESTÉ ESTO */
-                 /* Hace que la descripción ocupe el espacio vertical restante */
-}
-
-/* ... */
-
-/* Ajustes para Tablets (2 columnas) */
-@media (min-width: 641px) and (max-width: 991px) {
-   .steps-container {
-       grid-template-columns: repeat(2, 1fr);
-       gap: 3rem 2rem;
-       align-items: stretch; /* <<< ASEGÚRATE QUE ESTÉ ESTO */
-                             /* Intenta que todos los items del grid tengan la misma altura */
-   }
-   /* ... */
- }
-
-/* ... */
-
 </style>

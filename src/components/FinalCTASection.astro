@@ -20,8 +20,6 @@
       /* --- Estilos para el Wrapper Principal --- */
       .final-cta-wrapper {
           background-color: var(--primary-color); /* Fondo de color primario */
-          /* O gradiente: background: linear-gradient(...); */
-          padding-top: 1rem;    /* Padding vertical */
           padding-bottom: 2.5rem; /* Un poco más abajo para el botón */
           color: #fff; /* Color de texto por defecto para esta sección */
       }
@@ -70,13 +68,11 @@
         transform: scale(1.03);
       }
   
-      /* Añadimos un estilo global heredado para padding si no existe */
-      /* Esto es por si .section-padding no se usa aquí */
-      /* Se puede quitar si .section-padding está global o se aplica en el wrapper */
+
       :global(.section-padding) {
          /* Asegura que exista o defínelo globalmente */
-         /* padding-top: 4rem; */
-         /* padding-bottom: 4rem; */
+         padding-top: 0rem; */
+         padding-bottom: 0rem; */
       }
   
   </style>

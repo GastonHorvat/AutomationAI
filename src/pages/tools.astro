@@ -152,162 +152,7 @@ console.log(`Terminando frontmatter de /tools.astro. Herramientas cargadas: ${to
 
 {/* --- SCRIPT FINAL Y CORREGIDO --- */}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Selectores ---
-    const allToolCardWrappers = document.querySelectorAll('.tool-card-wrapper');
-    const categorySections = document.querySelectorAll('section.category-section');
-    const filterControlDiv = document.querySelector('.filter-controls');
-    const noResultsMessage = document.getElementById('no-results-message');
-    const allFilterHeaders = filterControlDiv?.querySelectorAll<HTMLElement>('.filter-header'); // Todos los headers de filtro
-
-    // --- Comprobación Inicial ---
-    if (!filterControlDiv) return; // Salir si no hay controles
-
-    // --- Estado ---
-    let selectedTags: string[] = [];
-    let selectedCategories: string[] = [];
-
-    // --- Función Principal de Filtrado ---
-    function applyAllFilters() {
-        let visibleCategories = new Set<string>();
-        let hasVisibleTools = false;
-
-        allToolCardWrappers.forEach(cardWrapper => {
-            if (!(cardWrapper instanceof HTMLElement)) return;
-            const card = cardWrapper.querySelector<HTMLElement>('.tool-card');
-            if (!card) return;
-
-            const cardTags = card.getAttribute('data-tags')?.split(',') || [];
-            const cardCategory = cardWrapper.closest('section.category-section')?.getAttribute('data-category') || 'Uncategorized';
-
-            const tagMatch = selectedTags.length === 0 || cardTags.some(tag => selectedTags.includes(tag));
-            const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(cardCategory);
-            const shouldShow = tagMatch && categoryMatch;
-
-            cardWrapper.classList.toggle('hidden-by-filter', !shouldShow);
-            if (shouldShow) {
-                visibleCategories.add(cardCategory);
-                hasVisibleTools = true;
-            }
-        });
-
-        // Ocultar/Mostrar Secciones de Categoría (<section>)
-        categorySections.forEach(section => {
-             if (!(section instanceof HTMLElement)) return;
-             const categoryName = section.getAttribute('data-category');
-             const shouldShowSection = categoryName ? visibleCategories.has(categoryName) : false;
-             section.style.display = shouldShowSection ? 'block' : 'none';
-        });
-
-        // Mensaje "No Results"
-        if (noResultsMessage) noResultsMessage.hidden = hasVisibleTools;
-
-        // Actualizar UI de ambos filtros
-        updateFilterUI('tags', selectedTags);
-        updateFilterUI('categories', selectedCategories);
-    }
-
-    // --- Función para Actualizar UI de un Filtro ---
-    function updateFilterUI(filterType: 'tags' | 'categories', selectedItems: string[]) {
-        const filterSectionElement = filterControlDiv?.querySelector(`.filter-section[data-filter-type="${filterType}"]`);
-        if (!filterSectionElement) return;
-        const summarySpan = filterSectionElement.querySelector<HTMLSpanElement>('.selected-items-summary');
-        const filterButtons = filterSectionElement.querySelectorAll<HTMLButtonElement>('.filter-button');
-
-        if (summarySpan) {
-             summarySpan.textContent = selectedItems.length === 0 ? 'Show All' : selectedItems.join(', ');
-        }
-        filterButtons.forEach(button => {
-            if (!button) return;
-            const value = button.getAttribute('data-filter-value');
-            button.classList.toggle('active', (value === 'all' && selectedItems.length === 0) || (value !== 'all' && value !== null && selectedItems.includes(value)));
-        });
-    }
-
-     // --- Función para Manejar Clic en Botones de Filtro ---
-    function handleFilterButtonClick(event: MouseEvent, filterType: 'tags' | 'categories') {
-        const button = event.currentTarget;
-        if (!(button instanceof HTMLButtonElement)) return;
-        const value = button.getAttribute('data-filter-value');
-        if (value === null) return;
-
-        let selectedArray = (filterType === 'tags') ? selectedTags : selectedCategories;
-        if (value === 'all') { selectedArray.length = 0; }
-        else {
-            const index = selectedArray.indexOf(value);
-            if (index > -1) { selectedArray.splice(index, 1); } else { selectedArray.push(value); }
-        }
-        applyAllFilters();
-    }
-
-    // --- Función para Toggle de Acordeones de Filtro ---
-    function toggleFilterAccordion(targetSection: HTMLElement) {
-        const wrapper = targetSection.querySelector<HTMLElement>('.filter-options-wrapper');
-        const button = targetSection.querySelector<HTMLButtonElement>('.toggle-filters');
-        const header = targetSection.querySelector<HTMLElement>('.filter-header');
-
-        if (!wrapper || !button || !header) return;
-
-        const isOpen = wrapper.hidden; // Estado al que va a cambiar
-
-        // --- Lógica de Acordeón Exclusivo ---
-        if (isOpen) { // Si vamos a ABRIR esta sección...
-            // ...cerramos TODAS las demás secciones de filtro primero
-            allFilterHeaders?.forEach(hdr => {
-                const otherSection = hdr.closest<HTMLElement>('.filter-section.collapsible');
-                if (otherSection && otherSection !== targetSection) {
-                    const otherWrapper = otherSection.querySelector<HTMLElement>('.filter-options-wrapper');
-                    const otherButton = otherSection.querySelector<HTMLButtonElement>('.toggle-filters');
-                    const otherHeader = otherSection.querySelector<HTMLElement>('.filter-header');
-                    if (otherWrapper && otherButton && otherHeader) {
-                        otherWrapper.hidden = true; // Ciérrala
-                        otherButton.setAttribute('aria-expanded', 'false');
-                        otherSection.classList.remove('is-open');
-                        const otherIcon = otherButton.querySelector<SVGElement>('.toggle-icon svg');
-                        if (otherIcon) otherIcon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-                        // Aplica estilo cerrado al header
-                        otherHeader.style.paddingBottom = '1rem';
-                    }
-                }
-            });
-        }
-
-        
-        // Abre/cierra la sección ACTUAL
-        wrapper.hidden = !isOpen;
-        button.setAttribute('aria-expanded', String(isOpen));
-        const icon = button.querySelector<SVGElement>('.toggle-icon svg');
-        if (icon) icon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-        targetSection.classList.toggle('is-open', isOpen);
-
-        // Actualiza borde/padding del header actual
-        header.style.paddingBottom = !isOpen ? '1rem' : '0';
-    }
-
-    // --- Añadir Event Listeners ---
-    allFilterHeaders?.forEach(header => {
-        header.addEventListener('click', (event) => {
-             // Evitar toggle si el clic vino de un botón DENTRO del header
-             // O si vino del propio botón de toggle (ya que tiene su propio listener)
-            if (event.target instanceof Element && event.target.closest('button')) return;
-
-            const section = header.closest<HTMLElement>('.filter-section.collapsible');
-            if(section) toggleFilterAccordion(section); // Llama a la función principal de toggle
-        });
-        // Listener específico para el BOTÓN de toggle dentro del header
-         const toggleBtn = header.querySelector<HTMLButtonElement>('.toggle-filters');
-         if(toggleBtn){
-             toggleBtn.addEventListener('click', (e) => {
-                  e.stopPropagation(); // IMPORTANTE: Detiene que el clic se propague al header
-                  const section = header.closest<HTMLElement>('.filter-section.collapsible');
-                  if(section) toggleFilterAccordion(section); // Llama a la función principal de toggle
-             });
-         }
-    });
-    filterControlDiv?.querySelectorAll('.filter-section[data-filter-type="tags"] .filter-button').forEach(button => { button.addEventListener('click', (e) => handleFilterButtonClick(e as MouseEvent, 'tags')); });
-    filterControlDiv?.querySelectorAll('.filter-section[data-filter-type="categories"] .filter-button').forEach(button => { button.addEventListener('click', (e) => handleFilterButtonClick(e as MouseEvent, 'categories')); });
-
-});
+  import "../scripts/tools-filters.js";
 </script>
 
 <style>
@@ -373,6 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   .category-button:hover:not(.active) {
       background-color: #ced4da; /* Gris más oscuro al pasar */
+  }
+
+  .filter-options-wrapper.is-closed {
+    display: none !important;
   }
 
   /* Botón Activo (Común a ambos tipos) */
