@@ -26,10 +26,8 @@ img, picture, video, canvas, svg {
 
 /* Puedes añadir más estilos globales aquí más adelante (ej. variables de color) */
 :root {
-    --primary-color: #1920ff; /* Ejemplo: ROJO VIVO - ¡AJUSTA AL TUYO! */
-    /* --primary-color: #0000FF; */ /* Ejemplo: AZUL VIVO - ¡AJUSTA AL TUYO! */
-    --secondary-color: #FF1919; /* Ejemplo: Petróleo oscuro (puedes definir más) */
-    /* ... otras variables si las necesitas ... */
+    --primary-color: #1920ff; 
+    --secondary-color: #FF1919; 
   }
 
 /* En global.css */
@@ -98,6 +96,6 @@ a:hover {
   }
 
   .section-padding {
-    padding-top: 3rem; /* Antes era 4rem */
-    padding-bottom: 3rem; /* Antes era 4rem */
+    padding-top: 3rem;
+    padding-bottom: 3rem; 
   }

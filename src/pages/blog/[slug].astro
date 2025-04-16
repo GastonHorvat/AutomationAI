@@ -1,15 +1,54 @@
 ---
-// src/pages/blog/[slug].astro - VERSIÓN ROBUSTA PARA RENDERIZADO MARKDOWN
+// src/pages/blog/[slug].astro - VERSIÓN OPTIMIZADA PARA HTML
 import { Image } from 'astro:assets';
 import Airtable from 'airtable';
-import * as marked from 'marked'; // Importación completa de marked
+// Eliminamos la importación de marked ya que no la necesitamos
 import Layout from '../../layouts/Layout.astro';
+
+function compressHTML(html: string): string {
+  if (!html) return '';
+  
+  // 1. Elimina espacios entre etiquetas
+  let compressed = html.replace(/>\s+</g, '><');
+  
+  // 2. Preserva saltos de línea dentro de <pre> y <code> (opcional)
+  const codeBlocks: string[] = [];
+  const preBlocks: string[] = [];
+  
+  // Guarda bloques de código para preservarlos
+  compressed = compressed.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (match) => {
+    preBlocks.push(match);
+    return `___PRE_BLOCK_${preBlocks.length - 1}___`;
+  });
+  
+  compressed = compressed.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (match) => {
+    codeBlocks.push(match);
+    return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
+  });
+  
+  // 3. Restaura los bloques preservados
+  preBlocks.forEach((block, i) => {
+    compressed = compressed.replace(`___PRE_BLOCK_${i}___`, block);
+  });
+  
+  codeBlocks.forEach((block, i) => {
+    compressed = compressed.replace(`___CODE_BLOCK_${i}___`, block);
+  });
+  
+  return compressed;
+}
 
 // 1. getStaticPaths: Define qué rutas generar en build time
 export async function getStaticPaths() {
+  // Define un tipo para los elementos de paths
+  type PathItem = {
+    params: { slug: string };
+    props: { recordId: string };
+  } | null;
+  
   const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
   const tableId = import.meta.env.AIRTABLE_BLOG_TABLE_ID || import.meta.env.AIRTABLE_TABLE_ID;
-  let paths = [];
+  let paths: PathItem[] = [];
 
   if (!import.meta.env.AIRTABLE_API_KEY || !import.meta.env.AIRTABLE_BASE_ID || !tableId) {
       return paths;
@@ -53,7 +92,7 @@ try {
   
   if (record && record.fields) {
     // Helper para obtener valores string seguros
-    const getStringValue = (field) => {
+    const getStringValue = (field: string): string => {
       const value = record.fields[field];
       return value ? String(value) : '';
     };
@@ -77,7 +116,7 @@ try {
     }
     
     // Procesamos tags
-    const tags = [];
+    const tags: string[] = [];
     if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
       record.fields.Tags.forEach((tag) => {
         if (typeof tag === 'string') tags.push(tag);
@@ -98,18 +137,8 @@ try {
       Slug: getStringValue('Slug') || ""
     };
     
-    // IMPORTANTE: Configuración robusta para renderizado Markdown
-    marked.marked.setOptions({
-      breaks: true,
-      gfm: true,
-      headerIds: true,
-      mangle: false,
-      smartLists: true,
-      smartypants: true,
-    });
-    
-    // Renderizar el contenido Markdown a HTML
-    contentHtml = marked.marked.parse(post.Content);
+    // Ya no necesitamos marked, usamos el HTML directamente
+    contentHtml = compressHTML(post.Content);
   }
 } catch (error) {
   console.error(`Error fetching post with ID ${recordId}:`, error);
@@ -121,7 +150,7 @@ if (!post) {
 }
 
 // Helper para formatear fechas
-function formatDate(date) {
+function formatDate(date: Date): string {
   return date.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
@@ -130,7 +159,7 @@ function formatDate(date) {
 }
 
 // Tiempo estimado de lectura
-function calculateReadingTime(content) {
+function calculateReadingTime(content: string): number {
   const wordsPerMinute = 200;
   const words = content.split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
@@ -180,7 +209,7 @@ const readingTime = calculateReadingTime(post.Content);
 
       {/* Contenido Principal del Post */}
       <div class="post-content prose">
-        {/* Renderizamos el contenido HTML generado a partir del Markdown */}
+        {/* Renderizamos el contenido HTML directamente */}
         <Fragment set:html={contentHtml} />
       </div>
 
@@ -202,249 +231,101 @@ const readingTime = calculateReadingTime(post.Content);
 </Layout>
 
 <style is:global>
-  /* Estilos globales para el contenido Markdown renderizado */
-  .post-content h1, 
-  .post-content h2, 
-  .post-content h3, 
-  .post-content h4, 
-  .post-content h5, 
-  .post-content h6 {
-    color: var(--text-dark, #1A2B48);
-    font-weight: 700;
-    line-height: 1.3;
-    margin-top: .5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .post-content h2 {
-  font-size: 1.7rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid #eee;
-}
-  
-.post-content h3 {
-  font-size: 1.4rem;
-}
 
-.post-content h4 {
-  font-size: 1.2rem;
-}
+  /* Estilos para el menú desplegable */
+  .dropdown-menu,
+  [role="menu"],
+  nav ul ul {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+  
+  .dropdown-menu li,
+  [role="menu"] li,
+  nav ul ul li {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+  
+  .dropdown-menu a,
+  [role="menu"] a,
+  nav ul ul a {
+    padding-left: 15px !important;
+    display: block !important;
+  }
 
-.post-content p {
-  line-height: 1.7;
-  color: var(--text-dark, #1A2B48);
-}
+   /* Estilos la caja del artículo */
+  .post-detail-article {
+    margin: 1rem auto;
+    max-width: 65%;
+    padding: 2rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 
-  .post-content a {
-    color: var(--primary-color, #007bff);
-    text-decoration: underline;
-  }
-  
-  .post-content a:hover {
-    text-decoration: none;
-  }
-  
-  .post-content strong {
-    font-weight: 600;
-  }
-  
-  .post-content em {
-    font-style: italic;
-  }
-  
+  /* Estilos para las listas */
   .post-content ul, 
-  .post-content ol {
-    padding-left: 1.5rem;
+  .post-content ol,
+  article ul,
+  article ol,
+  body ul,
+  body ol {
+    padding-left: 60px !important;
+    margin-left: 0 !important;
   }
 
-
-  .post-content code {
-    background-color: rgba(0, 123, 255, 0.08);
-    color: var(--text-dark, #1A2B48);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
-  }
-  
-  .post-content pre {
-    background-color: #282c34;
-    color: #abb2bf;
-    padding: 1em;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin-bottom: 1.5em;
-  }
-  
-  .post-content code {
-    background: #f1f3f5;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
+  .post-content li,
+  article li,
+  li {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
   }
 
-  .post-content pre {
-    background: #282c34;
-    color: #f1f1f1;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-
-  .post-content blockquote {
-    border-left: 3px solid var(--primary-color, #007bff);
-    padding-left: 1rem;
-    margin: 1.5rem 0;
-    color: #555;
-    font-style: italic;
-    background: #f9f9f9;
-  }
-
-  .post-content img {
-    margin: 1.5rem 0;
-    border-radius: 6px;
-    max-width: 100%;
-    height: auto;
-  }
-  
+  /* Estilos personalizados para <hr> */
   .post-content hr {
-    margin: 2rem 0;
+    margin-top: 2rem !important;
+    margin-bottom: 0.5rem !important;
     border: none;
     border-top: 1px solid #ddd;
   }
-  .post-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.5em;
-  }
-  
-  .post-content table th,
-  .post-content table td {
-    border: 1px solid #e2e8f0;
-    padding: 0.5em;
-  }
-  
-  .post-content table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-  }
+ 
+
 </style>
 
 <style>
-  .post-detail-article {
-    background-color: var(--white, #ffffff);
-  }
 
-  .container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
 
-  .section-padding {
-    padding: 0.5rem 0;
-  }
 
-  .post-header {
-    text-align: center;
-    border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
-    padding-bottom: 1.5rem;
-  }
-
-  .post-category {
-    display: inline-block;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--primary-color, #007bff);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    text-decoration: none;
-  }
-  .post-category:hover {
-    text-decoration: underline;
-  }
-
-  .post-title {
-    font-size: clamp(2.2rem, 6vw, 3.5rem);
-    color: var(--text-dark, #1A2B48);
-    line-height: 1.2;
-    margin-bottom: 1rem;
-  }
-
-  .post-meta {
-    font-size: 0.95rem;
-    color: var(--text-light, #6c757d);
-  }
-
-  .post-meta span,
-  .post-meta time {
-    display: inline; /* Asegura que se comporten en línea */
-    margin-top: 0;
-    margin-bottom: 0;
-    vertical-align: middle; /* Ayuda a alinear si tienen tamaños de fuente distintos */
-  }
-
-  /* Opcional: Si quieres menos espacio alrededor de los separadores '|' */
-  .post-meta .separator {
-    margin: 0 0.3em; /* Reduce el espacio lateral */
-  }
-
-  .post-meta .separator {
-    margin: 0 0.5em;
-  }
-
-  .post-featured-image {
-
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
-  }
-  .post-featured-image img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .post-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--text-dark, #1A2B48);
-  }
-
-  .post-footer {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color-soft, #e2e8f0);
-  }
-
+ /* Estilos para la caja de tags */
   .post-tags {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1920ff;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 2rem;
+    gap: 0.5rem;
   }
+  
   .post-tags strong {
     font-weight: 600;
-    color: var(--text-dark, #1A2B48);
     margin-right: 0.5rem;
   }
+  
   .tag-link {
     display: inline-block;
-    background-color: var(--bg-light-gray, #f8f9fa);
-    color: var(--text-light, #6c757d);
+    background-color: #d6e6f5;
+    color: #1a2b48;
     padding: 0.3rem 0.8rem;
     border-radius: 4px;
     font-size: 0.85rem;
-    font-weight: 500;
     text-decoration: none;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
+  
   .tag-link:hover {
-    background-color: var(--primary-color, #007bff);
-    color: var(--white, #ffffff);
+    background-color: #007bff;
+    color: #ffffff;
   }
 </style>
