@@ -26,7 +26,7 @@ function compressHTML(html: string): string {
     return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
   });
   
-  // 3. Restaura los bloques preservados
+  // 3. Restaura los bloques preservados.
   preBlocks.forEach((block, i) => {
     compressed = compressed.replace(`___PRE_BLOCK_${i}___`, block);
   });
