@@ -1,25 +1,31 @@
 ---
-// src/components/WhatWeDoSection.astro - VERSIÓN CON ASTRO IMAGE
+// src/components/WhatWeDoSection.astro - VERSIÓN CON 6 TARJETAS
 
 import { Image } from 'astro:assets'; // Importa el componente Image
 
 // --- Importa las imágenes desde src/assets ---
-// Asegúrate que las rutas y nombres sean EXACTOS
-import automationImage from '../../src/assets/images/automation-neon.png'; // Asumo que la primera era .jpg? Ajusta si es .png
+import automationImage from '../../src/assets/images/automation-neon.png';
 import analyticsImage from '../../src/assets/images/analytics-neon.png';
 import customerImage from '../../src/assets/images/customer-neon.png';
 import customImage from '../../src/assets/images/custom-neon.png';
+import productivityImage from '../../src/assets/images/productivity-neon.png';
+import leadImage from '../../src/assets/images/lead-neon.png';
+
+// --- ¡¡IMPORTANTE!! Necesitarás importar 2 imágenes NUEVAS aquí ---
+// Ejemplo:
+// import productivityImage from '../../src/assets/images/productivity-agents.png';
+// import leadCaptureImage from '../../src/assets/images/lead-capture.png';
 
 
-// --- Define los datos de los servicios usando las imágenes importadas ---
+// --- Define los datos de los servicios (AHORA 6) ---
 const services = [
   {
-    imageData: automationImage, // Referencia a la imagen importada
+    imageData: automationImage,
     imageAlt: "Neon abstract representing process automation",
     title: "Intelligent Process Automation",
     description: "Streamline workflows, eliminate repetitive tasks, reduce manual errors, and boost efficiency, freeing up your time for what truly matters.",
     keyAreas: ["RPA & BPM Enhancement", "Document Processing", "Workflow Optimization"],
-    link: "/solutions#automation" // Enlace opcional a la página de soluciones
+    link: "/solutions#automation"
   },
   {
     imageData: analyticsImage,
@@ -44,11 +50,27 @@ const services = [
     description: "Build unique, tailor-made AI applications designed to solve your specific business challenges and provide a competitive edge.",
     keyAreas: ["Bespoke Model Training", "API Integrations", "Proof-of-Concepts"],
     link: "/solutions#custom-development"
+  },
+  {
+    imageData: productivityImage,
+    imageAlt: "Employees learning together", 
+    title: "Internal Productivity Agents",
+    description: "Boost internal productivity with AI agents in Teams/Slack. Provide instant, accurate answers from your knowledge base, reducing search time and repetitive questions. ",
+    keyAreas: ["Access to Critical Information 24/7", "Reduced Repetitive Questions", "Accelerated Employee Onboarding"],
+    link: "/solutions#internal-productivity" // Actualiza el enlace si es necesario
+  },
+  {
+    imageData: leadImage, 
+    imageAlt: "AI capturing and qualifying leads from multiple channels", // Actualiza el Alt
+    title: "Intelligent Lead Capture & Qualification",
+    description: "Turn multi-channel leads into qualified appointments automatically. Our AI captures, qualifies, and schedules 24/7, letting your sales team focus on closing. ",
+    keyAreas: ["24/7 Frictionless Lead Capture", "Automated Segmentation & Nurturing", "Smart Qualification"],
+    link: "/solutions#lead-capture" // Actualiza el enlace si es necesario
   }
 ];
 ---
 
-{/* --- Template HTML (Usa <Image /> ahora) --- */}
+{/* --- Template HTML (Sin cambios) --- */}
 <div class="what-we-do-content">
     <h2 class="section-title">What We Do</h2>
     <p class="section-subtitle">
@@ -57,27 +79,22 @@ const services = [
     <div class="services-grid">
       {services.map(service => (
         <div class="service-card">
-          {/* --- Usamos el componente Image de Astro --- */}
           {service.imageData && (
               <div class="service-image-container">
                   <Image
-                      src={service.imageData} {/* Pasa la imagen importada */}
+                      src={service.imageData}
                       alt={service.imageAlt}
-                      widths={[300, 600, 900]} /* Define anchos para optimización */
-                      sizes="(max-width: 640px) 90vw, (max-width: 992px) 45vw, 30vw" /* Ayuda al navegador a elegir */
+                      widths={[300, 600, 900]}
+                      sizes="(max-width: 640px) 90vw, (max-width: 992px) 45vw, 30vw"
                       loading="lazy"
                       decoding="async"
                       class="service-image"
-                      format="webp" /* Opcional: Fuerza WebP para mejor compresión */
-                      quality={80} /* Opcional: Ajusta calidad (75-85 suele ser bueno) */
+                      format="webp"
+                      quality={80}
                   />
-                   {/* Capa de overlay */}
                    <div class="image-overlay"></div>
               </div>
           )}
-          {/* Ya no necesitamos la sección de icono placeholder */}
-
-          {/* --- Contenido Textual (sin cambios) --- */}
           <div class="service-text-content">
               <h3 class="service-title">{service.title}</h3>
               <p class="service-description">{service.description}</p>
@@ -93,13 +110,14 @@ const services = [
     </div>
 </div>
 
-{/* --- CSS (Sin cambios respecto a la versión anterior con imágenes) --- */}
+{/* --- CSS (Sin cambios) --- */}
 <style>
   .section-title { text-align: center; margin-bottom: 1rem; font-size: 2.2rem; }
   .section-subtitle { text-align: center; font-size: 1.1rem; color: #555; max-width: 650px; margin: 0 auto 3rem auto; }
 
   .services-grid {
     display: grid;
+    /* Se ajustará automáticamente a 2 o 3 columnas según el ancho */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
   }

@@ -1,0 +1,853 @@
+---
+// src/pages/enfoque.astro
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+
+// Importar los iconos de Remix
+---
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<style>
+  :where([class^="ri-"])::before { content: "\f3c2"; }
+  .gradient-bg {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+  }
+  .process-line {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    width: calc(100% - 80px);
+    height: 2px;
+    background-color: #e5e7eb;
+    z-index: 0;
+  }
+  .rounded-button {
+    border-radius: 8px;
+  }
+  .text-primary {
+    color: var(--primary-color);
+  }
+  .bg-primary {
+    background-color: var(--primary-color);
+  }
+  .bg-primary\/10 {
+    background-color: rgba(25, 32, 255, 0.1);
+  }
+  .bg-primary\/20 {
+    background-color: rgba(25, 32, 255, 0.2);
+  }
+  .hover\:bg-primary\/90:hover {
+    background-color: rgba(25, 32, 255, 0.9);
+  }
+  .hover\:bg-primary\/30:hover {
+    background-color: rgba(25, 32, 255, 0.3);
+  }
+  .border-primary {
+    border-color: var(--primary-color);
+  }
+</style>
+
+<Layout title="Nuestro Enfoque | AutomationAI Solutions">
+  <!-- Hero Section -->
+  <section
+    class="pt-24 pb-16 w-full"
+    style="background-image: url('https://readdy.ai/api/search-image?query=Modern%20technology%20workspace%20with%20advanced%20AI%20analytics%20dashboard%2C%20soft%20blue%20gradient%20background%20with%20abstract%20data%20visualization%20elements%2C%20professional%20corporate%20setting%2C%20clean%20minimalist%20design&width=1920&height=600&seq=1&orientation=landscape'); background-size: cover; background-position: center;"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="bg-white/90 backdrop-blur-sm p-12 rounded-xl max-w-3xl">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Nuestro Enfoque
+        </h1>
+        <p class="text-lg text-gray-700 mb-8">
+          En
+          <span class="font-semibold text-primary"
+            >AutomationAI Solutions</span
+          >
+          nos especializamos en soluciones personalizadas de inteligencia
+          artificial, automatización y business intelligence para optimizar
+          procesos empresariales, resolver desafíos y fomentar decisiones
+          respaldadas por datos para un crecimiento transformador.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <button
+            class="bg-primary text-white px-6 py-3 rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors flex items-center gap-2"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-calendar-line"></i>
+            </div>
+            Agendar Consulta
+          </button>
+          <button
+            class="bg-white text-primary border border-primary px-6 py-3 rounded-button whitespace-nowrap hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+            Ver Casos de Éxito
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-primary rounded-xl overflow-hidden shadow-xl">
+        <div class="flex flex-col md:flex-row">
+          <div class="md:w-1/2 p-12 flex flex-col justify-center">
+            <h2 class="text-3xl font-bold text-white mb-4">
+              ¿Listo para transformar su negocio?
+            </h2>
+            <p class="text-white/90 mb-8 text-lg">
+              Descubra cómo nuestras soluciones personalizadas pueden
+              optimizar sus procesos, mejorar la toma de decisiones y acelerar
+              el crecimiento de su empresa.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <button
+                class="bg-white text-primary px-6 py-3 rounded-button whitespace-nowrap hover:bg-gray-100 transition-colors flex items-center gap-2 font-medium"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-calendar-line"></i>
+                </div>
+                Agendar una Demostración
+              </button>
+              <button
+                class="bg-primary/20 text-white border border-white/30 px-6 py-3 rounded-button whitespace-nowrap hover:bg-primary/30 transition-colors flex items-center gap-2"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-phone-line"></i>
+                </div>
+                Contactar Ahora
+              </button>
+            </div>
+          </div>
+          <div
+            class="md:w-1/2"
+            style="background-image: url('https://readdy.ai/api/search-image?query=Modern%20business%20professionals%20analyzing%20data%20on%20digital%20screens%2C%20AI%20visualization%2C%20collaborative%20workspace%2C%20clean%20professional%20environment%2C%20soft%20lighting&width=800&height=600&seq=2&orientation=landscape'); background-size: cover; background-position: center;"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios Principales -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          Servicios Principales
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Nuestro enfoque integral permite a las empresas automatizar
+          procesos, transformar datos en información procesable y construir
+          soluciones personalizadas para alcanzar una eficiencia máxima.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Automatización Inteligente -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-robot-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Automatización Inteligente
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Eliminamos tareas repetitivas en ventas, marketing y soporte,
+            automatizando comunicaciones para liberar el potencial de su
+            equipo.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Automatización de comunicaciones</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Procesamiento de documentos</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Optimización de flujos de trabajo</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Agentes de IA -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-customer-service-2-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Agentes de IA
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Implementamos chatbots inteligentes y asistentes virtuales para
+            soporte 24/7, generación de leads y acceso instantáneo al
+            conocimiento.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Chatbots para Web/WhatsApp</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Asistentes virtuales (Teams/Slack)</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Generación automática de leads</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Inteligencia de Datos -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-bar-chart-box-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Inteligencia de Datos
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Transformamos datos sin procesar en información procesable,
+            construyendo paneles personalizados para rastrear KPIs y tomar
+            decisiones más inteligentes.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Canalizaciones de datos</span>
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Paneles Looker/Power BI</span>
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Análisis predictivo</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Herramientas Web con IA -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-code-box-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Herramientas Web con IA
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Desarrollamos aplicaciones web personalizadas con IA para cálculos
+            complejos, lógica empresarial única y captura de leads sin
+            interrupciones.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Aplicaciones web personalizadas</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Cálculos complejos automatizados</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Integración de lógica empresarial</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Integración de Ecosistemas -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-link-m-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Integración de Ecosistemas
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Conectamos fluidamente sus herramientas mediante APIs y soluciones
+            sin código, integrando CRMs, plataformas de comunicación,
+            calendarios y más.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Integración de CRMs</span>
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Conexión de plataformas de comunicación</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Soluciones sin código</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Estrategia Experta -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-lightbulb-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Estrategia Experta
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Analizamos sus necesidades, diseñamos hojas de ruta personalizadas
+            y le guiamos en la implementación para lograr un impacto máximo y
+            una adopción sin problemas.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Análisis de necesidades</span>
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600"
+                >Hojas de ruta personalizadas</span
+              >
+            </li>
+            <li class="flex items-start">
+              <div
+                class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+              >
+                <i class="ri-check-line"></i>
+              </div>
+              <span class="ml-2 text-gray-600">Guía de implementación</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proceso y Metodología -->
+  <section class="py-16 gradient-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Nuestro Proceso</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Seguimos una metodología probada para garantizar resultados
+          excepcionales en cada proyecto, desde el análisis inicial hasta el
+          soporte continuo.
+        </p>
+      </div>
+
+      <div class="relative">
+        <div class="process-line"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Fase 1 -->
+          <div
+            class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 relative z-10"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-6 mx-auto -mt-16 shadow-md"
+            >
+              <span class="text-xl font-bold">1</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+              Análisis y Descubrimiento
+            </h3>
+            <p class="text-gray-600 mb-4 text-center">
+              Comprendemos a fondo sus desafíos, objetivos y procesos actuales
+              para identificar oportunidades de mejora.
+            </p>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600"
+                  >Evaluación de necesidades</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600">Mapeo de procesos</span>
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600"
+                  >Definición de objetivos</span
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Fase 2 -->
+          <div
+            class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 relative z-10"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-6 mx-auto -mt-16 shadow-md"
+            >
+              <span class="text-xl font-bold">2</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+              Diseño y Desarrollo
+            </h3>
+            <p class="text-gray-600 mb-4 text-center">
+              Creamos soluciones personalizadas que se adaptan perfectamente a
+              sus necesidades específicas y se integran con sus sistemas
+              existentes.
+            </p>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600"
+                  >Arquitectura de solución</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600">Desarrollo iterativo</span>
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600">Pruebas de calidad</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Fase 3 -->
+          <div
+            class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 relative z-10"
+          >
+            <div
+              class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-6 mx-auto -mt-16 shadow-md"
+            >
+              <span class="text-xl font-bold">3</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+              Implementación y Soporte
+            </h3>
+            <p class="text-gray-600 mb-4 text-center">
+              Implementamos la solución con un enfoque en la adopción sin
+              problemas y proporcionamos soporte continuo para garantizar
+              resultados óptimos.
+            </p>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600">Despliegue controlado</span>
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600"
+                  >Capacitación de usuarios</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                >
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <span class="ml-2 text-gray-600"
+                  >Mantenimiento proactivo</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Beneficios -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          Beneficios de Nuestro Enfoque
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Nuestras soluciones están diseñadas para proporcionar beneficios
+          tangibles y medibles que impulsan el crecimiento y la eficiencia de
+          su negocio.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Beneficio 1 -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-time-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Ahorro de Tiempo
+          </h3>
+          <p class="text-gray-600">
+            Reducción del
+            <span class="font-semibold text-primary">70%</span> en tiempo
+            dedicado a tareas manuales repetitivas, liberando recursos para
+            actividades de mayor valor.
+          </p>
+        </div>
+
+        <!-- Beneficio 2 -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-line-chart-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Mayor Productividad
+          </h3>
+          <p class="text-gray-600">
+            Aumento del <span class="font-semibold text-primary">35%</span> en
+            la productividad general mediante la optimización de procesos y la
+            eliminación de cuellos de botella.
+          </p>
+        </div>
+
+        <!-- Beneficio 3 -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-customer-service-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Mejor Experiencia
+          </h3>
+          <p class="text-gray-600">
+            Incremento del
+            <span class="font-semibold text-primary">45%</span> en la
+            satisfacción del cliente gracias a respuestas más rápidas y
+            precisas a sus consultas.
+          </p>
+        </div>
+
+        <!-- Beneficio 4 -->
+        <div
+          class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
+        >
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
+          >
+            <div
+              class="w-8 h-8 flex items-center justify-center text-primary"
+            >
+              <i class="ri-funds-box-line ri-2x"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            ROI Significativo
+          </h3>
+          <p class="text-gray-600">
+            Retorno de la inversión promedio del
+            <span class="font-semibold text-primary">300%</span> en el primer
+            año, con reducción de costos operativos y aumento de ingresos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Testimonios -->
+  <section class="py-16 gradient-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          Lo Que Dicen Nuestros Clientes
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Empresas de diversos sectores han transformado sus operaciones con
+          nuestras soluciones personalizadas.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Testimonio 1 -->
+        <div class="bg-white p-8 rounded-xl shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="text-primary">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "La automatización implementada por AutomationAI ha revolucionado
+            nuestro departamento de atención al cliente. Ahora respondemos
+            consultas un 80% más rápido y nuestro equipo puede centrarse en
+            casos más complejos."
+          </p>
+          <div class="flex items-center">
+            <div
+              class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500"
+            >
+              <i class="ri-user-3-line ri-lg"></i>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-medium text-gray-900">Carlos Rodríguez</h4>
+              <p class="text-sm text-gray-500">
+                Director de Atención al Cliente, TechSolutions
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 2 -->
+        <div class="bg-white p-8 rounded-xl shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="text-primary">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "Los paneles de Business Intelligence que desarrollaron para
+            nosotros han transformado nuestra toma de decisiones. Ahora
+            tenemos visibilidad en tiempo real de todos nuestros KPIs críticos
+            y podemos actuar con rapidez."
+          </p>
+          <div class="flex items-center">
+            <div
+              class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500"
+            >
+              <i class="ri-user-3-line ri-lg"></i>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-medium text-gray-900">Elena Martínez</h4>
+              <p class="text-sm text-gray-500">CEO, Retail Innovators</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 3 -->
+        <div class="bg-white p-8 rounded-xl shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="text-primary">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "Nuestro chatbot impulsado por IA ha generado un 40% más de leads
+            cualificados y ha mejorado significativamente la experiencia de
+            nuestros clientes. El equipo de AutomationAI entendió
+            perfectamente nuestras necesidades."
+          </p>
+          <div class="flex items-center">
+            <div
+              class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500"
+            >
+              <i class="ri-user-3-line ri-lg"></i>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-medium text-gray-900">Miguel Sánchez</h4>
+              <p class="text-sm text-gray-500">
+                Director de Marketing, Global Services
+              </p>
+            </div>
+          </div>
+        </div>

@@ -2,209 +2,207 @@
 // src/components/Footer.astro
 const currentYear = new Date().getFullYear();
 const companyName = "AutomationAI Solutions";
-// Asume que tienes un logo blanco en public/img/logo-white.png
-// Si no, cambia 'useLogo' a false o ajusta la ruta/nombre
-const useLogo = true;
-const logoSrc = "/img/AutomationAI_logo_white.png"; // O '/img/TU_LOGO_BLANCO.png', etc.
+const logoSrc = "/img/AutomationAI_logo_white.png"; // Tu logo blanco
 const logoAlt = `${companyName} Logo`;
+
+// Enlaces de redes sociales (Reemplaza '#' con tus URLs reales)
+const socialLinks = {
+  linkedin: "#",
+  twitter: "#",
+  facebook: "#",
+  instagram: "#",
+};
+
+// Datos de contacto (del ejemplo, ajústalos)
+const contactInfo = {
+  address: "Av. Diagonal 123, 08018 Barcelona, España",
+  email: "info@automationai.es",
+  phone: "+34 93 123 45 67",
+};
 ---
 
+{/* --- ASEGÚRATE DE TENER ESTO EN TU <head> DEL LAYOUT ---
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+---------------------------------------------------------- */}
+
 <footer class="site-footer">
-  <div class="footer-content container"> {/* Usamos la clase .container global */}
+  <div class="container">
+    <div class="footer-grid">
+      {/* Columna 1: Logo */}
+      <div class="footer-column">
+        {/* ... Contenido Logo ... */}
+         <a href="/" class="footer-logo-link">
+          <img src={logoSrc} alt={logoAlt} class="footer-logo" />
+        </a>
+        <p class="footer-description">
+          Driving business transformation through intelligent automation.
+        </p>
+        <div class="social-icons">
+          {socialLinks.linkedin && <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-icon-link"><div class="social-icon-circle"><i class="ri-linkedin-fill"></i></div></a>}
+          {socialLinks.twitter && <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" aria-label="Twitter X" class="social-icon-link"><div class="social-icon-circle"><i class="ri-twitter-x-fill"></i></div></a>}
+          {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-icon-link"><div class="social-icon-circle"><i class="ri-facebook-fill"></i></div></a>}
+          {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-icon-link"><div class="social-icon-circle"><i class="ri-instagram-fill"></i></div></a>}
+        </div>
+      </div>
 
-    {/* Columna 1: Logo y Descripción */}
-    <div class="footer-column about">
-      {useLogo && (
-        <img src={logoSrc} alt={logoAlt} class="footer-logo" />
-      )}
-      <p class="footer-tagline">
-        Driving business transformation through intelligent automation.
-      </p>
+      {/* Columna 2: Espaciador Vacío */}
+      <div class="footer-column footer-spacer" aria-hidden="true"></div>
+
+      {/* Columna 3: Navegación */}
+      <div class="footer-column">
+        {/* ... Contenido Navegación ... */}
+         <h4 class="footer-heading">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/solutions">Solutions</a></li>
+          <li><a href="/approach">Approach</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      {/* Columna 4: Recursos */}
+      <div class="footer-column">
+        {/* ... Contenido Recursos ... */}
+         <h4 class="footer-heading">Resources</h4>
+        <ul class="footer-links">
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/tools">AI Tools</a></li>
+          <li><a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn Profile</a></li>
+          <li><a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer">Twitter Profile</a></li>
+        </ul>
+      </div>
+
+      {/* Columna 5: Contacto */}
+      <div class="footer-column">
+        {/* ... Contenido Contacto ... */}
+         <h4 class="footer-heading">Contact</h4>
+        <ul class="contact-info">
+          <li class="contact-item"><i class="ri-map-pin-line contact-icon"></i><span>{contactInfo.address}</span></li>
+          <li class="contact-item"><i class="ri-mail-line contact-icon"></i><a href={`mailto:${contactInfo.email}`} class="contact-link">{contactInfo.email}</a></li>
+          <li class="contact-item"><i class="ri-phone-line contact-icon"></i><a href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} class="contact-link">{contactInfo.phone}</a></li>
+        </ul>
+      </div>
     </div>
 
-    {/* Columna 2: Navegación Principal */}
-    <div class="footer-column links">
-      <h4>Navigation</h4>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/solutions">Solutions</a></li>
-        <li><a href="/approach">Approach</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </div>
-
-    {/* Columna 3: Recursos y Social */}
-    <div class="footer-column links">
-      <h4>Resources</h4>
-      <ul>
-        <li><a href="/blog">Blog</a></li>
-        <li><a href="/tools">AI Tools</a></li>
-        {/* Placeholders para Redes Sociales */}
-        <li><a href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-        <li><a href="#" target="_blank" rel="noopener noreferrer">Twitter</a></li>
-      </ul>
-    </div>
-
-  </div>
-
-  {/* Barra Inferior: Copyright y Legal */}
-  <div class="footer-bottom">
-    <div class="container">
-      <p class="copyright">
-        © {currentYear} {companyName}. All rights reserved.
-      </p>
+    {/* Barra Inferior */}
+    <div class="footer-bottom">
+       {/* ... Contenido Barra Inferior ... */}
+       <p class="copyright">© {currentYear} {companyName}. All rights reserved.</p>
       <div class="legal-links">
-        <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Terms of Service</a>
-        {/* Crear estas páginas /privacy-policy y /terms-of-service será importante */}
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/cookies-policy">Cookies</a>
       </div>
     </div>
   </div>
 </footer>
 
 <style>
+  /* Estilos Generales del Footer */
   .site-footer {
-    background-color: #222;
-    color: #ccc;
-    /* Reducimos un poco el padding superior */
-    padding-top: 3rem;
-    font-size: 0.9rem;
+    background-color: #111827; /* bg-gray-900 */
+    color: #d1d5db; /* Gris claro por defecto */
+    padding-top: 4rem; /* pt-16 */
+    padding-bottom: 2rem; /* pb-8 */
+    font-size: 0.875rem;
     line-height: 1.6;
   }
 
-  .footer-content {
-    /* Aseguramos que usemos la clase container global para el padding */
-    /* La clase .container debe tener: max-width, margin: auto, padding: 0 1rem (o 1.5rem) */
-    /* NO añadimos padding aquí directamente si ya lo tiene .container */
-    display: flex;
-    flex-wrap: wrap;
-    /* Usamos gap para espaciado entre columnas en lugar de sólo space-between */
-    gap: 2rem;
-    padding-bottom: 2.5rem; /* Reducimos un poco el padding inferior */
+  /* Asume que .container tiene max-width, margin:auto y padding globalmente */
+  .container {
+    /* Si necesitas padding extra específico aquí (además del global), añádelo */
+    /* padding-left: 1rem; */
+    /* padding-right: 1rem; */
   }
 
-  .footer-column {
-    flex: 1;
-    min-width: 200px;
-    /* Añadimos un padding interno mínimo por si el container no lo da */
-    /* padding: 0 0.5rem; */ /* Prueba sin esto primero, si sigue pegado, descomenta */
+  /* Grid Principal */
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2rem; /* gap-8 */
+    margin-bottom: 3rem; /* mb-12 */
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      /* 4 columnas para los 4 bloques de contenido visibles */
+      grid-template-columns: 1.5fr 1fr 1fr 1fr; /* Logo un poco más ancho, resto igual */
+    }
+     /* Ocultamos el espaciador explícitamente */
+     .footer-spacer { display: none; }
   }
 
-  .footer-column.about {
-    flex-basis: 30%;
-    /* Damos prioridad a esta columna si hay espacio extra */
-    flex-grow: 2;
+  /* Desktop: 5 columnas (restaurando el espaciador) */
+  @media (min-width: 1024px) {
+    .footer-grid {
+      /* Col1=Ancha, Col2=Estrecha(Spacer), Col3,4,5=Normales */
+      grid-template-columns: 1.5fr 0.5fr 1fr 1fr 1fr;
+    }
+     /* Mostramos el espaciador de nuevo */
+     .footer-spacer { display: block; }
   }
 
-  .footer-logo {
-    height: 35px;
-    width: auto;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-  }
-
-  .footer-tagline {
-    color: #aaa;
-    margin: 0;
-  }
-
-  .footer-column h4 {
-    color: #fff;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-
-  .footer-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .footer-column ul li {
-    margin-bottom: 0.6rem;
-  }
-
-  .footer-column ul a {
-    color: #ccc;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .footer-column ul a:hover {
-    color: #fff;
-    text-decoration: underline;
-  }
-
-  /* --- Barra Inferior REVISADA --- */
-  .footer-bottom {
-    background-color: #1a1a1a;
-    padding: 1.5rem 0; /* Un poco más de padding vertical */
-    border-top: 1px solid #333;
-     /* Quitamos el margin-top, el padding del footer-content ya da espacio */
-  }
-
-  .footer-bottom .container {
-    display: flex;
-    flex-wrap: wrap; /* Permite que envuelva si no cabe */
-    /* Cambiamos space-between por flex-start y usamos gap */
-    justify-content: flex-start; /* Alinea items al inicio */
-    align-items: center;
-    gap: 1.5rem; /* Espacio consistente entre copyright y links */
-  }
-
-  .copyright {
-    color: #aaa;
-    margin: 0;
-     /* Hacemos que ocupe el espacio disponible si está solo en una línea */
-    flex-grow: 1;
-  }
-
-  .legal-links {
-    /* Quitamos margin-left auto, gap se encarga del espacio */
-    /* margin-left: auto; */
-    text-align: right; /* Alinea texto a la derecha dentro de su contenedor */
-    flex-shrink: 0; /* Evita que se encoja demasiado */
-  }
-
-  .legal-links a {
-  color: #aaa;
-  text-decoration: none;
-  margin: 0 0.5rem; /* << AÑADE ESTA LÍNEA (0 vertical, 0.5rem horizontal) */
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-   .legal-links a:hover {
-    color: #fff;
-    text-decoration: underline;
+   /* Estilos para la columna espaciadora (cuando es visible) */
+   .footer-spacer {
+     /* No necesita contenido */
    }
 
-  /* Responsive: Mantenemos la lógica de apilar */
-  @media (max-width: 768px) {
-    .footer-content {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .footer-column.about {
-      flex-basis: auto;
-      width: 100%;
-      margin-bottom: 2rem;
-    }
-     /* Centramos todo en la barra inferior en móvil */
-     .footer-bottom .container {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        gap: 0.8rem; /* Menos gap en móvil */
-    }
-    .legal-links {
-        margin-left: 0; /* Reseteamos margen */
-        text-align: center; /* Aseguramos centro */
-    }
-     .legal-links a {
-        margin: 0 0.5rem; /* Espacio horizontal en móvil */
-     }
+
+  /* Columna 1: Logo, Descripción, Redes */
+  .footer-logo-link { display: inline-block; margin-bottom: 1rem; }
+  .footer-logo { height: 35px; width: auto; display: block; }
+  .footer-description { color: #9ca3af; margin-bottom: 1.5rem; }
+  .social-icons { display: flex; gap: 1rem; }
+  .social-icon-link { color: #9ca3af; transition: color 0.2s ease-in-out; display: inline-block; /* Necesario para que el círculo funcione bien */ }
+  .social-icon-link:hover { color: #ffffff; }
+  .social-icon-circle {
+    width: 2.5rem; height: 2.5rem; display: flex; align-items: center;
+    justify-content: center; border: 1px solid #374151; border-radius: 9999px;
+    transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
   }
+  .social-icon-link:hover .social-icon-circle { border-color: #9ca3af; }
+  .social-icon-circle i { font-size: 1.25rem; line-height: 1; /* Asegura que el icono no tenga altura extra */ }
+
+  /* Columnas 2, 3, 4: Títulos y Listas */
+  .footer-heading { color: #ffffff; font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; }
+  .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .footer-links li a { color: #9ca3af; text-decoration: none; transition: color 0.2s ease-in-out; }
+  .footer-links li a:hover { color: #ffffff; text-decoration: underline; }
+
+  /* Columna 4: Contacto Específico (Ajustes de alineación) */
+  .contact-info { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; color: #9ca3af; }
+  .contact-item { display: flex; align-items: flex-start; /* Mantenemos flex-start por si hay texto multi-línea */ }
+  .contact-icon {
+    width: 1.25rem; /* w-5 */
+    margin-right: 0.5rem; /* ml-2 en el span, aplicado como mr al icono */
+    flex-shrink: 0;
+    /* Quitado: margin-top: 0.125rem; para mejorar alineación inicial */
+    line-height: inherit; /* Intenta alinear mejor el icono con la primera línea de texto */
+    margin-top: 0.1em; /* Alternativa: un pequeño margen relativo para centrar verticalmente */
+    text-align: center; /* Asegura que el icono esté centrado en su espacio */
+  }
+  .contact-link { color: #9ca3af; text-decoration: none; transition: color 0.2s ease-in-out; }
+  .contact-link:hover { color: #ffffff; text-decoration: underline; }
+
+  /* Barra Inferior */
+  .footer-bottom {
+    border-top: 1px solid #1f2937;
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 3rem;
+  }
+  .copyright { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }
+  .legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 1.5rem; }
+  .legal-links a { color: #9ca3af; font-size: 0.875rem; text-decoration: none; transition: color 0.2s ease-in-out; }
+  .legal-links a:hover { color: #ffffff; text-decoration: underline; }
+
+  @media (min-width: 768px) {
+    .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; }
+    .copyright { margin-bottom: 0; }
+    .legal-links { justify-content: flex-end; gap: 1.5rem; }
+  }
+
 </style>
