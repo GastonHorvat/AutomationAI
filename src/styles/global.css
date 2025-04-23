@@ -28,6 +28,8 @@ img, picture, video, canvas, svg {
 :root {
     --primary-color: #1920ff; 
     --secondary-color: #FF1919; 
+    --text-dark: #1A2B48;
+    --text-medium: #4A5568;
   }
 
 /* En global.css */

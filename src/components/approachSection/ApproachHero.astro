@@ -1,0 +1,295 @@
+---
+/*
+ * COMPONENTE DE SECCIÓN HERO
+ * Este componente crea la sección principal (hero) de la página de Approach,
+ * con una imagen de fondo, una tarjeta con texto superpuesta, y botones de llamada
+ * a la acción. Diseñado para captar la atención y comunicar el propósito principal.
+ */
+
+// Importación del componente Icon para mostrar iconos SVG desde el paquete astro-icon
+import { Icon } from 'astro-icon/components';
+
+// Importación de la imagen de fondo para el hero desde los assets del proyecto
+import heroBgImage from '../../assets/images/hero-approach.jpg';
+---
+
+<!-- ====================================================================== -->
+<!-- --- Sección 1: HERO --- -->
+<!-- ====================================================================== -->
+
+<!-- 
+  ESTRUCTURA PRINCIPAL
+  - hero-section-new: Contenedor principal de la sección hero
+  - Aplica la imagen de fondo dinámicamente mediante un atributo style inline
+  - La imagen se importa desde los assets para optimización automática
+-->
+<section
+  class="hero-section-new"
+  style={`background-image: url(${heroBgImage.src});`}
+  >
+  <!-- 
+    Container: Limita el ancho del contenido y lo centra en la página
+    (Clase común que suele estar definida en los estilos globales)
+  -->
+  <div class="container">
+    <!-- 
+      TARJETA HERO
+      - hero-card: Contenedor con fondo semitransparente para el contenido principal
+      - Incluye efectos visuales como blur, sombra y borde sutil
+    -->
+    <div class="hero-card">
+      <!-- 
+        TÍTULO PRINCIPAL
+        - hero-title: Estilo para el título principal con tamaño responsive
+        - Comunica el mensaje principal de la página
+      -->
+      <h1 class="hero-title">Our Approach: From Insight to Impact</h1>
+      
+      <!-- 
+        DESCRIPCIÓN/SUBTÍTULO
+        - hero-description: Estilo para el párrafo descriptivo
+        - Explica la propuesta de valor de la empresa
+        - Incluye el nombre de la empresa destacado con clases adicionales
+      -->
+      <p class="hero-description">
+        We believe implementing AI shouldn't be complex or intimidating. It should be a strategic partnership focused on tangible results.
+        At <span class="font-semibold text-primary">AutomationAI Solutions</span>, we specialize in personalized AI, automation, and business intelligence solutions to optimize processes, solve challenges, and drive transformative growth backed by data.
+      </p>
+      
+      <!-- 
+        CONTENEDOR DE BOTONES
+        - hero-buttons: Organiza los botones con flexbox
+        - Permite que los botones se adapten en móvil (flex-wrap)
+      -->
+      <div class="hero-buttons">
+        <!-- 
+          BOTÓN PRIMARIO
+          - hero-button-primary: Estilo principal destacado para la acción principal
+          - Incluye un icono de calendario y texto
+          - Enlace a la página de contacto
+        -->
+        <a href="/contact" class="hero-button-primary">
+          <Icon name="mdi:calendar-outline" size={20} />
+          <span>Schedule Consultation</span>
+        </a>
+        
+        <!-- 
+          BOTÓN SECUNDARIO
+          - hero-button-secondary: Estilo visual menos destacado para acción alternativa
+          - Incluye un icono de documento y texto
+          - Enlace a la página de casos de estudio
+        -->
+        <a href="/case-studies" class="hero-button-secondary">
+          <Icon name="mdi:file-document-outline" size={20} />
+          <span>View Case Studies</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 
+  ESTILOS CSS
+  Los estilos específicos para la sección hero y sus componentes
+-->
+<style>
+/* ====================================================================== */
+/* --- ESTILOS DE LA SECCIÓN HERO --- */
+/* ====================================================================== */
+
+/**
+ * Contenedor principal de la sección hero
+ * - Padding superior e inferior para espaciado adecuado
+ * - Ancho completo para cubrir toda la pantalla
+ * - Configuración del fondo para cubrir todo el espacio
+ * - Posición relativa para elementos absolutos internos
+ * - Altura mínima para asegurar visibilidad en pantallas pequeñas
+ * - Flexbox para centrar verticalmente el contenido
+ */
+.hero-section-new {
+  padding-top: 6rem;         /* Espacio superior amplio */
+  padding-bottom: 4rem;      /* Espacio inferior moderado */
+  width: 100%;               /* Ancho completo */
+  background-size: cover;    /* Imagen de fondo cubre todo el espacio */
+  background-position: center; /* Imagen centrada */
+  position: relative;        /* Para posicionamiento de elementos internos */
+  min-height: 400px;         /* Altura mínima para asegurar visibilidad */
+  display: flex;             /* Flexbox para alineación */
+  align-items: center;       /* Centra verticalmente */
+}
+
+/**
+ * Tarjeta principal del hero
+ * - Fondo blanco semitransparente para legibilidad
+ * - Efecto de desenfoque (blur) para profundidad visual
+ * - Padding interno para espaciado del contenido
+ * - Bordes redondeados para estética moderna
+ * - Ancho máximo limitado para mejor lectura
+ * - Alineación a la izquierda dentro del contenedor
+ * - Sombra pronunciada para efecto de elevación
+ * - z-index elevado para asegurar visibilidad
+ * - Borde sutil para definición visual
+ */
+.hero-card {
+  display: block;
+  background-color: rgba(255, 255, 255, 0.92);  /* Fondo blanco semitransparente */
+  backdrop-filter: blur(4px);                   /* Efecto de desenfoque */
+  -webkit-backdrop-filter: blur(4px);           /* Compatibilidad con Safari */
+  padding: 1.5rem;                              /* Espaciado interno */
+  border-radius: 0.75rem;                       /* Bordes redondeados */
+  max-width: 46rem;                             /* Ancho máximo limitado */
+  margin-left: 0;                               /* Alineado a la izquierda */
+  margin-right: auto;                           /* Espacio automático a la derecha */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);      /* Sombra pronunciada */
+  position: relative;                           /* Para z-index */
+  z-index: 10;                                  /* Elevado para estar por encima del fondo */
+  border: 1px solid rgba(200, 200, 200, 0.3);   /* Borde sutil */
+}
+
+/**
+ * Título principal del hero
+ * - Display block para asegurar visibilidad
+ * - Tamaño responsive con clamp (entre 2.25rem y 3rem)
+ * - Peso de fuente en negrita
+ * - Color oscuro para máximo contraste
+ * - Margen inferior para separarlo de la descripción
+ * - Altura de línea reducida para titulares
+ */
+.hero-title {
+  display: block;                        /* Asegura visibilidad como bloque */
+  font-size: clamp(2.25rem, 5vw, 3rem);  /* Tamaño responsive */
+  font-weight: 700;                      /* Negrita */
+  color: var(--text-dark);               /* Color oscuro para contraste */
+  margin-bottom: 1.5rem;                 /* Espacio bajo el título */
+  line-height: 1.2;                      /* Altura de línea para títulos */
+}
+
+/**
+ * Párrafo descriptivo del hero
+ * - Display block para asegurar visibilidad
+ * - Tamaño de fuente medio-grande
+ * - Color de texto medio para buen contraste
+ * - Margen inferior para separarlo de los botones
+ * - Altura de línea aumentada para mejor legibilidad
+ */
+.hero-description {
+  display: block;            /* Asegura visibilidad como bloque */
+  font-size: 1.125rem;       /* Tamaño medio-grande */
+  color: var(--text-medium); /* Color secundario */
+  margin-bottom: 2rem;       /* Espacio antes de los botones */
+  line-height: 1.7;          /* Altura de línea aumentada para legibilidad */
+}
+
+/**
+ * Estilo para texto en semi-negrita dentro de la descripción
+ * - Aplicado al nombre de la empresa para destacarlo
+ */
+.hero-description .font-semibold { 
+  font-weight: 600; /* Semi-negrita */
+}
+
+/**
+ * Estilo para texto con color primario dentro de la descripción
+ * - Aplicado al nombre de la empresa para destacarlo con color corporativo
+ */
+.hero-description .text-primary { 
+  color: var(--primary-color); /* Color principal de la marca */
+}
+
+/**
+ * Contenedor de los botones hero
+ * - Display flex para organización horizontal
+ * - Wrap para permitir adaptación en pantallas pequeñas
+ * - Espaciado entre botones
+ */
+.hero-buttons {
+  display: flex;     /* Organización horizontal */
+  flex-wrap: wrap;   /* Adaptación en pantallas pequeñas */
+  gap: 1rem;         /* Espacio entre botones */
+}
+
+/**
+ * Estilos comunes para ambos botones
+ * - Padding adecuado para área de clic cómoda
+ * - Bordes redondeados para estética moderna
+ * - Previene saltos de línea dentro del botón
+ * - Transiciones suaves para efectos hover
+ * - Flexbox para alinear icono y texto
+ * - Sin subrayado (quita el estilo predeterminado de enlaces)
+ * - Fuente semi-negrita para destacar
+ * - Tamaño de fuente ligeramente reducido
+ * - Cursor pointer para indicar interactividad
+ * - Borde transparente por defecto
+ */
+.hero-button-primary,
+.hero-button-secondary {
+  padding: 0.75rem 1.5rem;      /* Espaciado interno */
+  border-radius: 0.75rem;       /* Bordes redondeados */
+  white-space: nowrap;          /* Previene saltos de línea */
+  transition: background-color 0.2s ease-in-out, 
+              border-color 0.2s ease-in-out, 
+              color 0.2s ease-in-out; /* Transiciones suaves */
+  display: inline-flex;         /* Flexbox para icono y texto */
+  align-items: center;          /* Centrado vertical */
+  gap: 0.5rem;                  /* Espacio entre icono y texto */
+  text-decoration: none;        /* Sin subrayado */
+  font-weight: 600;             /* Semi-negrita */
+  font-size: 0.95rem;           /* Tamaño reducido */
+  cursor: pointer;              /* Cursor de mano */
+  border: 1px solid transparent; /* Borde invisible por defecto */
+}
+
+/**
+ * Ajuste de tamaño para los iconos en los botones
+ * - Dimensiones uniformes para ambos tipos de botón
+ */
+.hero-button-primary svg, .hero-button-secondary svg {
+  width: 1.25rem;   /* Ancho uniforme */
+  height: 1.25rem;  /* Alto uniforme */
+}
+
+/**
+ * Estilo específico para el botón primario
+ * - Fondo con color primario de la marca
+ * - Texto blanco para máximo contraste
+ * - Borde del mismo color que el fondo
+ */
+.hero-button-primary {
+  background-color: var(--primary-color); /* Fondo con color primario */
+  color: var(--white);                    /* Texto blanco */
+  border-color: var(--primary-color);     /* Borde igual al fondo */
+}
+
+/**
+ * Efecto hover para el botón primario
+ * - Cambia a una versión ligeramente más clara del color primario
+ * - Actualiza el borde a la misma tonalidad
+ * - Crea un efecto visual sutil al pasar el cursor
+ */
+.hero-button-primary:hover {
+  background-color: color-mix(in srgb, var(--primary-color) 90%, transparent); /* Versión más clara */
+  border-color: color-mix(in srgb, var(--primary-color) 90%, transparent);     /* Borde a juego */
+}
+
+/**
+ * Estilo específico para el botón secundario
+ * - Fondo blanco para contraste con el primario
+ * - Texto en color primario para identificación
+ * - Borde en color primario para definición
+ */
+.hero-button-secondary {
+  background-color: var(--white);        /* Fondo blanco */
+  color: var(--primary-color);           /* Texto en color primario */
+  border: 1px solid var(--primary-color); /* Borde visible en color primario */
+}
+
+/**
+ * Efecto hover para el botón secundario
+ * - Cambia a un fondo gris claro
+ * - Mantiene color de texto y borde
+ * - Crea un efecto visual sutil al pasar el cursor
+ */
+.hero-button-secondary:hover {
+  background-color: var(--bg-light-gray); /* Fondo gris claro */
+}
+</style>

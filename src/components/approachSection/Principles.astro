@@ -1,0 +1,232 @@
+---
+/* 
+  COMPONENTE DE SECCIÓN DE PRINCIPIOS
+  Este componente crea una sección que muestra los principios o valores 
+  fundamentales de la empresa, organizados en un grid responsive.
+*/
+
+/* Importación del componente Icon para mostrar iconos SVG desde el paquete astro-icon */
+import { Icon } from 'astro-icon/components';
+---
+
+<!-- 
+  ESTRUCTURA PRINCIPAL
+  - principles-section: Contenedor principal de la sección
+  - section-padding: Clase que aplica el espaciado interno estándar para secciones
+  - bg-light-gray: Aplica un fondo de color gris claro a toda la sección
+-->
+<section class="principles-section section-padding bg-light-gray">
+  <!-- 
+    Container: Limita el ancho del contenido y lo centra en la página
+    (Clase común que suele estar definida en los estilos globales)
+  -->
+  <div class="container">
+    <!-- 
+      ENCABEZADO DE SECCIÓN
+      - section-title-alt: Estilo de título alternativo con un subrayado decorativo
+      - text-center: Centra el texto horizontalmente
+      - El span se usa para aplicar el subrayado decorativo solo al texto
+    -->
+    <h2 class="section-title-alt text-center">
+      <span>Principles That Guide Us</span>
+    </h2>
+    
+    <!-- 
+      PÁRRAFO INTRODUCTORIO
+      - section-intro: Estilo para el párrafo introductorio (tamaño, color, márgenes)
+      - text-center: Centra el texto horizontalmente
+    -->
+    <p class="section-intro text-center">Our process is powered by core beliefs that ensure we deliver the right solutions, the right way.</p>
+    
+    <!-- 
+      GRID DE PRINCIPIOS
+      - principles-grid: Define la cuadrícula donde se mostrarán las tarjetas de principios
+      - En móvil muestra 1 columna, en tablets/desktop muestra 3 columnas
+    -->
+    <div class="principles-grid">
+      <!-- 
+        PRIMER PRINCIPIO
+        - principle-item: Contenedor para cada tarjeta de principio
+      -->
+      <div class="principle-item">
+          <!-- 
+            ICONO DEL PRINCIPIO
+            - principle-icon: Estiliza el contenedor del icono
+            - Se usa el componente Icon importado de astro-icon
+            - name: Especifica qué icono mostrar (en formato "paquete:nombre-icono")
+            - size: Define el tamaño del icono (40px)
+          -->
+          <div class="principle-icon"><Icon name="mdi:puzzle-edit-outline" size={40}/></div>
+          
+          <!-- Título del principio con estilo specific -->
+          <h3 class="principle-title">Tailored, Not Templated</h3>
+          
+          <!-- Texto descriptivo del principio -->
+          <p class="principle-text">We fundamentally reject one-size-fits-all. Your business is unique, and your AI solutions should be too. Every strategy and implementation is meticulously crafted for your specific context.</p>
+      </div>
+      
+      <!-- SEGUNDO PRINCIPIO -->
+      <div class="principle-item">
+          <div class="principle-icon"><Icon name="mdi:target-arrow" size={40}/></div>
+          <h3 class="principle-title">Practicality & ROI First</h3>
+          <p class="principle-text">We focus on implementing AI that delivers tangible, measurable results and a clear return on investment quickly. We cut through the hype to provide solutions with real-world value.</p>
+      </div>
+      
+      <!-- TERCER PRINCIPIO -->
+      <div class="principle-item">
+          <div class="principle-icon"><Icon name="mdi:handshake-outline" size={40}/></div>
+          <h3 class="principle-title">Transparent Collaboration</h3>
+          <p class="principle-text">We believe in building true partnerships through open, honest communication. You'll be involved and informed at every stage, ensuring alignment and shared success.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 
+  ESTILOS CSS
+  Los estilos específicos para la sección de principios y sus componentes
+-->
+<style>
+  /* --- ESTILOS DEL GRID DE PRINCIPIOS --- */
+  
+  /* 
+   * Layout principal de la cuadrícula de principios
+   * - Por defecto (móvil): 1 columna, espaciado vertical grande
+   * - Añade margen superior para separarlo del párrafo introductorio
+   */
+  .principles-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; /* Una columna en móvil */
+    gap: 3rem; /* Espaciado grande entre cards en móvil */
+    margin-top: 4rem; /* Espacio respecto al párrafo introductorio */
+  }
+  
+  /* 
+   * Media query para tablets y desktop
+   * - Cambia a 3 columnas cuando el ancho de pantalla es ≥ 768px
+   * - Reduce ligeramente el espaciado entre columnas
+   */
+  @media (min-width: 768px) { 
+    .principles-grid { 
+      grid-template-columns: repeat(3, 1fr); /* Tres columnas iguales */
+      gap: 2.5rem; /* Espaciado un poco menor entre cards */
+    } 
+  }
+  
+  /* 
+   * Estilo para cada tarjeta individual de principio
+   * - Centrado de texto
+   * - Padding interno para dar espacio al contenido
+   */
+  .principle-item { 
+    text-align: center; /* Centra todo el contenido de la tarjeta */
+    padding: 1.5rem; /* Espaciado interno uniforme */
+  }
+  
+  /* 
+   * Estilo para el contenedor del icono
+   * - Color primario de la marca
+   * - Margen inferior para separarlo del título
+   * - Display inline-block para permitir centrarlo
+   */
+  .principle-icon { 
+    color: var(--primary-color); /* Color principal de la marca */
+    margin-bottom: 1.2rem; /* Espacio entre icono y título */
+    display: inline-block; /* Para permitir centrarlo */
+  }
+  
+  /* 
+   * Estilo específico para el SVG dentro del icono
+   * - Fija el tamaño exacto del icono
+   */
+  .principle-icon svg { 
+    width: 40px; 
+    height: 40px; 
+  }
+  
+  /* 
+   * Estilo para el título de cada principio
+   * - Tamaño de fuente medio-grande
+   * - Margen inferior pequeño
+   * - Peso de fuente semi-negrita
+   */
+  .principle-title { 
+    font-size: 1.25rem !important; /* Tamaño para los títulos */
+    font-weight: 600; /* Semi-negrita */
+    color: var(--text-dark); /* Color oscuro */
+    margin-bottom: 0.75rem; /* Espacio entre título y descripción */
+  }
+
+  /* 
+   * Estilo para el texto descriptivo de cada principio
+   * - Tamaño de fuente ligeramente reducido
+   * - Color de texto secundario (medio)
+   * - Altura de línea aumentada para mejor legibilidad
+   */
+  .principle-text { 
+    font-size: 0.95rem; /* Tamaño ligeramente menor que el texto base */
+    color: var(--text-medium); /* Color de texto secundario */
+    line-height: 1.6; /* Altura de línea para mejor legibilidad */
+  }
+
+  /* --- ESTILOS DEL TÍTULO DE SECCIÓN --- */
+  
+  /* 
+   * Estilo base para el título alternativo de sección
+   * - Tamaño responsive con clamp (mínimo 2rem, máximo 3rem)
+   * - Margen inferior moderado
+   * - Posición relativa para permitir posicionar el subrayado
+   * - Padding inferior pequeño
+   */
+  h2.section-title-alt {
+    font-size: clamp(2rem, 5vw, 2.3rem); /* Tamaño responsive */
+    margin-bottom: 1.5rem; /* Espacio bajo el título */
+    position: relative; /* Para posicionamiento del pseudo-elemento */
+    padding-bottom: 0.75rem; /* Padding bajo el texto */
+  }
+
+  /* 
+   * Estilo para el span dentro del título
+   * - Display inline-block para permitir el posicionamiento relativo
+   * - Posición relativa para el pseudo-elemento
+   * - Padding inferior para dejar espacio al subrayado
+   */
+  h2.section-title-alt span {
+    display: inline-block;
+    position: relative;
+    padding-bottom: calc(1rem + 4px); /* Espacio + grosor */
+  }
+  
+  /* 
+   * Pseudo-elemento para crear el subrayado decorativo
+   * - Crea un elemento vacío después del span
+   * - Lo posiciona absolutamente respecto al span
+   * - Define dimensiones, color y forma del subrayado
+   */
+  h2.section-title-alt span::after {
+    content: ''; /* Elemento vacío */
+    position: absolute; /* Posicionamiento absoluto */
+    left: 0; /* Alinea al inicio del texto */
+    bottom: 0.3rem; /* Ajusta separación */
+    width: 15rem; /* Ancho fijo del subrayado */
+    max-width: 100%; /* Nunca excede el ancho del texto */
+    height: 4px; /* Grosor del subrayado */
+    background-color: var(--secondary-color); /* Color secundario */
+    border-radius: 2px; /* Bordes redondeados */
+  }
+  
+  /* 
+   * Estilo para el párrafo introductorio
+   * - Tamaño de fuente ligeramente mayor
+   * - Color de texto más claro
+   * - Ancho máximo para mejorar legibilidad
+   * - Margen automático para centrar horizontalmente
+   * - Margen inferior grande para separarlo del grid
+   */
+  .section-intro { 
+    font-size: 1.1rem; /* Tamaño mayor que el texto base */
+    color: var(--text-light); /* Color de texto más claro */
+    max-width: 700px; /* Ancho máximo para legibilidad */
+    margin: 0 auto 4rem auto; /* Centrado y espacio inferior */
+  }
+</style>

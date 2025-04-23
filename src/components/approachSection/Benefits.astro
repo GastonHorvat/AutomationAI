@@ -1,0 +1,308 @@
+---
+/*
+  COMPONENTE DE SECCIÓN DE BENEFICIOS
+  Este componente crea una sección que muestra los beneficios cuantificables
+  de los servicios ofrecidos, organizados en un grid responsive de tarjetas. */
+
+// Importación del componente Icon para mostrar iconos SVG desde el paquete astro-icon 
+import { Icon } from 'astro-icon/components';
+
+
+// --- DEFINICIÓN DE DATOS ---
+
+/*
+ * Interface que define la estructura de cada beneficio
+ * @property {string} iconName - Nombre del icono en formato "paquete:nombre-icono"
+ * @property {string} title - Título del beneficio
+ * @property {string} description - Descripción del beneficio (puede contener HTML para destacar porcentajes)
+ */
+interface Benefit {
+  iconName: string;
+  title: string;
+  description: string; // HTML permitido aquí para el span
+}
+
+/*
+ * Array de datos de beneficios
+ * Cada objeto contiene la información completa de un beneficio:
+ * - Icono a mostrar
+ * - Título descriptivo
+ * - Descripción con porcentajes destacados usando spans con clase especial
+ */
+
+ const benefitsData: Benefit[] = [
+  {
+    iconName: "mdi:clock-fast",
+    title: "Significant Time Savings",
+    description: `Reduce time spent on manual, repetitive tasks by up to <span class="highlight-percentage">70%</span>, freeing up valuable resources for higher-impact activities.`
+  },
+  {
+    iconName: "mdi:chart-line",
+    title: "Increased Productivity",
+    description: `Boost overall productivity by up to <span class="highlight-percentage">35%</span> through process optimization and bottleneck elimination.`
+  },
+  {
+    iconName: "mdi:account-heart-outline",
+    title: "Enhanced Customer Experience",
+    description: `Improve customer satisfaction scores by up to <span class="highlight-percentage">45%</span> with faster, more accurate responses to inquiries.`
+  },
+  {
+    iconName: "mdi:finance",
+    title: "Significant ROI",
+    description: `Achieve an average Return on Investment of up to <span class="highlight-percentage">300%</span> within the first year, driven by reduced operational costs and increased revenue.`
+  }
+];
+
+---
+
+<!-- ====================================================================== -->
+<!-- --- Sección 3: Beneficios --- -->
+<!-- ====================================================================== -->
+
+<!-- 
+  ESTRUCTURA PRINCIPAL
+  - benefits-section: Contenedor principal de la sección
+  - section-padding: Clase que aplica el espaciado interno estándar para secciones
+  - bg-gradient: Aplica un fondo con gradiente a toda la sección
+-->
+<section class="benefits-section section-padding bg-gradient">
+  <!-- 
+    Container: Limita el ancho del contenido y lo centra en la página
+    (Clase común que suele estar definida en los estilos globales)
+  -->
+  <div class="container">
+    <!-- 
+      ENCABEZADO DE SECCIÓN
+      - benefits-header: Contenedor del título y subtítulo con márgenes específicos
+      - text-center: Centra el texto horizontalmente
+    -->
+    <div class="benefits-header text-center">
+      <!-- 
+        TÍTULO DE SECCIÓN
+        - section-title-alt: Estilo de título alternativo con un subrayado decorativo
+        - text-center: Centra el texto horizontalmente
+        - El span se usa para aplicar el subrayado decorativo solo al texto
+      -->
+      <h2 class="section-title-alt text-center">
+        <span>Benefits of Our Approach</span> 
+      </h2>
+      
+      <!-- 
+        SUBTÍTULO DE SECCIÓN
+        - benefits-subtitle: Estilo para el párrafo introductorio (tamaño, color, márgenes)
+      -->
+      <p class="benefits-subtitle">
+        Our solutions are designed to deliver tangible and measurable benefits that drive growth and efficiency for your business.
+      </p>
+    </div>
+
+    <!-- 
+      GRID DE BENEFICIOS
+      - benefits-grid: Define la cuadrícula donde se mostrarán las tarjetas de beneficios
+      - Responsive: 1 columna en móvil, 2 en tablet, 4 en desktop
+    -->
+    <div class="benefits-grid">
+      {/* 
+        ITERACIÓN DE BENEFICIOS
+        - Recorre el array benefitsData y genera una tarjeta para cada elemento
+        - Cada beneficio se renderiza como una tarjeta independiente
+      */}
+      {benefitsData.map(benefit => (
+        <!-- 
+          TARJETA DE BENEFICIO
+          - benefit-card: Contenedor para cada tarjeta de beneficio
+          - Incluye estilos de sombra, borde y fondo
+        -->
+        <div class="benefit-card">
+          <!-- 
+            CONTENEDOR DEL ICONO
+            - benefit-icon-wrapper: Círculo que contiene el icono
+            - Aplica fondo claro y centra el icono
+          -->
+          <div class="benefit-icon-wrapper">
+            <!-- 
+              ICONO DEL BENEFICIO
+              - Se usa el componente Icon importado de astro-icon
+              - name: Especifica qué icono mostrar (desde los datos)
+              - size: Define el tamaño del icono (40px)
+              - class: Aplica estilos específicos al icono
+            -->
+            <Icon name={benefit.iconName} size={40} class="benefit-icon"/>
+          </div>
+          
+          <!-- Título del beneficio con estilo específico -->
+          <h3 class="benefit-title">{benefit.title}</h3>
+          
+          <!-- 
+            DESCRIPCIÓN DEL BENEFICIO
+            - benefit-description: Estilo para el texto descriptivo
+            - set:html: Directiva de Astro para renderizar HTML desde una string
+              (permite que los spans con porcentajes se renderizen correctamente)
+          -->
+          <p class="benefit-description" set:html={benefit.description}></p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 
+  ESTILOS CSS
+  Los estilos específicos para la sección de beneficios y sus componentes
+-->
+<style>
+  /* 
+   * Nota: La clase .benefits-section hereda estilos globales 
+   * - .bg-gradient: Aplica un fondo con gradiente (definido globalmente)
+   * - .section-padding: Aplica espaciado interno estándar (definido globalmente)
+   */
+
+  /* 
+   * Contenedor del encabezado (título + subtítulo)
+   * - Aplica margen inferior para separarlo del grid de tarjetas
+   */
+  .benefits-header {
+    margin-bottom: 3rem; /* Espacio entre el encabezado y el grid de beneficios */
+  }
+
+  /* 
+   * Estilo para el subtítulo/introducción
+   * - Tamaño de fuente medio-grande
+   * - Color de texto secundario
+   * - Ancho máximo para mejorar legibilidad
+   * - Centrado horizontal con margen automático
+   * - Altura de línea aumentada para mejor legibilidad
+   */
+  .benefits-subtitle {
+    font-size: 1.125rem; /* Tamaño mayor que el texto base */
+    color: var(--text-medium); /* Color de texto secundario */
+    max-width: 56rem; /* Ancho máximo para legibilidad */
+    margin-left: auto; /* Centrado horizontal */
+    margin-right: auto; /* Centrado horizontal */
+    line-height: 1.7; /* Altura de línea aumentada */
+  }
+
+  /* 
+   * Layout principal de la cuadrícula de beneficios
+   * - Por defecto (móvil): 1 columna
+   * - Espaciado moderado entre tarjetas
+   */
+  .benefits-grid {
+    display: grid; /* Establece grid layout */
+    grid-template-columns: 1fr; /* Una columna en móvil */
+    gap: 2rem; /* Espaciado entre tarjetas */
+  }
+
+  /* 
+   * Media query para tablets pequeñas
+   * - Cambia a 2 columnas cuando el ancho de pantalla es ≥ 576px
+   */
+  @media (min-width: 576px) {
+    .benefits-grid {
+      grid-template-columns: repeat(2, 1fr); /* Dos columnas iguales */
+    }
+  }
+
+  /* 
+   * Media query para desktop
+   * - Cambia a 4 columnas cuando el ancho de pantalla es ≥ 992px
+   */
+  @media (min-width: 992px) {
+    .benefits-grid {
+      grid-template-columns: repeat(4, 1fr); /* Cuatro columnas iguales */
+    }
+  }
+
+  /* 
+   * Estilo para cada tarjeta individual de beneficio
+   * - Fondo blanco
+   * - Padding interno uniforme
+   * - Bordes redondeados
+   * - Sombra para efecto de elevación
+   * - Borde fino para mejorar definición
+   * - Contenido centrado
+   * - Layout flexible en columna para alineación vertical
+   */
+  .benefit-card {
+    background-color: var(--white); /* Fondo blanco */
+    padding: 2rem 1.5rem; /* Padding interno */
+    border-radius: 0.75rem; /* Bordes redondeados */
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.5); /* Sombra suave */
+    border: 1px solid var(--border-color-soft); /* Borde fino */
+    text-align: center; /* Contenido centrado */
+    display: flex; /* Layout flexible */
+    flex-direction: column; /* Dirección vertical */
+    /* Opcional: igualar altura si es necesario */
+    /* height: 100%; */
+  }
+
+  /* 
+   * Contenedor circular para el icono
+   * - Dimensiones fijas para el círculo
+   * - Forma circular con border-radius
+   * - Fondo muy claro del color primario (10% de opacidad)
+   * - Centrado del icono con flexbox
+   * - Centrado horizontal con margen automático
+   * - Margen inferior para separarlo del título
+   */
+  .benefit-icon-wrapper {
+    width: 70px; /* Ancho del círculo */
+    height: 70px; /* Alto del círculo */
+    border-radius: 50%; /* Forma circular */
+    /* Fondo azul primario MUY claro (10% de opacidad) */
+    background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+    display: flex; /* Layout flexible */
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    margin: 0 auto 1.5rem auto; /* Centrado horizontal y margen inferior */
+  }
+
+  /* 
+   * Estilo para el icono dentro del wrapper
+   * - Color primario de la marca
+   * - Tamaño definido en el componente Icon con size={40}
+   */
+  .benefit-icon {
+    color: var(--primary-color); /* Color principal de la marca */
+    /* size={40} ya está en el componente Icon */
+  }
+
+  /* 
+   * Estilo para el título de cada beneficio
+   * - Tamaño de fuente medio-grande
+   * - Peso de fuente semi-negrita
+   * - Color de texto oscuro para mejor legibilidad
+   * - Margen inferior pequeño para separarlo de la descripción
+   */
+  .benefit-title {
+    font-size: 1.25rem; /* Tamaño para los títulos */
+    font-weight: 600; /* Semi-negrita */
+    color: var(--text-dark); /* Color oscuro */
+    margin-bottom: 0.75rem; /* Espacio entre título y descripción */
+  }
+
+  /* 
+   * Estilo para el texto descriptivo de cada beneficio
+   * - Color de texto secundario
+   * - Tamaño de fuente ligeramente reducido
+   * - Altura de línea aumentada para mejor legibilidad
+   * - Flex-grow para que ocupe el espacio disponible (alineación vertical)
+   */
+  .benefit-description {
+    color: var(--text-medium); /* Color de texto secundario */
+    font-size: 0.95rem; /* Tamaño ligeramente menor */
+    line-height: 1.6; /* Altura de línea para mejor legibilidad */
+    flex-grow: 1; /* Para alinear tarjetas si tienen alturas diferentes */
+  }
+
+  /* 
+   * Estilo global para los porcentajes destacados
+   * - Se usa :global porque se renderiza con set:html
+   * - Color primario de la marca para destacar
+   * - Peso de fuente negrita para mayor énfasis visual
+   */
+  :global(.highlight-percentage) {
+    color: var(--primary-color); /* Color principal de la marca */
+    font-weight: 700; /* Negrita (o 600 para semi-negrita) */
+  }
+</style>

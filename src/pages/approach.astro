@@ -1,276 +1,175 @@
 ---
-// src/pages/approach.astro
+/*
+ * PÁGINA DE ENFOQUE/METODOLOGÍA (APPROACH)
+ * Esta página presenta la metodología, proceso y principios de la empresa
+ * para implementar soluciones de IA, organizada en secciones modulares
+ * que muestran el flujo de trabajo, beneficios y valores de la empresa.
+ */
+
+// Importación del layout principal que proporciona la estructura común de la página
 import Layout from '../layouts/Layout.astro';
+
+// Importación del componente de iconos para utilizar SVGs
 import { Icon } from 'astro-icon/components';
-import heroBgImage from '../assets/images/hero-approach.jpg';
+
+// Importación de componentes modulares que conforman las diferentes secciones de la página
+import ApproachHero from '../components/approachSection/ApproachHero.astro';  // Hero section
+import Process from '../components/approachSection/Process.astro';            // Sección de proceso detallado
+import Benefits from '../components/approachSection/Benefits.astro';          // Sección de beneficios
+import Principles from '../components/approachSection/Principles.astro';      // Sección de principios
+import CTA from '../components/approachSection/FinalCTA.astro';              // Call-to-Action final
 
 ---
 
+<!-- 
+  ESTRUCTURA PRINCIPAL DE LA PÁGINA
+  - Utiliza el componente Layout para heredar la estructura común (header, footer, etc.)
+  - Recibe un título y descripción SEO específicos para esta página
+-->
 <Layout title="Our Approach | AutomationAI Solutions" description="Discover AutomationAI's collaborative, results-driven approach to implementing AI solutions that deliver tangible impact and rapid ROI for your business.">
 
-  {/* ====================================================================== */}
-  {/* --- Sección 1: NUEVO Hero (CORREGIDO CON CONTAINER) --- */}
-  {/* ====================================================================== */}
-  <section
-    class="hero-section-new"
-    style={`background-image: url(${heroBgImage.src});`}
-    >
-    <div class="container">
-      <div class="hero-card">
-        <h1 class="hero-title">Our Approach: From Insight to Impact</h1>
-        <p class="hero-description">
-          We believe implementing AI shouldn't be complex or intimidating. It should be a strategic partnership focused on tangible results.
-          At <span class="font-semibold text-primary">AutomationAI Solutions</span>, we specialize in personalized AI, automation, and business intelligence solutions to optimize processes, solve challenges, and drive transformative growth backed by data.
-        </p>
-        <div class="hero-buttons">
-          <a href="/contact" class="hero-button-primary">
-            <Icon name="mdi:calendar-outline" size={20} />
-            <span>Schedule Consultation</span>
-          </a>
-          <a href="/case-studies" class="hero-button-secondary">
-            <Icon name="mdi:file-document-outline" size={20} />
-            <span>View Case Studies</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- ====================================================================== -->
+  <!-- --- Sección 1: Sección Hero --- -->
+  <!-- ====================================================================== -->
+  <!-- 
+    HERO SECTION
+    - Componente importado que muestra el banner principal de la página
+    - Normalmente incluye título principal, subtítulo y posiblemente una imagen
+  -->
+  <ApproachHero />
 
-  <section class="process-section section-padding">
-     <div class="container">
-      {/* ... (Tu código de la sección de proceso sin cambios) ... */}
-       <h2 class="section-title-alt text-center">Our Collaborative Process: Your AI Journey, Step-by-Step</h2>
-       <p class="section-intro text-center">We follow a structured yet flexible methodology to ensure clarity, alignment, and successful outcomes.</p>
-       <div class="process-steps-grid">
-         {/* ... (Steps 1-4 sin cambios) ... */}
-         <div class="process-step-card">
-           <div class="step-number">1</div><div class="step-icon"><Icon name="mdi:magnify" size={48}/></div><h3 class="step-title">Deep Dive Discovery</h3><p class="step-text">We begin by immersing ourselves in your world. We meticulously analyze your current workflows, tools, pain points, and strategic objectives. Through active listening and targeted questions, we pinpoint the highest-impact opportunities where AI can make a real difference.</p>
-         </div>
-         <div class="process-step-card">
-           <div class="step-number">2</div><div class="step-icon"><Icon name="mdi:compass-rose" size={48}/></div><h3 class="step-title">Strategic Solution Design</h3><p class="step-text">Leveraging insights from the discovery phase, we craft a bespoke AI strategy. This isn't a generic template; it's a clear, actionable roadmap outlining the 'what, why, and how' of the proposed solution, always prioritizing practical application and rapid ROI.</p>
-         </div>
-         <div class="process-step-card">
-           <div class="step-number">3</div><div class="step-icon"><Icon name="mdi:cogs" size={48}/></div><h3 class="step-title">Seamless Implementation & Integration</h3><p class="step-text">Our experienced team gets to work, building and integrating the AI solution with precision. We focus on a smooth transition, ensuring the technology integrates seamlessly into your existing systems and workflows with minimal disruption to your daily operations.</p>
-         </div>
-         <div class="process-step-card">
-           <div class="step-number">4</div><div class="step-icon"><Icon name="mdi:chart-line" size={48}/></div><h3 class="step-title">Ongoing Support & Growth Partnership</h3><p class="step-text">Launch isn't the end; it's the beginning of optimization. We provide dedicated support, monitor performance against key metrics, and proactively collaborate with you to refine the solution and identify new opportunities for continuous AI-driven improvement.</p>
-         </div>
-       </div>
-     </div>
-  </section>
+  <!-- ====================================================================== -->
+  <!-- --- Sección 2: El Proceso Detallado --- -->
+  <!-- ====================================================================== -->
+  <!-- 
+    SECCIÓN DE PROCESO
+    - Componente importado que muestra el proceso paso a paso
+    - Típicamente presenta un flujo de trabajo con etapas secuenciales
+  -->
+  <Process />
 
-  <section class="principles-section section-padding bg-light-gray">
-    <div class="container">
-      {/* ... (Tu código de la sección de principios sin cambios) ... */}
-       <h2 class="section-title-alt text-center">Principles That Guide Us</h2>
-       <p class="section-intro text-center">Our process is powered by core beliefs that ensure we deliver the right solutions, the right way.</p>
-       <div class="principles-grid">
-         {/* ... (Principles 1-3 sin cambios) ... */}
-         <div class="principle-item"><div class="principle-icon"><Icon name="mdi:puzzle-edit-outline" size={40}/></div><h3 class="principle-title">Tailored, Not Templated</h3><p class="principle-text">We fundamentally reject one-size-fits-all. Your business is unique, and your AI solutions should be too. Every strategy and implementation is meticulously crafted for your specific context.</p></div>
-         <div class="principle-item"><div class="principle-icon"><Icon name="mdi:target-arrow" size={40}/></div><h3 class="principle-title">Practicality & ROI First</h3><p class="principle-text">We focus on implementing AI that delivers tangible, measurable results and a clear return on investment quickly. We cut through the hype to provide solutions with real-world value.</p></div>
-         <div class="principle-item"><div class="principle-icon"><Icon name="mdi:handshake-outline" size={40}/></div><h3 class="principle-title">Transparent Collaboration</h3><p class="principle-text">We believe in building true partnerships through open, honest communication. You'll be involved and informed at every stage, ensuring alignment and shared success.</p></div>
-       </div>
-    </div>
-  </section>
+  <!-- ====================================================================== -->
+  <!-- --- Sección 3: Beneficios --- -->
+  <!-- ====================================================================== -->
+  <!-- 
+    SECCIÓN DE BENEFICIOS
+    - Componente importado que muestra los beneficios cuantificables
+    - Presenta tarjetas con métricas y resultados esperados
+  -->
+  <Benefits />
 
-  <section class="tech-stance-section section-padding">
-    <div class="container narrow-container">
-      {/* ... (Tu código de la sección tech stance sin cambios) ... */}
-       <h2 class="section-title-alt text-center">Our Technology Stance</h2>
-       <blockquote class="tech-stance-quote"><p>We are technology-agnostic. Our priority is selecting the right AI tools, platforms, and algorithms – whether established or emerging – that best solve your specific problem within your constraints. The optimal outcome dictates the technology, not the other way around.</p></blockquote>
-    </div>
-  </section>
+  <!-- ====================================================================== -->
+  <!-- --- Sección 4: Principios --- -->
+  <!-- ====================================================================== -->
+  <!-- 
+    SECCIÓN DE PRINCIPIOS
+    - Componente importado que muestra los valores fundamentales
+    - Presenta los principios que guían la metodología de la empresa
+  -->
+  <Principles />
 
-  <section class="final-cta-section section-padding bg-gradient">
-     <div class="container text-center narrow-container">
-      {/* ... (Tu código de la sección CTA final sin cambios) ... */}
-       <h2>Let's Build Your <span class="highlight">AI Advantage</span>, Together.</h2>
-       <p>...</p>
-       <div class="cta-buttons">
-         <a href="/contact" class="cta-button-primary">CONTACT US FOR A CONSULTATION</a>
-         <a href="/solutions" class="cta-button-secondary">EXPLORE OUR SOLUTIONS</a>
-       </div>
-     </div>
-  </section>
+  <!-- ====================================================================== -->
+  <!-- --- Sección 5: CTA --- -->
+  <!-- ====================================================================== -->
+  <!-- 
+    SECCIÓN DE CALL-TO-ACTION FINAL
+    - Componente importado que muestra la llamada a la acción final
+    - Invita a los usuarios a contactar o explorar más soluciones
+  -->
+  <CTA />
 
 </Layout>
 
-{/* ====================================================================== */}
-{/* --- ESTILOS CSS --- */}
-{/* ====================================================================== */}
+<!-- ====================================================================== -->
+<!-- --- ESTILOS CSS --- -->
+<!-- ====================================================================== -->
 <style>
-  /* --- Variables y Globales (Asegúrate que estén bien) --- */
+  /**
+   * VARIABLES GLOBALES Y ESTILOS BASE
+   * Estas variables definen la paleta de colores y estilos base
+   * que se utilizan en toda la página y sus componentes
+   */
+  
+  /**
+   * Variables de colores y estilos globales
+   * - Estas variables están disponibles para todos los componentes de la página
+   * - Definen la paleta de colores corporativa y estilos base
+   */
   :global(body) {
-     --primary-color: #007bff; /* Tu azul */
-     --text-dark: #1A2B48;
-     --text-medium: #4A5568;
-     --text-light: #6c757d;
-     --bg-light-gray: #f8f9fa;
-     --border-color-soft: #e2e8f0;
-     --white: #ffffff;
-     --soft-gradient-start: #f8faff; /* Ejemplo para hero */
-     --soft-gradient-end: #ffffff;
+     --primary-color: #007bff;        /* Color principal azul corporativo */
+     --text-dark: #1A2B48;            /* Color para textos principales/títulos */
+     --text-medium: #4A5568;          /* Color para textos de cuerpo/párrafos */
+     --text-light: #6c757d;           /* Color para textos secundarios/subtítulos */
+     --bg-light-gray: #f8f9fa;        /* Color de fondo claro para secciones alternativas */
+     --border-color-soft: #e2e8f0;    /* Color sutil para bordes */
+     --white: #ffffff;                /* Color blanco puro */
+     --soft-gradient-start: #f8faff;  /* Color inicial para gradientes suaves */
+     --soft-gradient-end: #ffffff;    /* Color final para gradientes suaves */
   }
-  :global(.section-padding) { padding-top: 6rem; padding-bottom: 6rem; }
-  :global(.container) { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-  :global(.narrow-container) { max-width: 800px; }
-  :global(.text-center) { text-align: center; }
-  :global(.highlight) { color: var(--primary-color); font-weight: 600; }
-  :global(.bg-light-gray) { background-color: var(--bg-light-gray); }
+  
+  /**
+   * Clase utilitaria para espaciado estándar de secciones
+   * - Aplica padding vertical consistente a todas las secciones
+   * - Padding superior menor que el inferior para mejor ritmo visual
+   */
+  :global(.section-padding) { 
+    padding-top: 2rem; 
+    padding-bottom: 5rem; 
+  }
+  
+  /**
+   * Clase utilitaria para contenedores principales
+   * - Limita el ancho máximo del contenido
+   * - Centra el contenido horizontalmente
+   * - Agrega padding horizontal para evitar que el contenido toque los bordes
+   */
+  :global(.container) { 
+    max-width: 1100px; 
+    margin: 0 auto; 
+    padding: 0 1.5rem; 
+  }
+  
+  /**
+   * Clase utilitaria para contenedores más estrechos
+   * - Útil para secciones donde se quiere centralizar más la atención
+   * - Típicamente usado en secciones de texto o CTA
+   */
+  :global(.narrow-container) { 
+    max-width: 800px; 
+  }
+  
+  /**
+   * Clase utilitaria para centrar texto
+   * - Alinea todo el contenido textual al centro
+   */
+  :global(.text-center) { 
+    text-align: center; 
+  }
+  
+  /**
+   * Clase utilitaria para resaltar texto
+   * - Aplica el color primario de la marca
+   * - Añade peso visual con negrita
+   */
+  :global(.highlight) { 
+    color: var(--primary-color); 
+    font-weight: 600; 
+  }
+  
+  /**
+   * Clase utilitaria para fondos gris claro
+   * - Aplica el color de fondo gris claro definido en las variables
+   */
+  :global(.bg-light-gray) { 
+    background-color: var(--bg-light-gray); 
+  }
+  
+  /**
+   * Clase utilitaria para fondos con gradiente
+   * - Crea un gradiente suave de azul muy claro a blanco
+   * - La dirección del gradiente es diagonal (135 grados)
+   */
   :global(.bg-gradient) {
-      background: linear-gradient(135deg, rgba(235, 245, 255, 0.8) 0%, rgba(245, 250, 255, 1) 100%);
+    background: linear-gradient(135deg, rgba(235, 245, 255, 0.8) 0%, rgba(245, 250, 255, 1) 100%);
   }
-
-  /* --- Estilos Generales de Texto (Revisa que estén bien) --- */
-  h1, h2, h3 { color: var(--text-dark); font-weight: 700; line-height: 1.3; }
-  h2.section-title-alt { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1.5rem; position: relative; padding-bottom: 0.75rem; }
-  h2.section-title-alt::after { content: ''; display: block; width: 70px; height: 4px; background-color: var(--primary-color); border-radius: 2px; margin: 1rem auto 0; }
-  h2.section-title-alt:not(.text-center)::after { margin-left: 0; }
-  p { color: var(--text-medium); line-height: 1.7; }
-  .page-subtitle { font-size: 1.25rem; color: var(--text-medium); max-width: 750px; margin: 0 auto 1.5rem auto; line-height: 1.7; }
-  .large-subtitle { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 400; }
-  .section-intro { font-size: 1.1rem; color: var(--text-light); max-width: 700px; margin: 0 auto 4rem auto; }
-
-  /* ====================================================================== */
-  /* --- 1. Estilos Hero (REVISA ESTE BLOQUE CON LUPA) --- */
-  /* ====================================================================== */
-  .hero-section-new {
-    padding-top: 6rem;
-    padding-bottom: 4rem;
-    width: 100%;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    min-height: 400px;
-    display: flex;
-    align-items: center;
-  }
-
-  /* El container global centra horizontalmente */
-
-  .hero-card {
-    display: block;
-    background-color: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(4px); 
-    -webkit-backdrop-filter: blur(4px);
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    max-width: 46rem;
-    margin-left: 0;
-    margin-right: auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    position: relative;
-    z-index: 10;
-    border: 1px solid rgba(200, 200, 200, 0.3);
-  }
-
-  .hero-title {
-    display: block; /* Asegura visibilidad */
-    font-size: clamp(2.25rem, 5vw, 3rem);
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-  }
-
-  .hero-description {
-    display: block; /* Asegura visibilidad */
-    font-size: 1.125rem;
-    color: var(--text-medium);
-    margin-bottom: 2rem;
-    line-height: 1.7;
-  }
-  .hero-description .font-semibold { font-weight: 600; }
-  .hero-description .text-primary { color: var(--primary-color); }
-
-  .hero-buttons {
-    display: flex; /* Asegura visibilidad */
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .hero-button-primary,
-  .hero-button-secondary {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    white-space: nowrap;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-  }
-  .hero-button-primary svg, .hero-button-secondary svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-  .hero-button-primary {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border-color: var(--primary-color);
-  }
-  .hero-button-primary:hover {
-    background-color: color-mix(in srgb, var(--primary-color) 90%, transparent);
-    border-color: color-mix(in srgb, var(--primary-color) 90%, transparent);
-  }
-  .hero-button-secondary {
-    background-color: var(--white);
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-  }
-  .hero-button-secondary:hover {
-    background-color: var(--bg-light-gray);
-  }
-
-  /* ====================================================================== */
-  /* --- 2. Estilos Sección Proceso (Asegúrate que estén intactos) --- */
-  /* ====================================================================== */
-   .process-section { background-color: var(--white); }
-   .process-steps-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; margin-top: 4rem; position: relative; }
-   @media (min-width: 768px) { .process-steps-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; } } /* Revisa esta línea */
-   @media (min-width: 1024px) { .process-steps-grid { grid-template-columns: repeat(4, 1fr); gap: 2rem; } } /* Revisa esta línea */
-   @media (min-width: 1024px) { .process-step-card:not(:last-child)::after { content: ''; position: absolute; top: calc(24px + 1.5rem); left: 100%; transform: translateY(-50%); width: calc(2rem - 2px); height: 2px; background-color: var(--border-color-soft); z-index: -1; } } /* Revisa esta línea */
-   @media (min-width: 768px) and (max-width: 1023px) { .process-step-card:nth-child(2)::after { display: none; } } /* Revisa esta línea */
-   .process-step-card { background-color: var(--white); border: 1px solid var(--border-color-soft); border-radius: 12px; padding: 2.5rem 2rem; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
-   .process-step-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0, 50, 100, 0.1); }
-   .step-number { position: absolute; top: -10px; left: -10px; background-color: var(--primary-color); color: var(--white); width: 40px; height: 40px; border-radius: 50% 0 12px 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; line-height: 1; }
-   .step-icon { color: var(--primary-color); margin-bottom: 1.5rem; display: inline-block; }
-   .step-icon svg { width: 48px; height: 48px; }
-   .step-title { font-size: 1.4rem; margin-bottom: 1rem; color: var(--text-dark); font-weight: 600; }
-   .step-text { font-size: 0.95rem; color: var(--text-medium); line-height: 1.6; }
-
-  /* ====================================================================== */
-  /* --- 3. Estilos Sección Principios (Asegúrate que estén intactos) --- */
-  /* ====================================================================== */
-  .principles-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; margin-top: 4rem; }
-  @media (min-width: 768px) { .principles-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } } /* Revisa esta línea */
-  .principle-item { text-align: center; padding: 1.5rem; }
-  .principle-icon { color: var(--primary-color); margin-bottom: 1.2rem; display: inline-block; }
-  .principle-icon svg { width: 40px; height: 40px; }
-  .principle-title { font-size: 1.3rem; margin-bottom: 0.8rem; font-weight: 600; }
-  .principle-text { font-size: 0.95rem; color: var(--text-medium); line-height: 1.6; }
-
-  /* ====================================================================== */
-  /* --- 4. Estilos Sección Tech Stance (Asegúrate que estén intactos) --- */
-  /* ====================================================================== */
-   .tech-stance-section { background-color: var(--white); }
-   .tech-stance-quote { border-left: 4px solid var(--primary-color); margin-top: 2rem; padding: 1rem 0 1rem 2rem; font-size: 1.15rem; font-style: italic; color: var(--text-medium); line-height: 1.8; }
-   .tech-stance-quote p { margin-bottom: 0; }
-
-  /* ====================================================================== */
-  /* --- 5. Estilos CTA Final (Asegúrate que estén intactos) --- */
-  /* ====================================================================== */
-  .final-cta-section h2 { color: var(--text-dark); font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 1rem; }
-  .final-cta-section p { margin-bottom: 2.5rem; font-size: 1.15rem; color: var(--text-medium); }
-  .cta-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; }
-  .cta-button-primary, .cta-button-secondary { padding: 0.9rem 2.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.2s ease; border: 2px solid transparent; cursor: pointer; display: inline-block; text-transform: uppercase; letter-spacing: 0.5px; }
-  .cta-button-primary { background-color: var(--primary-color); color: var(--white); border-color: var(--primary-color); }
-  .cta-button-primary:hover { background-color: transparent; color: var(--primary-color); border-color: var(--primary-color); }
-  .cta-button-secondary { background-color: #e9ecef; color: var(--text-dark); border-color: #e9ecef; }
-  .cta-button-secondary:hover { background-color: #ced4da; color: var(--text-dark); border-color: #ced4da; }
-
 </style>
