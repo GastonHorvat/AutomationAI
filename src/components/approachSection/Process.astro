@@ -1,10 +1,5 @@
 ---
-/*
- * COMPONENTE DE SECCIÓN DE PROCESO
- * Este componente crea una sección que muestra el proceso de trabajo en 3 pasos,
- * presentando cada fase del servicio con su descripción y áreas clave en un
- * diseño de tarjetas responsivas con iconos y numeración visual.
- */
+/* COMPONENTE DE SECCIÓN DE PROCESO: Muestra el proceso de trabajo en 3 pasos con tarjetas responsivas */
 
 // Importación del componente Icon para mostrar iconos SVG desde el paquete astro-icon
 import { Icon } from 'astro-icon/components';
@@ -19,15 +14,11 @@ import { Icon } from 'astro-icon/components';
 interface Step {
   number: number;
   title: string;
-  description: string; // Incluye la descripción corta
-  keyAreas: string[];  // Incluye el array para las 3 viñetas
+  description: string; // Descripción corta
+  keyAreas: string[];  // Array para las 3 viñetas
 }
 
-/**
- * Array de datos que define los 3 pasos del proceso
- * Cada paso incluye su número, título, descripción y las áreas clave
- * que se mostrarán como ítems con iconos de check
- */
+/* Array de datos que define los 3 pasos del proceso con sus características */
 const processStepsNew: Step[] = [
   {
     number: 1,
@@ -63,112 +54,40 @@ const processStepsNew: Step[] = [
 
 ---
 
-<!-- ====================================================================== -->
-<!-- --- Sección 2: El Proceso Detallado (AHORA CON 3 PASOS Y NUEVO CONTENIDO) --- -->
-<!-- ====================================================================== -->
-
-<!-- 
-  ESTRUCTURA PRINCIPAL
-  - process-section-new: Contenedor principal de la sección
-  - section-padding: Clase que aplica el espaciado interno estándar para secciones
-  - gradient-bg: Aplica un fondo con gradiente vertical a toda la sección
--->
+<!-- SECCIÓN DE PROCESO: Con 3 pasos y nuevo contenido -->
 <section class="process-section-new section-padding gradient-bg">
-  <!-- 
-    Container: Limita el ancho del contenido y lo centra en la página
-    (Clase común que suele estar definida en los estilos globales)
-  -->
   <div class="container">
-    <!-- 
-      ENCABEZADO DE SECCIÓN
-      - process-header: Contenedor del título y subtítulo con márgenes específicos
-      - text-center: Centra el texto horizontalmente
-    -->
+    <!-- Encabezado de sección con título y subtítulo -->
     <div class="process-header text-center">
-      <!-- 
-        TÍTULO DE SECCIÓN
-        - section-title-alt: Estilo de título alternativo con un subrayado decorativo
-        - text-center: Centra el texto horizontalmente
-        - El span se usa para aplicar el subrayado decorativo solo al texto
-      -->
       <h2 class="section-title-alt text-center">
         <span>Our Collaborative Process</span>
       </h2>
       
-      <!-- 
-        SUBTÍTULO DE SECCIÓN
-        - process-subtitle: Estilo para el párrafo introductorio (tamaño, color, márgenes)
-      -->
       <p class="process-subtitle">
         We follow a proven methodology to ensure exceptional results in every project, from initial analysis to ongoing support.
       </p>
     </div>
 
-    <!-- 
-      GRID DE PASOS DEL PROCESO
-      - new-process-grid: Define la cuadrícula donde se mostrarán las tarjetas de pasos
-      - Responsive: 1 columna en móvil, 3 columnas en desktop
-    -->
+    <!-- Grid responsive de tarjetas de proceso -->
     <div class="new-process-grid">
-      {/* 
-        ITERACIÓN DE PASOS DEL PROCESO
-        - Recorre el array processStepsNew y genera una tarjeta para cada paso
-        - Cada paso se renderiza como una tarjeta independiente
-      */}
       {processStepsNew.map(step => (
-        <!-- 
-          TARJETA DE PASO DE PROCESO
-          - new-process-card: Contenedor para cada tarjeta de paso
-          - Incluye estilos de sombra, borde, fondo y espaciado
-        -->
         <div class="new-process-card">
-          <!-- 
-            CÍRCULO CON NÚMERO DE PASO
-            - new-step-number-circle: Círculo con el número de paso
-            - Aplica color de fondo primario, sombra y posicionamiento 
-          -->
+          <!-- Círculo con número de paso -->
           <div class="new-step-number-circle">
-            <!-- Número del paso actual -->
             <span class="new-step-number">{step.number}</span>
           </div>
           
-          <!-- 
-            CONTENIDO DE LA TARJETA
-            - new-card-content: Contenedor flexible para el contenido textual
-            - Organiza verticalmente título, descripción y lista de áreas clave
-          -->
           <div class="new-card-content">
-            <!-- Título del paso actual -->
             <h3 class="new-step-title">{step.title}</h3>
-            
-            <!-- Descripción del paso actual -->
             <p class="new-step-text">{step.description}</p>
             
-            <!-- 
-              LISTA DE ÁREAS CLAVE
-              - new-step-checklist: Lista no ordenada para mostrar las áreas clave
-              - Estilizada para mostrar ítems con iconos de check
-            -->
+            <!-- Lista de áreas clave con iconos de check -->
             <ul class="new-step-checklist">
-              {/* Iteración sobre las áreas clave del paso actual */}
               {step.keyAreas.map(area => (
-                <!-- 
-                  ÍTEM DE ÁREA CLAVE
-                  - new-checklist-item: Contenedor flexible para cada ítem de la lista
-                  - Alinea el icono de check con el texto del área
-                -->
                 <li class="new-checklist-item">
-                  <!-- 
-                    ICONO DE CHECK
-                    - new-check-icon: Contenedor para el icono de verificación
-                    - Aplica color primario y alineación
-                  -->
                   <div class="new-check-icon">
-                    <!-- Icono de verificación desde astro-icon -->
                     <Icon name="mdi:check-circle-outline" size={20} />
                   </div>
-                  
-                  <!-- Texto del área clave -->
                   <span>{area}</span>
                 </li>
               ))}
@@ -180,118 +99,43 @@ const processStepsNew: Step[] = [
   </div>
 </section>
 
-<!-- 
-  ESTILOS CSS
-  Los estilos específicos para la sección de proceso y sus componentes
--->
 <style>
-  /* ====================================================================== */
-  /* --- ESTILOS DE LA SECCIÓN PROCESO --- */
-  /* ====================================================================== */
-  
-  /**
-   * Fondo con gradiente suave
-   * - Crea un degradado vertical desde un azul muy claro hasta blanco
-   */
-  .gradient-bg { 
-    background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%); 
-  }
-  
-  /**
-   * Contenedor del encabezado (título + subtítulo)
-   * - Aplica margen inferior para separarlo del grid de tarjetas
-   */
-  .process-header { 
-    margin-bottom: 4rem; 
-  }
-  
-  /**
-   * Estilo alternativo para título principal
-   * - Tamaño responsive con clamp
-   * - Peso de fuente en negrita
-   * - Color oscuro para mejor contraste
-   * - Margen inferior pequeño
-   */
-  .process-main-title { 
-    font-size: clamp(1.875rem, 4vw, 2.5rem); 
-    font-weight: 700; 
-    color: var(--text-dark); 
-    margin-bottom: 1rem; 
-  }
-  
-  /**
-   * Estilo para el subtítulo/introducción
-   * - Tamaño de fuente medio-grande
-   * - Color de texto secundario
-   * - Ancho máximo para mejorar legibilidad
-   * - Centrado horizontal con margen automático
-   * - Altura de línea aumentada para mejor legibilidad
-   */
-  .process-subtitle { 
-    font-size: 1.125rem; 
-    color: var(--text-medium); 
-    max-width: 56rem; 
-    margin-left: auto; 
-    margin-right: auto; 
-    line-height: 1.7; 
-  }
+  /* ESTILOS DE LA SECCIÓN PROCESO */
+  .gradient-bg { background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%); } /* Degradado vertical suave */
+  .process-header { margin-bottom: 4rem; } /* Espacio entre encabezado y grid de tarjetas */
+  .process-main-title { font-size: clamp(1.875rem, 4vw, 2.5rem); font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; } /* Título responsive con negrita */
+  .process-subtitle { font-size: 1.125rem; color: var(--text-medium); max-width: 56rem; margin-left: auto; margin-right: auto; line-height: 1.7; } /* Subtítulo centrado con ancho máximo */
 
-  /**
-   * Grid de tarjetas de proceso
-   * - Por defecto (móvil): 1 columna
-   * - Espaciado vertical grande entre tarjetas (5rem)
-   * - Espaciado horizontal moderado (2rem)
-   * - Posición relativa para permitir elementos posicionados absolutos (si fuera necesario)
-   * - Margen superior para separarlo del encabezado
-   */
+  /* Grid de tarjetas: 1 columna en móvil */
   .new-process-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Mobile: 1 columna */
-    gap: 5rem 2rem; /* Mayor espaciado vertical que horizontal */
+    grid-template-columns: 1fr; 
+    gap: 5rem 2rem; /* Mayor espacio vertical que horizontal */
     position: relative;
     margin-top: 4rem;
   }
 
-  /**
-   * Media query para tablets
-   * - Mantiene 1 columna (o se podría cambiar a 2 si se prefiere)
-   * - Ajusta el espaciado entre tarjetas
-   */
+  /* 1 columna en tablets con mayor espacio horizontal */
   @media (min-width: 768px) {
     .new-process-grid {
-      grid-template-columns: 1fr; /* Mantiene 1 columna (comentario sobre alternativa de 2 columnas) */
-      gap: 5rem 3rem; /* Aumenta el espaciado horizontal en pantallas más anchas */
+      grid-template-columns: 1fr; 
+      gap: 5rem 3rem; 
     }
   }
 
-  /**
-   * Media query para desktop
-   * - Cambia a 3 columnas cuando el ancho de pantalla es ≥ 1024px
-   * - Ajusta el espaciado entre tarjetas
-   */
+  /* 3 columnas en desktop */
   @media (min-width: 1024px) {
     .new-process-grid {
-      grid-template-columns: repeat(3, 1fr); /* Tres columnas iguales */
-      gap: 5rem 2rem; /* Ajusta espaciado horizontal para mejor equilibrio visual */
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 5rem 2rem; 
     }
   }
 
-  /**
-   * Tarjeta individual de paso de proceso
-   * - Fondo blanco
-   * - Padding interno generoso, con más espacio en la parte superior
-   * - Bordes redondeados
-   * - Sombra sutil para efecto de elevación
-   * - Borde fino para mejor definición
-   * - Posición relativa para elementos absolutos internos
-   * - z-index para control de apilamiento
-   * - Texto centrado
-   * - Layout flexible en columna
-   */
+  /* Tarjeta de proceso con sombra y borde */
   .new-process-card {
     background-color: var(--white);
     padding: 2rem;
-    padding-top: 3rem; /* Padding superior mayor para acomodar círculo del número */
+    padding-top: 3rem; /* Espacio para el círculo del número */
     border-radius: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border-color-soft);
@@ -302,104 +146,25 @@ const processStepsNew: Step[] = [
     flex-direction: column;
   }
 
-  /**
-   * Círculo para número de paso
-   * - Dimensiones fijas (4rem x 4rem)
-   * - Fondo con color primario
-   * - Texto blanco para contraste
-   * - Forma circular con border-radius
-   * - Centrado con flexbox
-   * - Margen negativo superior para posicionarlo parcialmente fuera de la tarjeta
-   * - Centrado horizontal con márgenes automáticos
-   * - Sombra para efecto de elevación
-   * - z-index elevado para asegurar visibilidad
-   * - flex-shrink para evitar que se encoja
-   */
+  /* Círculo con número de paso */
   .new-step-number-circle {
-    width: 4rem; 
-    height: 4rem; 
+    width: 4rem; height: 4rem; 
     background-color: var(--primary-color); 
     color: var(--white); 
     border-radius: 9999px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    margin-bottom: 1.5rem; 
-    margin-left: auto; 
-    margin-right: auto; 
-    margin-top: -4rem; /* Posiciona el círculo parcialmente fuera de la tarjeta */
+    display: flex; align-items: center; justify-content: center; 
+    margin-bottom: 1.5rem; margin-left: auto; margin-right: auto; margin-top: -4rem; /* Posición elevada sobre la tarjeta */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
-    position: relative; 
-    z-index: 11; 
-    flex-shrink: 0; /* Evita que se encoja */
+    position: relative; z-index: 11; 
+    flex-shrink: 0; /* Mantiene tamaño */
   }
   
-  /**
-   * Número dentro del círculo
-   * - Tamaño de fuente medio-grande
-   * - Peso de fuente en negrita
-   * - Altura de línea reducida para mejor centrado
-   */
-  .new-step-number { 
-    font-size: 1.25rem; 
-    font-weight: 700; 
-    line-height: 1; 
-  }
+  .new-step-number { font-size: 1.25rem; font-weight: 700; line-height: 1; } /* Número en negrita */
+  .new-card-content { display: flex; flex-direction: column; flex-grow: 1; } /* Contenedor flexible vertical */
+  .new-step-title { font-size: 1.25rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.75rem; text-align: center; } /* Título semi-negrita */
+  .new-step-text { color: var(--text-medium); margin-bottom: 1.5rem; text-align: center; font-size: 0.95rem; line-height: 1.6; flex-grow: 1; } /* Descripción centrada */
   
-  /**
-   * Contenedor del contenido de la tarjeta
-   * - Layout flexible en columna
-   * - Crece para ocupar espacio disponible
-   */
-  .new-card-content {
-    display: flex;        
-    flex-direction: column;  
-    flex-grow: 1;             
-  }
-  
-  /**
-   * Título del paso
-   * - Tamaño de fuente medio-grande
-   * - Peso de fuente semi-negrita
-   * - Color oscuro para mejor contraste
-   * - Margen inferior pequeño
-   * - Texto centrado
-   */
-  .new-step-title { 
-    font-size: 1.25rem; 
-    font-weight: 600; 
-    color: var(--text-dark); 
-    margin-bottom: 0.75rem; 
-    text-align: center; 
-  }
-  
-  /**
-   * Texto descriptivo del paso
-   * - Color de texto secundario
-   * - Margen inferior para separarlo de la lista
-   * - Texto centrado
-   * - Tamaño de fuente ligeramente reducido
-   * - Altura de línea aumentada para mejor legibilidad
-   * - Crece para ocupar espacio disponible
-   */
-  .new-step-text {
-    color: var(--text-medium);
-    margin-bottom: 1.5rem;
-    text-align: center;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    flex-grow: 1;
-  }
-  
-  /**
-   * Lista de áreas clave
-   * - Sin estilo de lista (elimina bullets)
-   * - Sin padding (alineación con el resto del contenido)
-   * - Sin margen
-   * - Layout flexible en columna
-   * - Espaciado entre ítems
-   * - Alineación de texto a la izquierda (para ítems de lista)
-   */
+  /* Lista de áreas clave sin bullets */
   .new-step-checklist {
     list-style: none;
     padding: 0;
@@ -410,54 +175,8 @@ const processStepsNew: Step[] = [
     text-align: left;
   }
 
-  /**
-   * Ítem individual de la lista de áreas clave
-   * - Layout flexible para alinear icono y texto
-   * - Alineación central para mejor alineamiento visual
-   */
-  .new-checklist-item {
-    display: flex;
-    align-items: center;
-  }
-
-  /**
-   * Contenedor del icono de check
-   * - Dimensiones fijas
-   * - Centrado con flexbox
-   * - Color primario para el icono
-   * - Margen derecho para separarlo del texto
-   * - No se encoge (mantiene tamaño)
-   */
-  .new-check-icon {
-    width: 1.25rem;
-    height: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-color);
-    margin-right: 0.5rem;
-    flex-shrink: 0;
-  }
-  
-  /**
-   * Ajustes específicos para el SVG del icono
-   * - Altura de línea para alineación
-   * - Alineación vertical centrada
-   */
-  .new-check-icon svg {
-    line-height: 1;
-    vertical-align: middle;
-  }
-
-  /**
-   * Texto del ítem de área clave
-   * - Color de texto secundario
-   * - Tamaño de fuente ligeramente reducido
-   * - Altura de línea moderada para legibilidad
-   */
-  .new-checklist-item span {
-    color: var(--text-medium);
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
+  .new-checklist-item { display: flex; align-items: center; } /* Alineación de iconos y texto */
+  .new-check-icon { width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center; color: var(--primary-color); margin-right: 0.5rem; flex-shrink: 0; } /* Icono de check */
+  .new-check-icon svg { line-height: 1; vertical-align: middle; } /* Alineación del SVG */
+  .new-checklist-item span { color: var(--text-medium); font-size: 0.95rem; line-height: 1.5; } /* Texto de área clave */
 </style>
