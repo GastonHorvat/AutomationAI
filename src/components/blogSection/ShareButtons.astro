@@ -1,0 +1,144 @@
+---
+// src/components/blogSection/ShareButtons.astro
+import { Icon } from 'astro-icon/components';
+
+// Props que necesitará para la funcionalidad
+export interface Props {
+  postUrl: string;  // La URL canónica del post actual
+  postTitle: string; // El título del post
+}
+
+const { postUrl, postTitle } = Astro.props;
+
+// Codificamos los parámetros para las URLs de compartir
+const encodedUrl = encodeURIComponent(postUrl);
+const encodedTitle = encodeURIComponent(postTitle);
+
+// URLs para compartir correctamente formateadas
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
+---
+
+<div class="share-section-wrapper border-t border-b border-gray-200 py-6 my-10">
+  <h3 class="text-lg font-semibold mb-4">Share this story</h3>
+  <div class="flex space-x-3 md:space-x-4">
+    <!-- Facebook -->
+    <a 
+      href={facebookShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-button bg-blue-600 hover:bg-blue-700"
+      aria-label="Share on Facebook"
+    >
+      <Icon name="mdi:facebook" />
+    </a>
+    
+    <!-- Twitter/X -->
+    <a 
+      href={twitterShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-button bg-sky-500 hover:bg-sky-600"
+      aria-label="Share on Twitter"
+    >
+      <Icon name="mdi:twitter" />
+    </a>
+    
+    <!-- LinkedIn -->
+    <a 
+      href={linkedinShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-button bg-blue-700 hover:bg-blue-800"
+      aria-label="Share on LinkedIn"
+    >
+      <Icon name="mdi:linkedin" />
+    </a>
+     
+    <!-- WhatsApp -->
+    <a 
+      href={whatsappShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-button bg-green-500 hover:bg-green-600"
+      aria-label="Share on WhatsApp"
+    >
+      <Icon name="mdi:whatsapp" />
+    </a>
+    
+    <!-- Copy Link Button -->
+    <button
+      type="button"
+      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700 copy-link-button"
+      aria-label="Copy link"
+      data-clipboard-text={postUrl}
+    >
+      <Icon name="mdi:link-variant" />
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Estilos adaptados del ejemplo, usando clases descriptivas */
+  .share-section-wrapper {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-color: #e5e7eb; /* gray-200 */
+    padding-top: 1.5rem;    /* py-6 */
+    padding-bottom: 1.5rem;
+
+  }
+
+  .share-section-wrapper h3 {
+    font-size: 1.125rem; /* text-lg */
+    line-height: 1.75rem;
+    font-weight: 600; /* font-semibold */
+    margin-bottom: 1rem; /* mb-4 */
+    color: var(--text-dark, #1f2937); /* Mejor usar variable */
+  }
+
+  .share-section-wrapper .flex { /* Contenedor de botones */
+    display: flex;
+  }
+  
+  .share-section-wrapper .space-x-3 > :not([hidden]) ~ :not([hidden]) { /* space-x-3 */
+     margin-left: 0.75rem; /* Ajusta según necesidad */
+  }
+  
+  @media (min-width: 768px) { /* md:space-x-4 */
+    .share-section-wrapper .space-x-3 > :not([hidden]) ~ :not([hidden]) {
+      margin-left: 1rem;
+    }
+  }
+
+  .share-button {
+    width: 2.5rem;    /* w-10 */
+    height: 2.5rem;   /* h-10 */
+    border-radius: 9999px; /* rounded-full */
+    display: inline-flex; /* flex no es necesario si usamos inline-flex */
+    align-items: center;
+    justify-content: center;
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    color: white; /* Color icono por defecto */
+    font-size: 1.25rem; /* Ajusta tamaño icono */
+  }
+  
+  .share-button:hover { /* Estilos hover genéricos, sobreescritos por color específico */
+    opacity: 0.9;
+  }
+
+  /* Colores específicos */
+  .bg-blue-600 { background-color: #2563eb; }
+  .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+  .bg-sky-500 { background-color: #0ea5e9; }
+  .hover\:bg-sky-600:hover { background-color: #0284c7; }
+  .bg-blue-700 { background-color: #1d4ed8; }
+  .hover\:bg-blue-800:hover { background-color: #1e40af; }
+  .bg-green-500 { background-color: #22c55e; }
+  .hover\:bg-green-600:hover { background-color: #16a34a; }
+  .bg-gray-200 { background-color: #e5e7eb; }
+  .hover\:bg-gray-300:hover { backgroun

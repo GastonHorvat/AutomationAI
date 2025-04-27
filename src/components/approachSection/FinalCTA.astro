@@ -1,108 +1,40 @@
 ---
-/*
- * COMPONENTE DE SECCIÓN CTA FINAL
- * Este componente crea una sección de llamada a la acción (Call-to-Action) final
- * que invita a los usuarios a contactar con la empresa o explorar sus soluciones.
- * Utiliza un fondo con gradiente y botones de acción destacados.
- */
-
-// Importación del componente Icon para mostrar iconos SVG desde el paquete astro-icon
+// Componente de Sección CTA Final - Invita a usuarios a contactar con la empresa
 import { Icon } from 'astro-icon/components';
-
 ---
 
-<!-- 
-  ESTRUCTURA PRINCIPAL
-  - final-cta-section: Contenedor principal de la sección CTA
-  - section-padding: Clase que aplica el espaciado interno estándar para secciones
-  - bg-gradient: Aplica un fondo con gradiente a toda la sección
--->
 <section class="final-cta-section section-padding bg-gradient">
-    <!-- 
-      Container: Limita el ancho del contenido y lo centra en la página
-      - text-center: Centra todo el contenido horizontalmente
-      - narrow-container: Reduce el ancho máximo para mejor enfoque visual
-    -->
     <div class="container text-center narrow-container">
-      <!-- 
-        TÍTULO PRINCIPAL CON TEXTO DESTACADO
-        - El título utiliza un tamaño responsive (definido en CSS)
-        - El span con clase "highlight" resalta la parte importante del mensaje
-      -->
+      <!-- Título con texto destacado -->
       <h2>Let's Build Your <span class="highlight">AI Advantage</span>, Together.</h2>
       
-      <!-- 
-        DESCRIPCIÓN/SUBTÍTULO
-        - Párrafo explicativo que amplía el mensaje del título
-        - Proporciona contexto adicional para motivar la acción
-      -->
-      <p>...</p>
+      <p>Ready to see how our tailored approach can transform your specific business challenges into growth opportunities?</p>
       
-      <!-- 
-        CONTENEDOR DE BOTONES CTA
-        - cta-buttons: Organiza los botones con flexbox
-        - Permite que los botones se adapten en móvil (flex-wrap)
-      -->
       <div class="cta-buttons">
-        <!-- 
-          BOTÓN PRIMARIO
-          - cta-button-primary: Estilo principal destacado para la acción principal
-          - Enlace a la página de contacto
-          - Diseñado para destacar visualmente como la acción preferida
-        -->
+        <!-- Botón primario para la acción principal -->
         <a href="/contact" class="cta-button-primary">CONTACT US FOR A CONSULTATION</a>
         
-        <!-- 
-          BOTÓN SECUNDARIO
-          - cta-button-secondary: Estilo visual menos destacado para acción alternativa
-          - Enlace a la página de soluciones
-          - Ofrece una opción alternativa para usuarios que no están listos para contactar
-        -->
+        <!-- Botón secundario como alternativa -->
         <a href="/solutions" class="cta-button-secondary">EXPLORE OUR SOLUTIONS</a>
       </div>
     </div>
 </section>
 
-<!-- 
-  ESTILOS CSS
-  Los estilos específicos para la sección CTA final y sus componentes
--->
 <style>
-/* ====================================================================== */
-/* --- Estilos CTA Final --- */
-/* ====================================================================== */
-
-/**
- * Estilo para el título principal
- * - Color oscuro para máxima legibilidad
- * - Tamaño responsive con clamp (entre 1.8rem y 2.5rem)
- * - Margen inferior pequeño para separarlo del párrafo
- */
+/* Estilos para el título y texto */
 .final-cta-section h2 { 
   color: var(--text-dark); 
   font-size: clamp(1.8rem, 5vw, 2.5rem); 
   margin-bottom: 1rem; 
 }
 
-/**
- * Estilo para el párrafo descriptivo
- * - Margen inferior amplio para separarlo de los botones
- * - Tamaño de fuente ligeramente mayor para mejor legibilidad
- * - Color de texto medio para contraste adecuado
- */
 .final-cta-section p { 
   margin-bottom: 2.5rem; 
   font-size: 1.15rem; 
   color: var(--text-medium); 
 }
 
-/**
- * Contenedor de los botones CTA
- * - Utiliza flexbox para organizar los botones horizontalmente
- * - flex-wrap permite que los botones se apilen en pantallas pequeñas
- * - justify-content centra los botones horizontalmente
- * - gap establece el espacio entre los botones
- */
+/* Contenedor flex para los botones que se adapta a móvil */
 .cta-buttons { 
   display: flex; 
   flex-wrap: wrap; 
@@ -110,20 +42,7 @@ import { Icon } from 'astro-icon/components';
   gap: 1.2rem; 
 }
 
-/**
- * Estilos comunes para ambos botones
- * - Padding adecuado para área de clic cómoda
- * - Bordes redondeados para estética moderna
- * - Sin subrayado (quita el estilo predeterminado de enlaces)
- * - Fuente semi-negrita para destacar
- * - Tamaño de fuente estándar
- * - Transición suave para efectos hover
- * - Borde transparente por defecto
- * - Cursor pointer para indicar interactividad
- * - display inline-block para comportamiento de bloque manteniendo el flujo
- * - Texto en mayúsculas para destacar visualmente
- * - Espaciado entre letras aumentado para mejorar legibilidad en mayúsculas
- */
+/* Estilos base compartidos por ambos botones */
 .cta-button-primary, .cta-button-secondary { 
   padding: 0.9rem 2.2rem; 
   border-radius: 8px; 
@@ -138,50 +57,26 @@ import { Icon } from 'astro-icon/components';
   letter-spacing: 0.5px; 
 }
 
-/**
- * Estilo específico para el botón primario
- * - Fondo con color primario de la marca
- * - Texto blanco para máximo contraste
- * - Borde del mismo color que el fondo
- */
+/* Botón primario: destacado con color principal */
 .cta-button-primary { 
   background-color: var(--primary-color); 
   color: var(--white); 
   border-color: var(--primary-color); 
 }
 
-/**
- * Efecto hover para el botón primario
- * - Cambia a fondo transparente
- * - Mantiene el color de texto igual al color primario
- * - Mantiene el borde visible con el color primario
- * - Crea un efecto de inversión de colores al pasar el cursor
- */
 .cta-button-primary:hover { 
   background-color: transparent; 
   color: var(--primary-color); 
   border-color: var(--primary-color); 
 }
 
-/**
- * Estilo específico para el botón secundario
- * - Fondo gris claro neutro
- * - Texto oscuro para buen contraste
- * - Borde del mismo color que el fondo
- */
+/* Botón secundario: menos destacado */
 .cta-button-secondary { 
   background-color: #e9ecef; 
   color: var(--text-dark); 
   border-color: #e9ecef; 
 }
 
-/**
- * Efecto hover para el botón secundario
- * - Cambia a un gris ligeramente más oscuro
- * - Mantiene el color de texto oscuro
- * - Actualiza el borde al mismo color que el nuevo fondo
- * - Crea un efecto sutil al pasar el cursor
- */
 .cta-button-secondary:hover { 
   background-color: #ced4da; 
   color: var(--text-dark); 

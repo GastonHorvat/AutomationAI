@@ -3,6 +3,8 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';       // Importa cliente Supabase
 import type { PostFromView } from '../../types';    // Importa el tipo desde types.ts
+import ShareButtons from '../../components/blogSection/ShareButtons.astro'; // Importa el ShareButtons
+import { Fragment } from 'astro/jsx-runtime';
 
 // --- getStaticPaths: Obtiene slugs desde Supabase ---
 export async function getStaticPaths() {
@@ -124,7 +126,7 @@ function formatDate(dateString: string | null): string {
             {/* Categoría */}
             {post.category_name && post.category_slug && (
               <a href={`/blog/category/${post.category_slug}/`} class="post-category">
-                {post.category_name} {/* Asume nombre capitalizado de DB */}
+                {post.category_name}
               </a>
             )}
             {/* Título */}
@@ -132,7 +134,7 @@ function formatDate(dateString: string | null): string {
             {/* Meta Info */}
             <div class="post-meta">
               {post.author_name && <span>By {post.author_name}</span>}
-              {post.author_name && post.published_at && <span class="separator">|</span>}
+              {post.author_name && post.published_at && <span class="separator"> | </span>}
               {post.published_at && (
                 <time datetime={post.published_at}>
                   {formatDate(post.published_at)}
@@ -141,7 +143,7 @@ function formatDate(dateString: string | null): string {
               {/* Tiempo de Lectura */}
               {post.estimated_read_time && post.estimated_read_time > 0 && (
                   <>
-                      <span class="separator">|</span>
+                      <span class="separator"> | </span>
                       <span class="reading-time">{post.estimated_read_time} min read</span>
                   </>
               )}
@@ -164,7 +166,9 @@ function formatDate(dateString: string | null): string {
 
           {/* Contenido Principal */}
           <div class="post-content prose" set:html={contentHtml || post.post_content || ''}>
+          {/* Contenido se inyecta aquí */}
           </div>
+
 
           {/* Tags */}
           <footer class="post-footer">
@@ -175,17 +179,23 @@ function formatDate(dateString: string | null): string {
                     const tagSlug = post.tag_slugs![index]; // Asumimos sincronía
                     return (
                       <a href={`/blog/tag/${tagSlug}/`} class="tag-link">
-                        {tagName} {/* Asume nombre en minúsculas de DB */}
+                        {tagName}
                       </a>
                     );
                 })}
               </div>
             )}
           </footer>
+          {/* --- COMPONENTE SHARE BUTTONS AQUÍ --- */}
+          <ShareButtons
+            postUrl={`${Astro.url.origin}${Astro.url.pathname}`} 
+            postTitle={post.post_title}
+          />
         </>
       )}
     </div>
   </article>
+
 </Layout>
 {/* --- FIN HTML DEL COMPONENTE --- */}
 
@@ -227,24 +237,20 @@ function formatDate(dateString: string | null): string {
   .post-content ul, 
   .post-content ol,
   article ul,
-  article ol,
-  body ul,
-  body ol {
-    padding-left: 60px !important;
-    margin-left: 0 !important;
+  article ol {
+    padding-left: 60px;
   }
 
   .post-content li,
-  article li,
-  li {
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
+  article li {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   /* Estilos personalizados para <hr> */
   .post-content hr {
-    margin-top: 2rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
     border: none;
     border-top: 1px solid #ddd;
   }
