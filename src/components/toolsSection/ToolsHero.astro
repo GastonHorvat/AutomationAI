@@ -1,0 +1,73 @@
+---
+// src/components/toolsSection/ToolsHero.astro
+interface Props {
+  toolCount: number;
+}
+
+const { toolCount } = Astro.props;
+
+const toolsFoundText = toolCount > 0 ? `Currently showcasing ${toolCount} tools.` : 'Exploring the latest AI solutions.';
+---
+
+<section class="tools-hero">
+  <div class="container hero-content">
+    <h1 class="hero-title">AI Tools Directory</h1>
+    <p class="hero-subtitle">
+      Explore our curated list of Artificial Intelligence tools designed
+      to boost productivity and drive innovation. Use the filters below
+      to find the perfect AI solution for your needs.
+    </p>
+    <p class="tool-count">{toolsFoundText}</p>
+  </div>
+</section>
+
+<style>
+    .tools-hero {
+      padding: 2rem 0 2rem; /* Más padding vertical */
+      /* --- Aplicar el Gradiente --- */
+      background: linear-gradient(145deg, rgba(235, 241, 255, 0.8) 00%, rgba(164, 124, 243, 0.9) 100%), #989ef3; /* Ajusta colores/opacidad */
+      /* O usa tus variables CSS si las tienes:
+      background: linear-gradient(145deg, var(--gradient-start, rgba(235, 241, 255, 0.8)) 0%, var(--gradient-end, rgba(253, 252, 255, 0.9)) 100%), var(--white, #ffffff);
+      */
+      text-align: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      border-radius: 12px;
+    }
+  
+    /* Contenedor GENERAL para centrar */
+    .container {
+      width: 90%;
+      max-width: 1200px; /* O el ancho máximo de tu layout */
+      margin-left: auto;
+      margin-right: auto;
+    }
+  
+    /* Contenedor ESPECÍFICO para el texto del hero */
+    .hero-content {
+      max-width: 750px; /* <<< --- Limita el ancho del texto --- */
+      margin: 0 auto; /* Centra el bloque de texto */
+    }
+  
+    .hero-title {
+      font-size: clamp(2.8rem, 7vw, 3.8rem); /* Ajusta tamaño si es necesario */
+      font-weight: 700; /* Puede ser 800 si tu fuente lo soporta */
+      color: var(--text-dark, #000000); /* Color oscuro principal */
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      letter-spacing: -0.5px; /* Ajuste fino opcional */
+    }
+  
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 5vw, 1.2rem); /* Ligeramente más pequeño que antes */
+      color: var(--text-medium, #000000); /* Gris medio */
+      line-height: 1.7; /* Un poco más de interlineado */
+      margin-bottom: 1.5rem;
+    }
+  
+    .tool-count {
+      font-size: 1.2rem; /* Más pequeño */
+      color: var(--text-light, #0c1218); 
+      font-weight: 500; /* Menos peso */
+    }
+  </style>

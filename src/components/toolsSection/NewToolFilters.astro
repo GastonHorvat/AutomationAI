@@ -1,0 +1,239 @@
+---
+// src/components/toolsSection/NewToolFilters.astro
+import { Icon } from 'astro-icon/components';
+
+// Props que probablemente necesitaremos pasarle más adelante desde tools.astro
+export interface Props {
+  toolCount: number;
+  categories: string[];
+  // Ejemplo: pricingOptions: string[];
+  // Ejemplo: ratingOptions: string[];
+}
+
+const { toolCount, categories = [] } = Astro.props;
+// Opciones hardcodeadas como ejemplo para el HTML inicial
+const pricingOptions = ['All', 'Free', 'Freemium', 'Paid', 'Open Source'];
+const ratingOptions = ['All', '4+ stars', '3+ stars'];
+---
+
+<div class="new-filter-container"> {/* Contenedor Blanco Principal */}
+  <div class="filter-section-wrapper"> {/* Wrapper Interno con Padding */}
+
+    {/* Barra con Dropdowns y Búsqueda */}
+    <div class="filter-bar">
+
+      {/* Dropdown Categoría */}
+      <div class="filter-group custom-select">
+        <button class="filter-dropdown-toggle" type="button" id="category-filter-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span>Category</span>
+          <Icon name="mdi:chevron-down" size={20} class="dropdown-icon text-gray-500"/>
+        </button>
+        <div class="dropdown-menu category-options" id="category-filter-options" hidden>
+          <ul role="listbox">
+            <li role="option" tabindex="0" class="custom-select-option" data-value="all">All Categories</li>
+            {categories.map(category => (
+              <li role="option" tabindex="0" class="custom-select-option" data-value={category}>{category}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Dropdown Precio (Placeholder) */}
+      <div class="filter-group custom-select">
+        <button class="filter-dropdown-toggle" type="button" id="price-filter-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span>Price</span>
+          <Icon name="mdi:chevron-down" size={20} class="dropdown-icon text-gray-500"/>
+        </button>
+        <div class="dropdown-menu price-options" id="price-filter-options" hidden>
+           <ul role="listbox">
+              {pricingOptions.map(option => (
+                <li role="option" tabindex="0" class="custom-select-option" data-value={option}>{option}</li>
+              ))}
+           </ul>
+        </div>
+      </div>
+
+      {/* Dropdown Valoración (Placeholder) */}
+       <div class="filter-group custom-select">
+        <button class="filter-dropdown-toggle" type="button" id="rating-filter-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span>Rating</span>
+          <Icon name="mdi:chevron-down" size={20} class="dropdown-icon text-gray-500"/>
+        </button>
+        <div class="dropdown-menu rating-options" id="rating-filter-options" hidden>
+           <ul role="listbox">
+             {ratingOptions.map(option => (
+               <li role="option" tabindex="0" class="custom-select-option" data-value={option.includes('+') ? option.split('+')[0] + '+' : option}>{option}</li>
+             ))}
+           </ul>
+        </div>
+      </div>
+
+      {/* Barra de Búsqueda */}
+      <div class="search-container">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+           <Icon name="mdi:magnify" size={20} class="search-icon text-gray-400"/>
+        </div>
+        <input type="search" id="tool-search-input" placeholder="Search tools..." class="search-input"/>
+      </div>
+
+    </div> {/* Fin .filter-bar */}
+
+    {/* Área de Filtros Activos (Píldoras) */}
+    <div class="active-filters-area">
+      {/* Píldora por defecto (se ocultará con JS si hay filtros) */}
+      <span class="filter-pill default-pill">All Tools</span>
+      {/* Las píldoras activas se añadirán aquí con JS */}
+      <button type="button" class="clear-all-filters" hidden>Clear All</button>
+    </div> {/* Fin .active-filters-area */}
+
+  </div> {/* Fin .filter-section-wrapper */}
+</div> {/* Fin .new-filter-container */}
+
+<style>
+  /* --- ESTILOS ADAPTADOS --- */
+  .new-filter-container {
+     background-color: #ffffff;
+     padding: 0; /* Sin padding externo */
+     border-radius: 12px;
+     box-shadow: 0 4px 15px rgba(0, 30, 60, 0.07);
+     margin-bottom: 3rem;
+  }
+
+  .filter-section-wrapper { /* Wrapper interno */
+      padding: 1.5rem 2rem;
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+  }
+
+  .filter-group {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto; /* No crece, puede encoger */
+  }
+   /* Anchos base sugeridos (ajústalos!) */
+   .filter-group:has(#category-filter-btn) { flex-basis: 180px; }
+   .filter-group:has(#price-filter-btn) { flex-basis: 120px; }
+   .filter-group:has(#rating-filter-btn) { flex-basis: 130px; }
+
+  .filter-dropdown-toggle {
+     display: inline-flex; align-items: center; justify-content: space-between;
+     width: 100%; /* Ocupa el ancho del .filter-group */
+     padding: 0.5rem 0.8rem;
+     background-color: white; border: 1px solid #d1d5db; border-radius: 0.5rem;
+     cursor: pointer; font-size: 0.875rem; font-weight: 500; color: #374151;
+     transition: border-color 0.2s; white-space: nowrap; text-align: left;
+  }
+   .filter-dropdown-toggle:hover { border-color: #9ca3af; }
+   .dropdown-icon { color: #6b7280; transition: transform 0.2s; }
+   .filter-dropdown-toggle[aria-expanded="true"] .dropdown-icon { transform: rotate(180deg); } /* Rotar icono al abrir */
+
+
+  .search-container {
+    position: relative;
+    flex: 1 1 300px; /* Crece/Encoge, base 300px */
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+  }
+  .search-icon { position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%); pointer-events: none; color: #9ca3af; }
+  .search-input {
+     display: block; width: 100%;
+     padding: 0.5rem 0.75rem 0.5rem 2.5rem; /* py-2 pr-3 pl-10 */
+     border: 1px solid #d1d5db; border-radius: 0.5rem;
+     line-height: 1.25rem; background-color: white; color: #111827;
+     placeholder-color: #6b7280; font-size: 0.875rem;
+  }
+   .search-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
+   .search-input::placeholder { color: #6b7280; }
+   .search-input:focus::placeholder { color: #9ca3af; }
+
+
+  .active-filters-area {
+     display: flex; flex-wrap: wrap; align-items: center;
+     gap: 0.6rem; padding-top: 1rem;
+     border-top: 1px solid #f0f0f0;
+     min-height: 28px;
+  }
+
+  .filter-pill {
+     display: inline-flex; align-items: center;
+     padding: 0.25rem 0.8rem; border-radius: 16px;
+     font-size: 0.8rem; font-weight: 500; line-height: 1.4;
+     white-space: nowrap; cursor: default; border: 1px solid transparent;
+  }
+
+   /* Píldora default "All Tools" */
+   .filter-pill.default-pill {
+     background-color: #FEF3C7; /* Amarillo claro - AJUSTA COLOR */
+     color: #92400E; /* Marrón/Naranja oscuro - AJUSTA COLOR */
+     border-color: #FDE68A; /* Amarillo más oscuro - AJUSTA COLOR */
+     font-style: normal; /* Sin itálica */
+   }
+   .filter-pill.default-pill[hidden] { display: none;}
+   /* Píldora activa (Filtro seleccionado) */
+
+  .filter-pill.active-pill {
+     background-color: #f30d20; /* Lavanda/Azul claro - AJUSTA COLOR */
+     color: #3730A3; /* Azul/Índigo oscuro - AJUSTA COLOR */
+     border-color: #C7D2FE; /* Lavanda/Azul más oscuro - AJUSTA COLOR */
+  }
+
+  .remove-pill {
+     margin-left: 0.4rem; padding: 0; background: none; border: none;
+     cursor: pointer; line-height: 0.8; opacity: 0.6; color: inherit;
+     font-size: 1.4em; font-weight: bold;
+  }
+   .remove-pill:hover { opacity: 1; }
+
+   .clear-all-filters {
+   /* Quitamos margin-left: auto; */
+   font-size: 0.85rem;
+   color: var(--text-light, --secondary-color) !important; /* Color gris como antes */
+   text-decoration: underline;
+   cursor: pointer;
+   padding: 0.25rem 0.5rem; /* Añadimos un poco de padding */
+   border: 1px solid transparent; /* Borde invisible para alinear altura */
+   border-radius: 4px; /* Opcional: redondear un poco */
+   transition: color 0.2s, background-color 0.2s;
+   margin-left: 0.5rem; /* Pequeño margen a la izquierda para separarlo del último chip */
+}
+ .clear-all-filters:hover {
+   color: var(--text-dark);
+   background-color: #f3f4f6; /* Fondo gris claro al pasar */
+ }
+ .clear-all-filters[hidden] { display: none; }
+
+  .dropdown-menu {
+     position: absolute; top: calc(100% + 4px); left: 0;
+     width: max-content; min-width: 100%; background-color: #ffffff;
+     border: 1px solid #d1d5db; border-radius: 8px;
+     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); z-index: 100;
+     max-height: 300px; overflow-y: auto; padding: 0.5rem 0; margin-top: 2px;
+  }
+   .dropdown-menu[hidden] { display: none; }
+   .dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
+   .dropdown-menu li { padding: 0.6rem 1.2rem; cursor: pointer; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.15s; }
+   .dropdown-menu li:hover, .dropdown-menu li:focus { background-color: #f3f4f6; outline: none;}
+   .dropdown-menu li.selected { font-weight: 600; background-color: #e0e7ff; color: #4338ca; }
+
+
+  /* --- Responsive --- */
+  @media (max-width: 900px) {
+     .filter-bar { gap: 0.5rem; }
+     .filter-group, .search-container { flex-basis: auto; }
+     .search-container { min-width: 180px; }
+  }
+  @media (max-width: 680px) {
+     .search-container { order: -1; flex-basis: 100%; margin-bottom: 0.75rem; }
+     .filter-group { flex-basis: calc(33.33% - 0.4rem); min-width: 100px; } /* Ajustado gap */
+  }
+  @media (max-width: 450px) {
+     .filter-group { flex-basis: 100%; }
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+// Quita la interfaz Props local si está ahí
+import type { ToolFromView } from '../../types'; // Ruta corregida
+import { Icon } from 'astro-icon/components'; // Asegúrate que Icon esté si lo usas
+
+// Definir Props usando el tipo importado
+export interface Props {
+  tool: ToolFromView;
+  tagColorsMap?: Record<string, string>;
+}
+
+const { tool, tagColorsMap = {} } = Astro.props;
+
+// Helper para estrellas
+function renderStars(rating: number | null): string {
+  if (rating === null || rating < 1 || rating > 5) return '';
+  const fullStars = Math.floor(rating);
+  const emptyStars = 5 - fullStars;
+  return '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
+}
+
+// Obtenemos valores para usar en el template
+const displayCategory = tool.category_name || 'Uncategorized';
+const displaySubcategory = tool.subcategory_name || '';
+const displayRating = renderStars(tool.tool_rating);
+const displayPricing = tool.tool_pricing_model || '';
+const displayTags = tool.tag_names || [];
+
+// Función auxiliar para obtener el color del tag
+function getTagColor(tagName: string): string {
+    return tagColorsMap[tagName] || '#e9ecef';
+}
+
+// Ya NO definimos toolNameContent aquí en el frontmatter
+---
+
+{/* --- Inicio del Template HTML --- */}
+<article class="tool-card">
+  <div class="card-main-content">
+    {/* Nombre como link (Usando ternario inline o la versión simple) */}
+    {/* Vamos a usar la versión simple que funcionó para aislar */}
+     <h3 class="tool-name">
+       <a href={tool.tool_link || '#'} target="_blank" rel="noopener noreferrer">{tool.tool_name}</a>
+     </h3>
+     {/* NO hay etiqueta </h3> extra aquí */}
+
+    {/* Categoría y Subcategoría */}
+    <div class="tool-categories">
+      <span class="tool-category">{displayCategory}</span>
+      {displaySubcategory && <span class="tool-subcategory"> / {displaySubcategory}</span>}
+    </div>
+
+    {/* Descripción */}
+    <p class="tool-description">{tool.tool_description || 'No description available.'}</p>
+  </div>
+
+  <div class="card-footer">
+    {/* Rating y Pricing */}
+    <div class="tool-meta">
+      {displayRating && <span class="tool-rating" title={`${tool.tool_rating}/5`}>{displayRating}</span>}
+      {displayRating && displayPricing && <span class="meta-separator">|</span>}
+      {displayPricing && <span class="tool-pricing">{displayPricing}</span>}
+    </div>
+
+    {/* Tags */}
+    {displayTags.length > 0 && (
+      <div class="tool-tags">
+        {displayTags.map(tagName => (
+          <span
+            class="tool-tag"
+            style={`background-color: ${getTagColor(tagName)};`}
+          >
+            {tagName}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+</article>
+<style>
+  /* ... tus estilos para .tool-card, .tool-name, etc. ... */
+  .tool-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 30, 60, 0.06);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 40, 80, 0.09);
+  }
+  .card-main-content { margin-bottom: 1rem; }
+  .tool-name { font-size: 1.25rem; font-weight: 600; margin-top: 0; margin-bottom: 0.5rem; color: var(--text-dark); }
+  .tool-name a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  .tool-name a:hover { color: var(--primary-color); }
+  .tool-categories { font-size: 0.8rem; color: var(--text-light); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+  .tool-category { color: var(--primary-color); font-weight: 600;}
+  .tool-subcategory { margin-left: 0.25rem; }
+  .tool-description { font-size: 0.95rem; color: var(--text-medium); line-height: 1.6; flex-grow: 1; margin-bottom: 0; }
+  .card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #f0f0f0; }
+  .tool-meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #666; margin-bottom: 0.75rem; }
+  .tool-rating { color: #f5c518; }
+  .tool-pricing { font-weight: 500; color: #333; }
+  .meta-separator { color: #ccc; }
+  .tool-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tool-tag { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; color: #334155; line-height: 1.3; border: 1px solid rgba(0,0,0,0.05); }
+</style>

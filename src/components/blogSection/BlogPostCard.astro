@@ -1,0 +1,224 @@
+---
+// src/components/blogSection/BlogPostCard.astro - SOLO GRID ITEM
+import type { PostFromView } from '../../types'; // Usando src/types.ts
+// Quitamos Icon si no se usa aquí
+
+export interface Props {
+  post: PostFromView;
+}
+
+const { post } = Astro.props; // Ya no necesitamos isFeatured
+
+// --- Helpers ---
+function formatDate(dateString: string | null): string {
+  if (!dateString) return 'Fecha desconocida';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); // Formato inglés
+  } catch (e) { return 'Fecha inválida'; }
+}
+
+
+// Preparamos variables
+const finalUrl = `/blog/${post.post_slug}/`;
+const categoryLink = post.category_slug ? `/blog/category/${post.category_slug}/` : '#';
+const displayCategoryName = post.category_name || 'General';
+const displayTags = post.tag_names || [];
+const displayTagSlugs = post.tag_slugs || [];
+const displayAuthor = post.author_name || 'AutomationAI Team';
+
+// Clase fija para el grid item
+const articleClasses = `post-card is-grid-item`;
+---
+
+<article class={articleClasses}>
+  {/* Contenedor de la Imagen */}
+  <div class="card-image-container">
+    {/* Sin badge aquí */}
+    {post.post_image_url ? (
+      <a href={finalUrl} class="card-image-link">
+        <img
+          src={post.post_image_url}
+          alt={post.post_title || 'Blog post image'}
+          class="card-image"
+          loading="lazy"
+          decoding="async"
+          width="400" height="200" 
+        />
+      </a>
+    ) : (
+      <div class="card-image-placeholder"></div>
+    )}
+  </div>
+
+  {/* Contenedor del Contenido de Texto */}
+  <div class="card-content">
+    {/* Chip de Categoría */}
+    <a href={categoryLink} class="card-category category-chip">
+      {displayCategoryName}
+    </a>
+
+    {/* Título */}
+    <h2 class="card-title">
+      <a href={finalUrl}>{post.post_title}</a>
+    </h2>
+
+    {/* Extracto / Descripción */}
+    <p class="card-excerpt">{post.post_description || ''}</p>
+
+    {/* Meta Info */}
+    <div class="card-meta">
+       <span class="card-author">{displayAuthor}</span>
+       <div class="meta-details"> {/* Contenedor para fecha/lectura */}
+        <time datetime={post.published_at || ''} class="card-date">
+           {formatDate(post.published_at)}
+        </time>
+        {/* Mostrar separador y tiempo solo si existe el dato y es mayor que 0 */}
+        {post.estimated_read_time && post.estimated_read_time > 0 && (
+            <> {/* Usamos Fragment (<> </>) para agrupar sin añadir un div extra */}
+                <span class="meta-separator">-</span>
+                <span class="reading-time">{post.estimated_read_time} min read</span>
+            </>
+        )}
+      </div>
+    </div>
+
+    {/* Tags */}
+    {displayTags.length > 0 && displayTagSlugs.length > 0 && (
+      <div class="card-tags">
+        {displayTags.map((tagName, index) => {
+          const tagSlug = displayTagSlugs[index];
+          if (!tagSlug) return null;
+          const tagLink = `/blog/tag/${tagSlug}/`;
+          return (
+            <a href={tagLink} class="card-tag tag-chip">
+              #{tagName}
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  /* --- ESTILOS SOLO PARA GRID ITEM --- */
+  .post-card.is-grid-item {
+    display: flex;
+    flex-direction: column; /* Layout vertical */
+    background-color: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    border: 1px solid #eee; /* Borde ligero */
+    height: 100%; /* Ocupar altura del grid */
+  }
+   .post-card.is-grid-item:hover {
+     transform: translateY(-5px);
+     box-shadow: 0 8px 25px rgba(0, 60, 120, 0.1);
+   }
+
+  .card-image-container {
+    height: 200px; /* Altura fija para imagen en grid */
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
+    background-color: #f0f0f0; /* Color para placeholder */
+    position: relative; /* Para posible contenido en placeholder */
+  }
+   .card-image-link { display: block; width: 100%; height: 100%;}
+   .card-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+
+  .card-content {
+    padding: 1.25rem; /* Menos padding que en destacado */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .category-chip {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.2rem 0.65rem; /* Ligeramente más pequeño */
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    background-color: var(--primary-soft-bg, #e6f2ff);
+    color: var(--primary-color, #007bff);
+    border: 1px solid var(--primary-light-border, #b3d7ff);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .category-chip:hover { background-color: var(--primary-color, #007bff); color: white; }
+
+  .card-title {
+    font-size: 1.25rem; /* Tamaño normal para grid */
+    font-weight: 600;
+    color: var(--text-dark, #1A2B48);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+  .card-title a { text-decoration: none; color: inherit; }
+  .card-title a:hover { color: var(--primary-color, #1920ff); }
+
+  .card-excerpt {
+    font-size: 0.9rem; /* Un poco más pequeño en grid */
+    color: var(--text-medium, #4A5568);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    flex-grow: 1;
+    /* Limitar líneas si se desea */
+     display: -webkit-box;
+     -webkit-line-clamp: 3; /* Muestra 3 líneas máx */
+     -webkit-box-orient: vertical;
+     overflow: hidden;
+     text-overflow: ellipsis;
+  }
+
+  .card-meta {
+    font-size: 0.8rem;
+    color: var(--text-light, #6c757d);
+    margin-bottom: 0.75rem; /* Espacio antes de tags */
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: auto; /* Empuja al final */
+  }
+   .card-author {
+     font-weight: 600;
+     color: var(--text-medium);
+     display: block;
+     margin-bottom: 0.2rem;
+     font-size: 0.8rem; /* Tamaño consistente con detalles */
+   }
+   .meta-details {
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     flex-wrap: wrap;
+     gap: 0.5rem;
+     font-size: 0.75rem;
+     color: #6c757d;
+   }
+    .meta-separator { margin: 0 0.1em; color: #ccc; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; /* Menos gap */ }
+  .tag-chip {
+     display: inline-block;
+     padding: 0.2rem 0.6rem;
+     border-radius: 10px; /* Un poco menos redondeado */
+     font-size: 0.7rem;
+     font-weight: 500;
+     text-decoration: none;
+     line-height: 1.3;
+     background-color: var(--bg-light-gray, #f1f3f5);
+     color: var(--text-light, #6c757d);
+     border: 1px solid #e0e0e0;
+  }
+  .tag-chip:hover { background-color: #e0e0e0; }
+
+</style>

@@ -1,0 +1,63 @@
+---
+import ToolCard from './ToolCard.astro'; // Asumiendo misma carpeta
+import type { ToolFromView } from '../../types'; // Ruta corregida
+
+// Definir Props y TagColorMap localmente o importarlo también
+type TagColorMap = Record<string, string>;
+export interface Props {
+  categoryName: string;
+  tools: ToolFromView[];
+  tagColorsMap: TagColorMap;
+}
+
+const { categoryName, tools, tagColorsMap } = Astro.props;
+---
+
+{/* Renderiza la sección solo si hay herramientas */}
+{tools && tools.length > 0 && (
+  <section class="category-section" data-category={categoryName}>
+    <div class="category-header-simple"><h2>{categoryName}</h2></div>
+    <div class="tools-grid">
+      {tools.map(tool => (
+        <div
+        class="tool-card-wrapper"
+        data-category={tool.category_name || 'Uncategorized'}
+        data-tool-tags={JSON.stringify(tool.tag_names || [])}
+        data-pricing-model={tool.tool_pricing_model || 'Unknown'} 
+        data-rating={tool.tool_rating ? String(tool.tool_rating) : '0'} 
+        >
+          <ToolCard tool={tool} tagColorsMap={tagColorsMap} />
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+{/* Estilos específicos para la sección y el grid */}
+<style>
+  .category-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .category-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 3rem;
+  }
+  .category-header-simple h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.6rem;
+    color: var(--text-dark);
+    font-weight: 700;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 0.6rem;
+    display: inline-block;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.75rem;
+  }
+  .tool-card-wrapper.hidden-by-filter { display: none; } /* Importante para el filtro JS */
+
+</style>

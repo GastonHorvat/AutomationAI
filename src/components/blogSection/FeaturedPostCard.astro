@@ -1,0 +1,226 @@
+---
+// src/components/blogSection/FeaturedPostCard.astro
+import type { PostFromView } from '../../types'; // Usando src/types.ts
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  post: PostFromView;
+}
+
+const { post } = Astro.props;
+
+// --- Helpers ---
+function formatDate(dateString: string | null): string {
+  if (!dateString) return 'Fecha desconocida';
+  try {
+    const date = new Date(dateString);
+    // Cambiado a formato inglés 'en-US' y mes corto
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }); // Ej: Apr 14, 2025
+  } catch (e) { return 'Fecha inválida'; }
+}
+
+// Tiempo de lectura (Placeholder - AJUSTAR)
+const readingTime = 8;
+
+// Preparamos variables
+const finalUrl = `/blog/${post.post_slug}/`;
+const categoryLink = post.category_slug ? `/blog/category/${post.category_slug}/` : '#';
+const displayCategoryName = post.category_name || 'General';
+const displayTags = post.tag_names || [];
+const displayTagSlugs = post.tag_slugs || [];
+const displayAuthor = post.author_name || 'AutomationAI Team';
+---
+
+<article class="post-card is-featured"> {/* Clase fija para este componente */}
+  {/* Contenedor de la Imagen */}
+  <div class="card-image-container">
+    <span class="featured-badge">Featured</span> {/* Siempre tiene el badge */}
+    {post.post_image_url ? (
+      <a href={finalUrl} class="card-image-link">
+        <img
+          src={post.post_image_url}
+          alt={post.post_title || 'Blog post image'}
+          class="card-image"
+          loading="eager" 
+          decoding="async"
+          width="600" height="375" 
+        />
+      </a>
+    ) : (
+      <div class="card-image-placeholder"></div>
+    )}
+  </div>
+
+  {/* Contenedor del Contenido de Texto */}
+  <div class="card-content">
+    {/* Chip de Categoría */}
+    <a href={categoryLink} class="card-category category-chip">
+      {displayCategoryName}
+    </a>
+
+    {/* Título */}
+    <h2 class="card-title">
+      <a href={finalUrl}>{post.post_title}</a>
+    </h2>
+
+    {/* Extracto / Descripción */}
+    <p class="card-excerpt">{post.post_description || ''}</p>
+
+    {/* Meta Info */}
+    <div class="card-meta">
+      <span class="card-author">{displayAuthor}</span> {/* Sin icono */}
+      <div class="meta-details"> {/* Contenedor para fecha/lectura */}
+        <time datetime={post.published_at || ''} class="card-date">
+            {formatDate(post.published_at)}
+         </time>
+         {/* Mostrar separador y tiempo solo si existe el dato y es mayor que 0 */}
+         {post.estimated_read_time && post.estimated_read_time > 0 && (
+             <> {/* Usamos Fragment (<> </>) para agrupar sin añadir un div extra */}
+                 <span class="meta-separator">-</span>
+                 <span class="reading-time">{post.estimated_read_time} min. read</span>
+             </>
+         )}
+      </div>
+    </div>
+
+    {/* Tags */}
+    {displayTags.length > 0 && displayTagSlugs.length > 0 && (
+      <div class="card-tags">
+        {displayTags.map((tagName, index) => {
+          const tagSlug = displayTagSlugs[index];
+          if (!tagSlug) return null;
+          const tagLink = `/blog/tag/${tagSlug}/`;
+          return (
+            <a href={tagLink} class="card-tag tag-chip">
+              #{tagName}
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  /* --- ESTILOS ESPECÍFICOS PARA LAYOUT DESTACADO --- */
+  .post-card.is-featured {
+    display: flex;
+    flex-direction: row; /* Layout horizontal */
+    align-items: stretch;
+    background-color: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Sombra un poco más definida */
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 3rem; /* Espacio debajo del destacado */
+  }
+   .post-card.is-featured:hover { /* Hover sutil */
+     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+     transform: none; /* Sin efecto translateY */
+   }
+
+  .card-image-container {
+    position: relative;
+    flex: 0 0 55%; /* Imagen un poco más de la mitad */
+    min-width: 350px;
+    max-width: 60%; /* Límite por si acaso */
+    height: auto;
+    overflow: hidden;
+  }
+  .card-image-link { display: block; width: 100%; height: 100%;}
+  .card-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .card-image-placeholder { width: 100%; height: 100%; min-height: 250px; background-color: #f0f0f0; }
+
+  .featured-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    padding: 0.25rem 0.75rem; /* Más pequeño */
+    border-radius: 15px;
+    font-size: 0.7rem; /* Más pequeño */
+    font-weight: 600;
+    z-index: 10;
+    line-height: 1.2;
+  }
+
+  .card-content {
+    flex: 1 1 45%;
+    padding: 2rem 2.5rem; /* Padding generoso */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .category-chip {
+    display: inline-block;
+    width: fit-content; /* Ajuste al texto */
+    padding: 0.2rem 0.65rem; /* Padding reducido */
+    border-radius: 12px; /* Menos redondeado? */
+    font-size: 0.65rem; /* Tamaño de fuente más pequeño */
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1.3;
+    margin-bottom: 1rem; /* Más espacio */
+    background-color: var(--primary-soft-bg, #e6f2ff);
+    color: var(--primary-color, #007bff);
+    border: 1px solid var(--primary-light-border, #b3d7ff);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .category-chip:hover { background-color: var(--primary-color, #007bff); color: white; }
+
+  .card-title { font-size: 1.7rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.75rem 0; line-height: 1.3; }
+  .card-title a { text-decoration: none; color: inherit; }
+  .card-title a:hover { color: var(--primary-color); }
+
+  .card-excerpt { font-size: 0.95rem; color: var(--text-medium); line-height: 1.6; margin-bottom: auto; padding-bottom: 1.5rem; flex-grow: 1;} /* Empuja meta abajo */
+
+  .card-meta {
+    font-size: 0.8rem; /* Tamaño base reducido */
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+  }
+  .card-author {
+    font-weight: 600; /* Negrita */
+    color: var(--text-dark); /* Más oscuro */
+    font-size: 0.85rem; /* Ligeramente más grande que detalles */
+    display: block; /* Para que ocupe su línea */
+    margin-bottom: 0.2rem; /* Espacio antes de detalles */
+  }
+  .meta-details {
+    display: flex; /* En línea */
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem; /* Espacio entre fecha y lectura */
+    font-size: 0.75rem; /* Detalles más pequeños */
+    color: #6c757d;
+  }
+   .meta-separator { margin: 0 0.1em; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tag-chip {
+     display: inline-block;
+     padding: 0.2rem 0.65rem; /* Igual que categoría */
+     border-radius: 12px;
+     font-size: 0.7rem; /* Igual que categoría */
+     font-weight: 500;
+     text-decoration: none;
+     line-height: 1.3;
+     background-color: var(--bg-light-gray, #f1f3f5);
+     color: var(--text-light, #6c757d);
+     border: 1px solid #e0e0e0;
+  }
+  .tag-chip:hover { background-color: #e0e0e0; } /* Hover sutil gris */
+
+  /* Media query para layout vertical en móvil para destacado */
+  @media (max-width: 768px) {
+    .post-card.is-featured { flex-direction: column; }
+    .post-card.is-featured .card-image-container { flex-basis: auto; width: 100%; height: 250px; max-width: 100%; border-bottom: 1px solid #e5e7eb; }
+    .post-card.is-featured .card-content { padding: 1.5rem; }
+    .post-card.is-featured .card-title { font-size: 1.5rem; }
+  }
+</style>

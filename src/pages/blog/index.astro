@@ -1,105 +1,96 @@
 ---
-// src/pages/blog/index.astro - VERSIÓN OPTIMIZADA
-import { Image } from 'astro:assets'; 
+// src/pages/blog/index.astro - VERSIÓN CON DOS COMPONENTES
 import Layout from '../../layouts/Layout.astro';
-import Airtable from 'airtable';
+// Importamos AMBOS componentes
+import BlogPostCard from '../../components/blogSection/BlogPostCard.astro';
+import FeaturedPostCard from '../../components/blogSection/FeaturedPostCard.astro'; // Nueva importación
+import { supabase } from '../../lib/supabase';
+import type { PostFromView } from '../../types';
 
-// Tipo para un post de blog procesado
-interface BlogPost {
-  id: string;
-  slug: string;
-  data: {
-    title: string;
-    description: string;
-    author: string;
-    publishDate: Date;
-    category: string;
-    tags: string[];
-    image: string | null;
-  };
-}
+// --- Inicialización ---
+let featuredPost: PostFromView | null = null;
+let regularPosts: PostFromView[] = [];
+let fetchError: string | null = null;
 
-// Obtener posts desde Airtable
-let publishedPosts: BlogPost[] = [];
+// --- Fetch de Datos ---
+if (!supabase) {
+  fetchError = "Supabase client could not be initialized.";
+  console.error(fetchError);
+} else {
+  try {
+    console.log("Fetching featured and regular posts from Supabase view 'posts_view'");
 
-try {
-  // Obtener variables de entorno
-  const apiKey = import.meta.env.AIRTABLE_API_KEY;
-  const baseId = import.meta.env.AIRTABLE_BASE_ID;
-  const tableId = import.meta.env.AIRTABLE_BLOG_TABLE_ID || import.meta.env.AIRTABLE_TABLE_ID;
-  
-  if (apiKey && baseId && tableId) {
-    // Inicializar Airtable y obtener registros
-    const base = new Airtable({ apiKey }).base(baseId);
-    const records = await base(tableId).select().all();
-    
-    // Filtrar posts publicados
-    const publishedRecords = records.filter(record => {
-      if (record.fields.Status && typeof record.fields.Status === 'string') {
-        return record.fields.Status.toLowerCase() === 'published';
-      }
-      return true;
-    });
-    
-    // Convertir a formato BlogPost
-    publishedPosts = publishedRecords.map(record => {
-      // Helper para obtener valores string
-      const getStringValue = (field: string): string => {
-        const value = record.fields[field];
-        return value ? String(value) : '';
-      };
-      
-      // Fecha de publicación
-      let publishDate = new Date();
-      
-      // Procesar imágenes
-      let imageUrl: string | null = null;
-      if (record.fields.Image && Array.isArray(record.fields.Image) && 
-          record.fields.Image.length > 0 && typeof record.fields.Image[0] === 'object' &&
-          record.fields.Image[0] !== null && 'url' in record.fields.Image[0]) {
-        imageUrl = record.fields.Image[0].url;
-      }
-      
-      // Procesar tags
-      const tags: string[] = [];
-      if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
-        record.fields.Tags.forEach((tag: any) => {
-          if (typeof tag === 'string') tags.push(tag);
-        });
-      }
-      
-      return {
-        id: record.id,
-        slug: getStringValue('Slug') || record.id,
-        data: {
-          title: getStringValue('Title') || 'Sin título',
-          description: getStringValue('Description') || '',
-          author: getStringValue('Author') || 'AutomationAI Team',
-          publishDate: publishDate,
-          category: getStringValue('Category') || 'General',
-          tags: tags,
-          image: imageUrl
-        }
-      };
-    });
+    // 1. Obtener el Post Destacado (el primero que encuentre, si hay varios)
+    const { data: featuredData, error: featuredError } = await supabase
+      .from('posts_view')
+      .select('*')
+      .eq('is_featured', true) // Busca posts marcados como destacados
+      .limit(1)               // Solo necesitamos uno
+      .maybeSingle();         // Devuelve un solo objeto o null, no un array
+
+    if (featuredError) {
+      console.error("Error fetching featured post:", featuredError);
+      // Podríamos decidir continuar sin post destacado o mostrar un error
+      // fetchError = `Error fetching featured post: ${featuredError.message}`; // Opcional
+    } else if (featuredData) {
+      featuredPost = featuredData as PostFromView;
+      console.log("Featured post found:", featuredPost.post_title);
+    } else {
+      console.log("No featured post found.");
+    }
+
+    // 2. Obtener Posts Regulares (todos los demás publicados)
+    //    Excluimos el destacado si lo encontramos para no repetirlo.
+    let query = supabase
+      .from('posts_view')
+      .select('*');
+
+    if (featuredPost) {
+      // Excluye el ID del post destacado si existe
+      query = query.neq('post_id', featuredPost.post_id);
+    }
+    // Añadimos el filtro por si acaso (aunque la vista ya filtra por 'Published',
+    // ser explícito con is_featured = false es más seguro)
+    // También podríamos filtrar por `is_featured IS NULL` si usamos null por defecto
+     query = query.or('is_featured.is.null,is_featured.eq.false') // Filtra no destacados o null
+
+
+    const { data: regularData, error: regularError } = await query; // No aplicamos limit por ahora
+
+    if (regularError) {
+      throw regularError; // Si falla obtener los regulares, lanzamos error principal
+    }
+
+    if (regularData) {
+      regularPosts = regularData as PostFromView[];
+      console.log(`Regular posts found: ${regularPosts.length}`);
+    }
+
+  } catch (error: any) {
+    console.error("Error fetching posts from Supabase:", error);
+    fetchError = `Error fetching posts: ${error.message || 'Unknown error'}`;
+    // Reseteamos por si acaso
+    featuredPost = null;
+    regularPosts = [];
   }
-} catch (error) {
-  // Silenciar errores en producción
 }
 
-// Helper para formatear fechas
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('es-ES', { 
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+// --- Helpers (si no los tienes en un archivo separado) ---
+function formatDate(dateString: string | null): string {
+  if (!dateString) return 'Fecha desconocida';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch (e) { return 'Fecha inválida'; }
 }
+
+// Ya no necesitamos la función capitalize si los nombres vienen capitalizados de la DB
+
 ---
 
 <Layout title="AutomationAI Blog | Insights & Tutorials" description="Explore the latest insights, tutorials, and success stories from AutomationAI Solutions on AI, automation, and business growth.">
 
-  {/* --- Encabezado de la Página del Blog --- */}
+  {/* --- Encabezado de la Página del Blog (Igual que antes) --- */}
   <section class="blog-hero section-padding bg-soft-gradient text-center">
     <div class="container">
       <h1 class="page-title">AutomationAI Insights</h1>
@@ -109,73 +100,42 @@ function formatDate(date: Date): string {
     </div>
   </section>
 
-  {/* --- Listado de Posts --- */}
+  {/* --- Mensaje de Error General --- */}
+  {fetchError && (
+    <div class="container section-padding">
+      <div class="error-message" style="color: red; text-align: center; border: 1px solid red; padding: 1rem;">
+        <h2>Error Loading Content</h2>
+        <p>{fetchError}</p>
+      </div>
+    </div>
+  )}
+
+  {/* --- Sección Post Destacado --- */}
+  {!fetchError && featuredPost && (
+    <section class="featured-post-section section-padding">
+      <div class="container">
+        {/* *** USA EL NUEVO COMPONENTE *** */}
+        <FeaturedPostCard post={featuredPost} />
+      </div>
+    </section>
+  )}
+
+  {/* --- Listado de Posts Regulares --- */}
   <section class="blog-list-section section-padding">
     <div class="container">
-      {publishedPosts.length > 0 ? (
+      {regularPosts.length > 0 ? (
         <div class="posts-grid">
-          {publishedPosts.map(post => {
-            const finalUrl = `/blog/${post.slug}/`;
+          {regularPosts.map(post => { // El map no cambia
             return (
-              <article class="post-card">
-                {/* Imagen Destacada (si existe) */}
-                {post.data.image ? (
-                  <a href={finalUrl} class="card-image-link">
-                    <img
-                      src={post.data.image}
-                      alt={post.data.title || 'Blog post image'}
-                      class="card-image"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                ) : (
-                  <div class="card-image-placeholder"></div>
-                )}
-
-                <div class="card-content">
-                  {/* Categoría */}
-                  <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
-                    {post.data.category}
-                  </a>
-
-                  {/* Título */}
-                  <h2 class="card-title">
-                    <a href={finalUrl}>{post.data.title}</a>
-                  </h2>
-
-                  {/* Extracto / Descripción */}
-                  <p class="card-excerpt">{post.data.description}</p>
-
-                  {/* Meta Info (Autor y Fecha) */}
-                  <div class="card-meta">
-                    <span class="card-author">By {post.data.author}</span>
-                    <span class="card-separator">|</span>
-                    <time datetime={post.data.publishDate.toISOString()} class="card-date">
-                      {formatDate(post.data.publishDate)}
-                    </time>
-                  </div>
-
-                  {/* Tags (si existen) */}
-                  {post.data.tags && post.data.tags.length > 0 && (
-                    <div class="card-tags">
-                      {post.data.tags.map((tag: string) => (
-                        <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
-                          #{tag}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </article>
+              // *** USA EL COMPONENTE SIMPLIFICADO ***
+              <BlogPostCard post={post} />
             );
           })}
         </div>
       ) : (
-        <div class="no-posts-message">
-          <h2>No posts found</h2>
-          <p>Check back soon for new content or verify your Airtable connection.</p>
-        </div>
+        !fetchError && !featuredPost && (
+          <div class="no-posts-message"> {/* ... */} </div>
+        )
       )}
     </div>
   </section>
@@ -266,113 +226,5 @@ function formatDate(date: Date): string {
     margin: 0 auto 1.5rem;
   }
 
-  /* --- Estilos Tarjeta de Post --- */
-  .post-card {
-    background-color: var(--white, #ffffff);
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.05);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-  }
-  .post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 60, 120, 0.1);
-  }
-
-  .card-image-link { display: block; }
-  .card-image {
-    display: block;
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-bottom: 1px solid var(--border-color-soft, #e2e8f0);
-  }
-  .card-image-placeholder {
-      height: 10px;
-      background-color: var(--primary-color, #007bff);
-  }
-
-  .card-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
-  .card-category {
-    display: inline-block;
-
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--primary-color, #1920ff);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-decoration: none;
-  }
-  .card-category:hover {
-    text-decoration: underline;
-  }
-
-  .card-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--text-dark, #1A2B48);
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
-  }
-  .card-title a {
-    text-decoration: none;
-    color: inherit;
-  }
-  .card-title a:hover {
-    color: var(--primary-color, #1920ff);
-  }
-
-  .card-excerpt {
-    font-size: 0.95rem;
-    color: var(--text-medium, #4A5568);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    flex-grow: 1;
-  }
-
-  .card-meta {
-    font-size: 0.85rem;
-    color: var(--text-light, #6c757d);
-    margin-bottom: 0.75rem;
-    border-top: 1px solid var(--border-color-soft, #e2e8f0);
-    padding-top: 0.75rem;
-    margin-top: auto;
-  }
-  .card-separator { margin: 0 0.5em; }
-
-  .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      padding-top: 0.5rem;
-      border-top: 1px solid var(--border-color-soft, #e2e8f0);
-  }
-   .card-meta + .card-tags {
-      border-top: none;
-      padding-top: 0;
-   }
-
-  .card-tag {
-    display: inline-block;
-    background-color: var(--bg-light-gray, #f8f9fa);
-    color: var(--text-light, #6c757d);
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-  .card-tag:hover {
-    background-color: var(--primary-color, #007bff);
-    color: var(--white, #ffffff);
-  }
+  
 </style>

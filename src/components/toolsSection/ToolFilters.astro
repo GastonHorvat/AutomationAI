@@ -1,0 +1,106 @@
+---
+// src/components/ToolFilters.astro
+import type { TagInfo } from '../../types'; // Ruta corregida
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  categories: string[];
+  tagsWithColors: TagInfo[];
+}
+
+const { categories, tagsWithColors } = Astro.props;
+---
+
+{/* --- Sección de Filtros Combinados (Extraída de tools.astro) --- */}
+{(categories.length > 0 || tagsWithColors.length > 0) && (
+  <div class="filter-controls">
+    {/* Filtro TAGS */}
+    {tagsWithColors.length > 0 && (
+      <div class="filter-section collapsible" data-filter-type="tags">
+        <div class="filter-header" role="button" tabindex="0">
+          <div class="filter-summary"><strong>Filter by Tags:</strong> <span class="selected-items-summary">Show All</span></div>
+          <button class="toggle-filters" type="button" aria-expanded="false" aria-controls="filter-options-tags"><Icon name="mdi:chevron-down" size={24} class="toggle-icon"/><span class="sr-only">Toggle Tag Filters</span></button>
+        </div>
+        <div class="filter-options-wrapper" id="filter-options-tags" hidden>
+          <div class="filter-options-container">
+            <button class="filter-button active" type="button" data-filter-value="all">Show All</button>
+            {tagsWithColors.map(tagInfo => (
+              <button class="filter-button tag-button" type="button" data-filter-value={tagInfo.name} style={`--tag-bg-color: ${tagInfo.color};`}>{tagInfo.name}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+    {/* Filtro CATEGORÍAS */}
+    {categories.length > 0 && (
+      <div class="filter-section collapsible" data-filter-type="categories">
+        <div class="filter-header" role="button" tabindex="0">
+           <div class="filter-summary"><strong>Filter by Category:</strong> <span class="selected-items-summary">Show All</span></div>
+           <button class="toggle-filters" type="button" aria-expanded="false" aria-controls="filter-options-categories"><Icon name="mdi:chevron-down" size={24} class="toggle-icon"/><span class="sr-only">Toggle Category Filters</span></button>
+        </div>
+        <div class="filter-options-wrapper" id="filter-options-categories" hidden>
+          <div class="filter-options-container">
+            <button class="filter-button active" type="button" data-filter-value="all">Show All</button>
+            {categories.map(category => (
+              <button class="filter-button category-button" type="button" data-filter-value={category}>{category}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
+{/* Los estilos de los filtros ahora viven aquí */}
+<style>
+ /* --- Filtros --- */
+ .filter-controls { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0, 40, 80, 0.07); }
+  @media (min-width: 992px) { .filter-controls { grid-template-columns: 1fr 1fr; } } /* Cambiado a 992px */
+
+  .filter-section { position: relative; border: 1px solid #eee; border-radius: 8px; background-color: #fdfdfd; }
+  .filter-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 1rem 1.25rem; transition: background-color 0.2s; }
+  .filter-header:hover { background-color: #f8f9fa; }
+  .filter-summary strong { font-weight: 600; color: var(--text-dark); margin-right: 0.5em; flex-shrink: 0; font-size: 1rem; }
+  .filter-summary span.selected-items-summary { color: var(--primary-color); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; font-size: 0.9rem; padding-left: 0.25rem; }
+  .toggle-filters { background: none; border: none; padding: 0.25rem; cursor: pointer; color: var(--text-light); line-height: 0; }
+  .toggle-filters .toggle-icon { transition: transform 0.3s ease-in-out; }
+  .filter-section.is-open .toggle-icon { transform: rotate(180deg); }
+
+  .filter-options-wrapper { transition: max-height 0.3s ease-out, padding 0.3s ease-out; max-height: 0; overflow: hidden; padding: 0 1.25rem; }
+  .filter-section.is-open .filter-options-wrapper { max-height: 400px; /* Ajusta si tienes muchos tags */ overflow-y: auto; padding: 1rem 1.25rem 1.5rem; border-top: 1px solid #eee; }
+  .filter-options-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  .filter-button {
+      border: 1px solid #ddd; /* Borde más visible */
+      padding: 0.4rem 0.9rem;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.85rem; /* Ligeramente más pequeño */
+      transition: all 0.2s ease;
+      line-height: 1.4;
+      white-space: nowrap;
+      background-color: #fff; /* Fondo blanco por defecto */
+      color: #444;
+  }
+  .tag-button {
+      background-color: var(--tag-bg-color, #f1f3f5); /* Color variable */
+      border-color: transparent; /* Sin borde para tags */
+  }
+  .category-button {
+      background-color: #f1f3f5; /* Gris claro */
+  }
+  .filter-button:hover:not(.active) {
+      filter: brightness(96%);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border-color: #ccc; /* Borde más oscuro al pasar */
+  }
+  .filter-button.active {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600; /* Más bold */
+      filter: none;
+      box-shadow: none;
+      border-color: var(--primary-color);
+  }
+
+</style>
