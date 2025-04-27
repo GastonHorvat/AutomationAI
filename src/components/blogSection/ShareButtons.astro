@@ -42,10 +42,10 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
       href={twitterShareUrl}
       target="_blank"
       rel="noopener noreferrer"
-      class="share-button bg-sky-500 hover:bg-sky-600"
-      aria-label="Share on Twitter"
+      class="share-button bg-black hover:bg-neutral-800"
+      aria-label="Share on X"
     >
-      <Icon name="mdi:twitter" />
+    <Icon name="simple-icons:x" />
     </a>
     
     <!-- LinkedIn -->
@@ -75,10 +75,10 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     <button
       id="copyLinkBtn"
       type="button"
-      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
+      class="share-button bg-gray-200 hover:bg-neutral-800 text-gray-700 border-0"
       aria-label="Copy link"
     >
-      <Icon name="mdi:link-variant" />
+    <Icon name="mdi:link" />
     </button>
     <span id="copyNotification" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;">The link has been copied!</span>
   </div>
@@ -177,6 +177,8 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
 .hover\:bg-green-600:hover { background-color: #16a34a; }
 .bg-gray-200 { background-color: #6c6d6d; }
 .hover\:bg-gray-300:hover { background-color: #d1d5db; }
+.bg-neutral-800 { background-color: #2f3742; }
+.bg-black { background-color: #00000a; }
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function() {

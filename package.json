@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@iconify-json/simple-icons": "^1.2.33",
     "@supabase/supabase-js": "^2.49.4",
     "airtable": "^0.12.2",
     "astro": "^5.7.5",
