@@ -16,7 +16,8 @@ const encodedTitle = encodeURIComponent(postTitle);
 
 // URLs para compartir correctamente formateadas
 // URLs para compartir correctamente formateadas
-const facebookShareUrl = `https://www.facebook.com/sharer.php?u=${encodedUrl}&quote=${encodedTitle}&hashtag=%23automationai`;
+
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
 const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
 const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
 const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
