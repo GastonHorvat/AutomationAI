@@ -1,9 +1,9 @@
 ---
 // src/pages/blog/category/[category].astro - VERSIÓN SUPABASE CORREGIDA
-import Layout from '../../layouts/Layout.astro'; // Ajusta ruta
-import BlogPostCard from '../../components/blogSection/BlogPostCard.astro'; // Ajusta ruta
-import { supabase } from '../../lib/supabase';
-import type { PostFromView } from '../../types'; // Importa tipo
+import Layout from '../../../layouts/Layout.astro'; // Ajusta ruta
+import BlogPostCard from '../../../components/blogSection/BlogPostCard.astro'; // Ajusta ruta
+import { supabase } from '../../../lib/supabase';
+import type { PostFromView } from '../../../types'; // Importa tipo
 
 // --- getStaticPaths: Obtiene slugs de categorías con posts publicados ---
 export async function getStaticPaths() {
@@ -26,6 +26,7 @@ export async function getStaticPaths() {
       .not('category_slug', 'is', null); // Asegura que tengamos slug de categoría
 
     if (error) throw error;
+    console.log("[Category Page] Raw categoriesData from Supabase:", JSON.stringify(categoriesData, null, 2)); // <-- Log 1
 
     if (categoriesData) {
       // Usamos un Map para obtener categorías únicas (basado en el slug)
@@ -36,6 +37,7 @@ export async function getStaticPaths() {
           uniqueCategories.set(cat.category_slug, cat.category_name || cat.category_slug);
         }
       });
+      console.log("[Category Page] Unique categories found (Map):", uniqueCategories);
 
       // Crear las rutas
       uniqueCategories.forEach((name, slug) => {
