@@ -65,10 +65,8 @@ jobs:
       - name: Build with Astro
         # Añade el bloque 'env:' aquí, al mismo nivel que 'name' y 'run'
         env:
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-          AIRTABLE_TABLE_ID: ${{ secrets.AIRTABLE_TABLE_ID }} 
-          AIRTABLE_BLOG_TABLE_ID: ${{ secrets.AIRTABLE_BLOG_TABLE_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "${{ steps.pages.outputs.origin }}" \
