@@ -1,5 +1,18 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "extends": "astro/tsconfigs/strict", // O "base" o "strictest"
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "baseUrl": ".", // Permite importaciones desde la raíz (ej: 'src/components/...')
+    "paths": {      // Opcional: alias de importación
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@lib/*": ["src/lib/*"],
+      "@types/*": ["src/types/*"]
+    },
+     "resolveJsonModule": true, // Permite importar JSON
+     "esModuleInterop": true,  // Mejora interoperabilidad con módulos JS
+     "skipLibCheck": true,     // Evita chequeo de tipos en librerías (acelera)
+     "forceConsistentCasingInFileNames": true // Asegura consistencia en nombres de archivo
+  }
 }

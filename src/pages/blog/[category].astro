@@ -1,250 +1,143 @@
 ---
-// src/pages/blog/category/[category].astro - Versión Airtable con tipado
-import { Image } from 'astro:assets';
-import Layout from '../../layouts/Layout.astro';
-import Airtable from 'airtable';
+// src/pages/blog/category/[category].astro - VERSIÓN SUPABASE CORREGIDA
+import Layout from '../../layouts/Layout.astro'; // Ajusta ruta
+import BlogPostCard from '../../components/blogSection/BlogPostCard.astro'; // Ajusta ruta
+import { supabase } from '../../lib/supabase';
+import type { PostFromView } from '../../types'; // Importa tipo
 
-// Definiciones de tipos
-interface PathItem {
-  params: { category: string };
-  props: { categoryName: string };
-}
-
-interface AirtableAttachment {
-  id: string;
-  url: string;
-  filename: string;
-  size?: number;
-  type?: string;
-}
-
-interface BlogPost {
-  id: string;
-  slug: string;
-  data: {
-    title: string;
-    description: string;
-    author: string;
-    publishDate: Date;
-    category: string;
-    tags: string[];
-    image: string | null;
-  };
-}
-
-// Define paths para categorías desde Airtable
+// --- getStaticPaths: Obtiene slugs de categorías con posts publicados ---
 export async function getStaticPaths() {
-  console.log("--- CATEGORY: Running getStaticPaths from Airtable ---");
-  const paths: PathItem[] = [];
-  
-  try {
-    const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
-    const tableId = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_BLOG_TABLE_ID;
-    
-    if (!import.meta.env.AIRTABLE_API_KEY || !import.meta.env.AIRTABLE_BASE_ID || !tableId) {
-      console.error("¡ERROR! Faltan variables de entorno de Airtable");
-      return paths;
-    }
-    
-    // Obtener todos los posts publicados
-    const records = await base(tableId).select({
-      filterByFormula: "{Status} = 'Published'",
-      fields: ["Category"]
-    }).all();
-    
-    // Extraer categorías únicas
-    const categories = new Set<string>();
-    records.forEach(record => {
-      if (record.fields.Category && typeof record.fields.Category === 'string') {
-        categories.add(record.fields.Category);
-      }
-    });
-    
-    console.log(`Found ${categories.size} unique categories`);
-    
-    // Crear rutas para cada categoría
-    categories.forEach(category => {
-      paths.push({
-        params: { category: category.toLowerCase() },
-        props: { categoryName: category }
-      });
-    });
-    
-  } catch (error) {
-    console.error("Error fetching categories from Airtable:", error);
+  console.log("--- CATEGORY PAGE: Running getStaticPaths from Supabase ---");
+  // Definimos el tipo esperado por Astro para las rutas generadas
+  type CategoryPath = { params: { category: string }, props: { categoryName: string } };
+  let paths: CategoryPath[] = [];
+
+  if (!supabase) {
+    console.error("Supabase client not initialized in [category].astro getStaticPaths.");
+    return paths;
   }
-  
+
+  try {
+    // Obtenemos nombres y slugs de categorías que tienen al menos un post asociado en la vista
+    // (la vista ya filtra por posts publicados)
+    const { data: categoriesData, error } = await supabase
+      .from('posts_view')
+      .select('category_name, category_slug')
+      .not('category_slug', 'is', null); // Asegura que tengamos slug de categoría
+
+    if (error) throw error;
+
+    if (categoriesData) {
+      // Usamos un Map para obtener categorías únicas (basado en el slug)
+      const uniqueCategories = new Map<string, string>(); // Clave: slug, Valor: name
+      categoriesData.forEach(cat => {
+        if (cat.category_slug && !uniqueCategories.has(cat.category_slug)) {
+          // Guardamos el nombre capitalizado (asumiendo que ya lo está en la DB) o el slug como fallback
+          uniqueCategories.set(cat.category_slug, cat.category_name || cat.category_slug);
+        }
+      });
+
+      // Crear las rutas
+      uniqueCategories.forEach((name, slug) => {
+        paths.push({
+          params: { category: slug },   // El slug va en la URL (: category)
+          props: { categoryName: name } // Pasamos el nombre como prop a la página
+        });
+      });
+      console.log(`Generated ${paths.length} paths for category pages.`);
+    }
+  } catch (error: any) {
+    console.error("Error fetching categories from Supabase:", error);
+    throw error; // Fallar build si hay error
+  }
   return paths;
 }
 
-// Acceder a props y params
-const { categoryName } = Astro.props;
-const { category } = Astro.params;
+// --- Obtener Props y Datos para la Categoría Actual ---
+const { categoryName } = Astro.props; // Nombre legible de la categoría (viene de props)
+const { category: categorySlug } = Astro.params; // Slug de la categoría (viene de la URL)
 
-// Obtener posts para esta categoría
-console.log(`Fetching posts for category: ${categoryName}`);
-let categoryPosts: BlogPost[] = [];
+let categoryPosts: PostFromView[] = [];
+let fetchError: string | null = null;
 
-try {
-  const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
-  const tableId = import.meta.env.AIRTABLE_TABLE_ID || import.meta.env.AIRTABLE_BLOG_TABLE_ID;
-  
-  const records = await base(tableId).select({
-    filterByFormula: `AND({Status} = 'Published', {Category} = '${categoryName}')`,
-    sort: [{ field: "PublishDate", direction: "desc" }]
-  }).all();
-  
-  console.log(`Found ${records.length} posts in category ${categoryName}`);
-  
-  // Convertir a formato utilizable con procesamiento seguro
-  categoryPosts = records.map(record => {
-    // Helper para obtener un valor como string
-    const getStringValue = (fieldName: string): string => {
-      const value = record.fields[fieldName];
-      return typeof value === 'string' ? value : String(value || '');
-    };
-    
-    // Procesamiento seguro de la fecha
-    let publishDate: Date;
-    try {
-      const dateStr = getStringValue('PublishDate');
-      publishDate = dateStr ? new Date(dateStr) : new Date();
-    } catch (e) {
-      publishDate = new Date();
+// Solo intentar buscar posts si tenemos un slug
+if (supabase && categorySlug) {
+  try {
+    console.log(`Fetching posts for category slug: ${categorySlug}`);
+    // Obtenemos los posts de esta categoría desde la vista
+    const { data, error } = await supabase
+      .from('posts_view')
+      .select('*')        // Traemos todos los datos del post de la vista
+      .eq('category_slug', categorySlug) // Filtramos por el slug de categoría
+      .order('published_at', { ascending: false }); // Ordenamos
+
+    if (error) throw error;
+
+    if (data) {
+      categoryPosts = data as PostFromView[];
+      console.log(`Found ${categoryPosts.length} posts in category "${categoryName}" (slug: ${categorySlug})`);
     }
-    
-    // Procesamiento seguro de la imagen
-    let imageUrl: string | null = null;
-    if (record.fields.Image && 
-        Array.isArray(record.fields.Image) && 
-        record.fields.Image.length > 0 &&
-        typeof record.fields.Image[0] === 'object' &&
-        record.fields.Image[0] !== null &&
-        'url' in record.fields.Image[0]) {
-      imageUrl = (record.fields.Image[0] as AirtableAttachment).url;
-    }
-    
-    // Procesamiento seguro de tags
-    const tags: string[] = [];
-    if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
-      record.fields.Tags.forEach(tag => {
-        if (typeof tag === 'string') {
-          tags.push(tag);
-        }
-      });
-    }
-    
-    return {
-      id: record.id,
-      slug: getStringValue('Slug'),
-      data: {
-        title: getStringValue('Title') || "Sin título",
-        description: getStringValue('Description') || "",
-        author: getStringValue('Author') || "AutomationAI Team",
-        publishDate: publishDate,
-        category: getStringValue('Category') || "General",
-        tags: tags,
-        image: imageUrl
-      }
-    };
-  });
-  
-} catch (error) {
-  console.error(`Error fetching posts for category ${categoryName}:`, error);
+  } catch (error: any) {
+    console.error(`Error fetching posts for category ${categorySlug}:`, error);
+    fetchError = `Error fetching posts: ${error.message}`;
+  }
+} else if (!supabase) {
+    fetchError = "Supabase client not initialized.";
+} else {
+    fetchError = "Category slug not found in params.";
 }
 
-// Helper para formatear fechas
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+// Helper para formatear fechas (igual que antes, usa en-US)
+function formatDate(dateString: string | null): string {
+    if (!dateString) return 'Unknown Date';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) { return 'Invalid Date'; }
 }
 ---
 
-<Layout title={`${categoryName} | AutomationAI Blog`} description={`Explore our articles about ${categoryName} - practical insights, tutorials, and tips from AutomationAI Solutions.`}>
+<Layout title={`${categoryName || 'Category'} | AutomationAI Blog`} description={`Explore our articles about ${categoryName || 'this category'} - practical insights, tutorials, and tips from AutomationAI Solutions.`}>
 
   {/* --- Encabezado de la Página de Categoría --- */}
   <section class="category-hero section-padding bg-soft-gradient text-center">
     <div class="container narrow-container">
       <p class="breadcrumb"><a href="/blog/">Blog</a> / Category</p>
-      <h1 class="page-title">{categoryName}</h1>
+      {/* Usamos el categoryName pasado como prop */}
+      <h1 class="page-title">{categoryName || 'Unknown Category'}</h1>
       <p class="page-subtitle">
-        Explore our latest articles and insights about {categoryName}.
+        Explore our latest articles and insights about {categoryName || 'this category'}.
       </p>
     </div>
   </section>
 
+  {/* --- Mensaje de Error --- */}
+  {fetchError && (
+    <div class="container section-padding">
+      <div class="error-message" style="/* estilos error */">
+          <h2>Error Loading Posts</h2>
+          <p>{fetchError}</p>
+      </div>
+    </div>
+   )}
+
   {/* --- Listado de Posts --- */}
   <section class="blog-list-section section-padding">
     <div class="container">
-      {categoryPosts.length > 0 ? (
+      {!fetchError && categoryPosts.length > 0 ? (
         <div class="posts-grid">
-          {categoryPosts.map(post => {
-            const finalUrl = `/blog/${post.slug}/`;
-            return (
-              <article class="post-card">
-                {/* Imagen Destacada (si existe) */}
-                {post.data.image ? (
-                  <a href={finalUrl} class="card-image-link">
-                    <img
-                      src={post.data.image}
-                      alt={post.data.title || 'Blog post image'}
-                      class="card-image"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                ) : (
-                  <div class="card-image-placeholder"></div>
-                )}
-
-                <div class="card-content">
-                  {/* Categoría */}
-                  <a href={`/blog/category/${post.data.category.toLowerCase()}/`} class="card-category">
-                    {post.data.category}
-                  </a>
-
-                  {/* Título */}
-                  <h2 class="card-title">
-                    <a href={finalUrl}>{post.data.title}</a>
-                  </h2>
-
-                  {/* Extracto / Descripción */}
-                  <p class="card-excerpt">{post.data.description}</p>
-
-                  {/* Meta Info (Autor y Fecha) */}
-                  <div class="card-meta">
-                    <span class="card-author">By {post.data.author}</span>
-                    <span class="card-separator">|</span>
-                    <time datetime={post.data.publishDate.toISOString()} class="card-date">
-                      {formatDate(post.data.publishDate)}
-                    </time>
-                  </div>
-
-                  {/* Tags (si existen) */}
-                  {post.data.tags && post.data.tags.length > 0 && (
-                    <div class="card-tags">
-                      {post.data.tags.map((tag: string) => (
-                        <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="card-tag">
-                          #{tag}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </article>
-            );
-          })}
+          {categoryPosts.map(post => (
+            <BlogPostCard post={post} />
+          ))}
         </div>
-      ) : (
+      ) : !fetchError ? (
+        // Mensaje si no hay posts en esta categoría (y no hubo error)
         <div class="no-posts-message">
-          <h2>No posts found in this category</h2>
-          <p>Check back soon for new content or explore other categories.</p>
-          <a href="/blog/" class="back-button">Back to all posts</a>
+          <h2>No posts found in this category yet</h2>
+          <p>Check back soon or explore other categories.</p>
+          <a href="/blog/" class="back-button" style="/* estilos botón */">Back to Blog Index</a>
         </div>
-      )}
+      ) : null } {/* No mostrar nada si hubo error de fetch */}
     </div>
   </section>
 

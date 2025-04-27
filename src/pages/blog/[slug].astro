@@ -1,234 +1,193 @@
 ---
-// src/pages/blog/[slug].astro - VERSIÓN OPTIMIZADA PARA HTML
-import { Image } from 'astro:assets';
-import Airtable from 'airtable';
-// Eliminamos la importación de marked ya que no la necesitamos
+// src/pages/blog/[slug].astro - VERSIÓN SUPABASE COMPLETA (SIN STYLES)
 import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase';       // Importa cliente Supabase
+import type { PostFromView } from '../../types';    // Importa el tipo desde types.ts
 
-function compressHTML(html: string): string {
-  if (!html) return '';
-  
-  // 1. Elimina espacios entre etiquetas
-  let compressed = html.replace(/>\s+</g, '><');
-  
-  // 2. Preserva saltos de línea dentro de <pre> y <code> (opcional)
-  const codeBlocks: string[] = [];
-  const preBlocks: string[] = [];
-  
-  // Guarda bloques de código para preservarlos
-  compressed = compressed.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (match) => {
-    preBlocks.push(match);
-    return `___PRE_BLOCK_${preBlocks.length - 1}___`;
-  });
-  
-  compressed = compressed.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (match) => {
-    codeBlocks.push(match);
-    return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
-  });
-  
-  // 3. Restaura los bloques preservados.
-  preBlocks.forEach((block, i) => {
-    compressed = compressed.replace(`___PRE_BLOCK_${i}___`, block);
-  });
-  
-  codeBlocks.forEach((block, i) => {
-    compressed = compressed.replace(`___CODE_BLOCK_${i}___`, block);
-  });
-  
-  return compressed;
-}
-
-// 1. getStaticPaths: Define qué rutas generar en build time
+// --- getStaticPaths: Obtiene slugs desde Supabase ---
 export async function getStaticPaths() {
-  // Define un tipo para los elementos de paths
-  type PathItem = {
-    params: { slug: string };
-    props: { recordId: string };
-  } | null;
-  
-  const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
-  const tableId = import.meta.env.AIRTABLE_BLOG_TABLE_ID || import.meta.env.AIRTABLE_TABLE_ID;
-  let paths: PathItem[] = [];
+  console.log("--- BLOG [slug]: Running getStaticPaths from Supabase ---");
+  type StaticPath = { params: { slug: string } };
+  let paths: StaticPath[] = []; 
 
-  if (!import.meta.env.AIRTABLE_API_KEY || !import.meta.env.AIRTABLE_BASE_ID || !tableId) {
-      return paths;
+  if (!supabase) {
+    console.error("Supabase client not initialized in [slug].astro getStaticPaths.");
+    return paths;
   }
 
   try {
-    const records = await base(tableId).select({
-      filterByFormula: "{Status} = 'Published'",
-      fields: ["Slug", "Status"]
-    }).all();
-    
-    paths = records.map((record) => {
-      const slug = record.fields.Slug;
-      if (!slug || typeof slug !== 'string') {
-         return null;
-      }
-      return {
-        params: { slug: slug },
-        props: { recordId: record.id },
-      };
-    }).filter((path) => path !== null);
-  } catch (error) {
-    console.error("Error fetching paths from Airtable:", error);
+    const { data: posts, error } = await supabase
+      .from('posts_view')      // Usamos la vista que ya filtra publicados
+      .select('post_slug');    // Solo necesitamos el slug
+
+    if (error) {
+      throw new Error(`Supabase query error in getStaticPaths: ${error.message}`);
+    }
+
+    if (posts) {
+      paths = posts
+        .filter(post => post.post_slug) // Asegura que el slug no sea null o vacío
+        .map((post) => ({
+          params: { slug: post.post_slug },
+          // No pasamos props, usaremos el slug para buscar
+        }));
+      console.log(`Generated ${paths.length} paths for blog posts from Supabase.`);
+    }
+  } catch (error: any) {
+    console.error("Error in getStaticPaths (Supabase):", error);
+    throw error; // Detener build si falla
   }
-  
+
   return paths;
 }
 
-// 2. Recibimos el recordId pasado por getStaticPaths
-const { recordId } = Astro.props;
+// --- Obtener Datos del Post Específico ---
+const { slug } = Astro.params; // Obtenemos el slug de la URL
+let post: PostFromView | null = null;
+let fetchError: string | null = null;
+let contentHtml = ''; // Variable para contenido procesado (opcional)
 
-// 3. Obtener post de Airtable
-let post = null;
-let contentHtml = '';
-
-try {
-  const base = new Airtable({ apiKey: import.meta.env.AIRTABLE_API_KEY }).base(import.meta.env.AIRTABLE_BASE_ID);
-  const tableId = import.meta.env.AIRTABLE_BLOG_TABLE_ID || import.meta.env.AIRTABLE_TABLE_ID;
-  
-  const record = await base(tableId).find(recordId);
-  
-  if (record && record.fields) {
-    // Helper para obtener valores string seguros
-    const getStringValue = (field: string): string => {
-      const value = record.fields[field];
-      return value ? String(value) : '';
-    };
-    
-    // Procesamos la fecha
-    let publishDate = new Date();
-    if (record.fields.PublishDate) {
-      try {
-        publishDate = new Date(String(record.fields.PublishDate));
-      } catch (e) {
-        // Usar fecha actual como fallback
-      }
-    }
-    
-    // Procesamos las imágenes
-    let imageUrl = null;
-    if (record.fields.Image && Array.isArray(record.fields.Image) && 
-        record.fields.Image.length > 0 && typeof record.fields.Image[0] === 'object' &&
-        record.fields.Image[0] !== null && 'url' in record.fields.Image[0]) {
-      imageUrl = record.fields.Image[0].url;
-    }
-    
-    // Procesamos tags
-    const tags: string[] = [];
-    if (record.fields.Tags && Array.isArray(record.fields.Tags)) {
-      record.fields.Tags.forEach((tag) => {
-        if (typeof tag === 'string') tags.push(tag);
-      });
-    }
-    
-    post = {
-      id: record.id,
-      Title: getStringValue('Title') || "Sin título",
-      Content: getStringValue('Content') || "",
-      Description: getStringValue('Description') || "",
-      Author: getStringValue('Author') || "AutomationAI Team",
-      PublishDate: publishDate,
-      Category: getStringValue('Category') || "General",
-      Tags: tags,
-      Image: imageUrl,
-      Status: getStringValue('Status') || "",
-      Slug: getStringValue('Slug') || ""
-    };
-    
-    // Ya no necesitamos marked, usamos el HTML directamente
-    contentHtml = compressHTML(post.Content);
-  }
-} catch (error) {
-  console.error(`Error fetching post with ID ${recordId}:`, error);
+// Función compressHTML (Opcional, puedes quitarla si no la usas)
+function compressHTML(html: string): string {
+  if (!html) return '';
+  // ... (Tu lógica de compresión si la mantienes) ...
+  let compressed = html.replace(/>\s+</g, '><');
+  return compressed;
 }
 
-// Si no encontramos el post, redirigimos a 404
-if (!post) {
-  return Astro.redirect('/404');
+// Fetch de datos del post actual
+if (!supabase) {
+   fetchError = "Supabase client not initialized.";
+   console.error(fetchError);
+} else if (!slug) {
+   fetchError = "Slug parameter is missing.";
+   console.error(fetchError);
+} else {
+  try {
+    console.log(`Fetching post details for slug: ${slug}`);
+    const { data, error } = await supabase
+      .from('posts_view')      // Usamos la vista
+      .select('*')             // Traemos todas las columnas de la vista
+      .eq('post_slug', slug)   // Filtramos por el slug
+      .maybeSingle();         // Esperamos un resultado (o null)
+
+    if (error) throw error;
+
+    if (data) {
+      post = data as PostFromView;
+      // Opcional: Pre-procesar contenido
+      if(post.post_content) {
+          contentHtml = compressHTML(post.post_content); // Llama a tu función si existe
+          // O simplemente: contentHtml = post.post_content; si no comprimes
+      }
+      console.log(`Post found: ${post.post_title}`);
+    } else {
+      console.warn(`Post with slug "${slug}" not found.`);
+      fetchError = `Post "${slug}" not found.`;
+    }
+
+  } catch (error: any) {
+     console.error(`Error fetching post with slug ${slug}:`, error);
+     fetchError = `Error fetching post: ${error.message}`;
+  }
 }
 
 // Helper para formatear fechas
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function formatDate(dateString: string | null): string {
+    if (!dateString) return 'Unknown Date';
+    try {
+        const date = new Date(dateString);
+        // Formato inglés consistente con tarjetas
+        return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) { return 'Invalid Date'; }
 }
-
-// Tiempo estimado de lectura
-function calculateReadingTime(content: string): number {
-  const wordsPerMinute = 200;
-  const words = content.split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
-}
-
-const readingTime = calculateReadingTime(post.Content);
 ---
 
-<Layout title={`${post.Title} | AutomationAI Blog`} description={post.Description}>
+{/* --- INICIO HTML DEL COMPONENTE --- */}
+<Layout title={`${post?.post_title || 'Blog Post'} | AutomationAI Blog`} description={post?.post_description || ''}>
   <article class="post-detail-article section-padding">
     <div class="container narrow-container">
-      {/* Encabezado del Post */}
-      <header class="post-header">
-        {/* Categoría */}
-        {post.Category && (
-          <a href={`/blog/category/${post.Category.toLowerCase()}/`} class="post-category">
-            {post.Category}
-          </a>
-        )}
-        {/* Título */}
-        <h1 class="post-title">{post.Title}</h1>
-        {/* Meta Info */}
-        <div class="post-meta">
-          {post.Author && <span>By {post.Author}</span>}
-          {post.Author && post.PublishDate && <span class="separator">|</span>}
-          {post.PublishDate && (
-            <time datetime={post.PublishDate.toISOString()}>
-              {formatDate(post.PublishDate)}
-            </time>
-          )}
-          <span class="separator">|</span>
-          <span class="reading-time">{readingTime} min read</span>
-        </div>
-      </header>
 
-      {/* Imagen Destacada (si existe) */}
-      {post.Image && (
-        <div class="post-featured-image">
-          <img
-            src={post.Image}
-            alt={`Featured image for ${post.Title}`}
-            loading="eager"
-            decoding="async"
-          />
-        </div>
+      {/* Mostrar error si lo hubo al cargar */}
+      {fetchError && !post && (
+          <div class="error-loading-post" style="padding: 2rem; text-align: center; border: 1px solid red; background: #fff0f0; color: #a00;">
+              <h2>Post Not Found or Error</h2>
+              <p>{fetchError}</p>
+              <a href="/blog/" style="display: inline-block; margin-top: 1rem; color: blue; text-decoration: underline;">Return to Blog</a>
+          </div>
       )}
 
-      {/* Contenido Principal del Post */}
-      <div class="post-content prose">
-        {/* Renderizamos el contenido HTML directamente */}
-        <Fragment set:html={contentHtml} />
-      </div>
-
-      {/* Tags y Otros Metadatos (Footer del Post) */}
-      <footer class="post-footer">
-        {post.Tags && post.Tags.length > 0 && (
-          <div class="post-tags">
-            <strong>Tags:</strong>
-            {post.Tags.map((tag) => (
-              <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/`} class="tag-link">
-                {tag}
+      {/* Mostrar contenido solo si el post existe */}
+      {post && (
+        <> {/* Fragment para agrupar */}
+          <header class="post-header">
+            {/* Categoría */}
+            {post.category_name && post.category_slug && (
+              <a href={`/blog/category/${post.category_slug}/`} class="post-category">
+                {post.category_name} {/* Asume nombre capitalizado de DB */}
               </a>
-            ))}
+            )}
+            {/* Título */}
+            <h1 class="post-title">{post.post_title}</h1>
+            {/* Meta Info */}
+            <div class="post-meta">
+              {post.author_name && <span>By {post.author_name}</span>}
+              {post.author_name && post.published_at && <span class="separator">|</span>}
+              {post.published_at && (
+                <time datetime={post.published_at}>
+                  {formatDate(post.published_at)}
+                </time>
+              )}
+              {/* Tiempo de Lectura */}
+              {post.estimated_read_time && post.estimated_read_time > 0 && (
+                  <>
+                      <span class="separator">|</span>
+                      <span class="reading-time">{post.estimated_read_time} min read</span>
+                  </>
+              )}
+            </div>
+          </header>
+
+          {/* Imagen Destacada */}
+          {post.post_image_url && (
+            <div class="post-featured-image">
+              <img
+                src={post.post_image_url}
+                alt={`Featured image for ${post.post_title}`}
+                loading="eager"
+                decoding="async"
+                width="800" 
+                height="450"
+              />
+            </div>
+          )}
+
+          {/* Contenido Principal */}
+          <div class="post-content prose" set:html={contentHtml || post.post_content || ''}>
           </div>
-        )}
-      </footer>
+
+          {/* Tags */}
+          <footer class="post-footer">
+            {post.tag_names && post.tag_names.length > 0 && post.tag_slugs && post.tag_slugs.length > 0 && (
+              <div class="post-tags">
+                <strong>Tags:</strong>
+                {post.tag_names.map((tagName, index) => {
+                    const tagSlug = post.tag_slugs![index]; // Asumimos sincronía
+                    return (
+                      <a href={`/blog/tag/${tagSlug}/`} class="tag-link">
+                        {tagName} {/* Asume nombre en minúsculas de DB */}
+                      </a>
+                    );
+                })}
+              </div>
+            )}
+          </footer>
+        </>
+      )}
     </div>
   </article>
 </Layout>
+{/* --- FIN HTML DEL COMPONENTE --- */}
 
 <style is:global>
 
