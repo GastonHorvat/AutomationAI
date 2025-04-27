@@ -75,12 +75,12 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     <button
       id="copyLinkBtn"
       type="button"
-      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700"
+      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
       aria-label="Copy link"
     >
       <Icon name="mdi:link-variant" />
     </button>
-    <span id="copyNotification" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;">¡Enlace copiado!</span>
+    <span id="copyNotification" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;">The link has been copied!</span>
   </div>
 </div>
 
@@ -125,10 +125,11 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     display: inline-flex; /* flex no es necesario si usamos inline-flex */
     align-items: center;
     justify-content: center;
+    border: none;
     transition-property: color, background-color, border-color;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
-    color: white; /* Color icono por defecto */
+    color: rgb(255, 255, 255); /* Color icono por defecto */
     font-size: 1.25rem; /* Ajusta tamaño icono */
   }
   
@@ -174,7 +175,7 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
 .hover\:bg-blue-800:hover { background-color: #1e40af; }
 .bg-green-500 { background-color: #22c55e; }
 .hover\:bg-green-600:hover { background-color: #16a34a; }
-.bg-gray-200 { background-color: #e5e7eb; }
+.bg-gray-200 { background-color: #6c6d6d; }
 .hover\:bg-gray-300:hover { background-color: #d1d5db; }
 </style>
 <script>
