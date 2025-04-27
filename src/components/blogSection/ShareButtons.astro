@@ -15,7 +15,8 @@ const encodedUrl = encodeURIComponent(postUrl);
 const encodedTitle = encodeURIComponent(postTitle);
 
 // URLs para compartir correctamente formateadas
-const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+// URLs para compartir correctamente formateadas
+const facebookShareUrl = `https://www.facebook.com/sharer.php?u=${encodedUrl}&quote=${encodedTitle}&hashtag=%23automationai`;
 const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
 const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
 const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
@@ -67,16 +68,18 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     >
       <Icon name="mdi:whatsapp" />
     </a>
-    
-    <!-- Copy Link Button -->
+        
+<!-- Copy Link Button -->
+<div class="copy-container" style="position: relative; display: inline-block;">
     <button
+      id="copyLinkBtn"
       type="button"
-      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700 copy-link-button"
+      class="share-button bg-gray-200 hover:bg-gray-300 text-gray-700"
       aria-label="Copy link"
-      data-clipboard-text={postUrl}
     >
       <Icon name="mdi:link-variant" />
     </button>
+    <span id="copyNotification" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;">¡Enlace copiado!</span>
   </div>
 </div>
 
@@ -88,7 +91,8 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     border-color: #e5e7eb; /* gray-200 */
     padding-top: 1.5rem;    /* py-6 */
     padding-bottom: 1.5rem;
-
+    margin-top: 1.5rem;     /* my-10 */
+    margin-bottom: 0rem;
   }
 
   .share-section-wrapper h3 {
@@ -131,14 +135,98 @@ const whatsappShareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
     opacity: 0.9;
   }
 
-  /* Colores específicos */
-  .bg-blue-600 { background-color: #2563eb; }
-  .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
-  .bg-sky-500 { background-color: #0ea5e9; }
-  .hover\:bg-sky-600:hover { background-color: #0284c7; }
-  .bg-blue-700 { background-color: #1d4ed8; }
-  .hover\:bg-blue-800:hover { background-color: #1e40af; }
-  .bg-green-500 { background-color: #22c55e; }
-  .hover\:bg-green-600:hover { background-color: #16a34a; }
-  .bg-gray-200 { background-color: #e5e7eb; }
-  .hover\:bg-gray-300:hover { backgroun
+  /* Notificación de copiado */
+.copy-notification {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.copy-notification.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Efecto de feedback para el botón de copiar */
+.copy-success {
+  background-color: #10b981 !important; /* Verde de éxito */
+}
+
+/* Colores específicos */
+.bg-blue-600 { background-color: #2563eb; }
+.hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+.bg-sky-500 { background-color: #0ea5e9; }
+.hover\:bg-sky-600:hover { background-color: #0284c7; }
+.bg-blue-700 { background-color: #1d4ed8; }
+.hover\:bg-blue-800:hover { background-color: #1e40af; }
+.bg-green-500 { background-color: #22c55e; }
+.hover\:bg-green-600:hover { background-color: #16a34a; }
+.bg-gray-200 { background-color: #e5e7eb; }
+.hover\:bg-gray-300:hover { background-color: #d1d5db; }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Función para copiar al portapapeles
+    const copyToClipboard = async (text) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.error('Error al copiar: ', err);
+        
+        // Fallback para navegadores que no soportan clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          document.body.removeChild(textArea);
+          return successful;
+        } catch (err) {
+          document.body.removeChild(textArea);
+          return false;
+        }
+      }
+    };
+
+    // Botón de copiar
+    const copyBtn = document.getElementById('copyLinkBtn');
+    const notification = document.getElementById('copyNotification');
+    
+    if (copyBtn && notification) {
+      copyBtn.addEventListener('click', async () => {
+        // URL directa para evitar problemas con atributos data
+        const urlToCopy = document.location.href;
+        
+        const success = await copyToClipboard(urlToCopy);
+        
+        if (success) {
+          // Mostrar notificación
+          notification.style.display = 'block';
+          
+          // Ocultar después de 2 segundos
+          setTimeout(() => {
+            notification.style.display = 'none';
+          }, 2000);
+        }
+      });
+    }
+  });
+</script>
