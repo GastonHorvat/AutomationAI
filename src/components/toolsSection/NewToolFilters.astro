@@ -89,6 +89,63 @@ const ratingOptions = ['All', '4+ stars', '3+ stars'];
   </div> {/* Fin .filter-section-wrapper */}
 </div> {/* Fin .new-filter-container */}
 
+<style is:global>
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle; /* Ayuda a alinear con texto adyacente */
+    padding: 0.3rem 0.9rem;  /* Un poco más de padding vertical */
+    border-radius: 16px;     /* Bordes redondeados consistentes */
+    font-size: 0.8rem;       /* Tamaño de fuente pequeño */
+    font-weight: 500;        /* Peso medio */
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: default;
+    border: 1px solid transparent; /* Borde base transparente */
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s; /* Transiciones suaves */
+}
+
+/* --- Estilos para Píldoras ACTIVAS (Freemium, 4+ stars, etc.) --- */
+.filter-pill.active-pill {
+    /* Un azul/púrpura más brillante pero aún suave */
+    background-color: #c7d2fe; /* Tailwind indigo-200 */
+    /* Color de texto oscuro para contraste */
+    color: #3730a3; /* Tailwind indigo-800 */
+    /* Borde opcional un poco más oscuro */
+    border-color: #a5b4fc; /* Tailwind indigo-300 */
+}
+
+/* --- Estilos para el botón 'x' dentro de la píldora activa --- */
+.remove-pill {
+    margin-left: 0.5rem; /* Espacio entre texto y 'x' */
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1; /* Ajusta para centrado vertical */
+    font-size: 1.3em;  /* Tamaño del símbolo '×' */
+    font-weight: bold;
+
+    /* Hereda el color del texto de la píldora */
+    color: inherit;
+
+    /* Opacidad inicial y cambio en hover */
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.remove-pill:hover {
+    opacity: 1; /* Opacidad completa al pasar */
+}
+
+/* --- Arreglo para clic en icono del dropdown --- */
+.filter-dropdown-toggle > span,
+.filter-dropdown-toggle > .dropdown-icon {
+    pointer-events: none; /* Ignora clics en el texto y el icono para el event target */
+}
+
+</style>
+
 <style>
   /* --- ESTILOS ADAPTADOS --- */
   .new-filter-container {
@@ -161,13 +218,6 @@ const ratingOptions = ['All', '4+ stars', '3+ stars'];
      min-height: 28px;
   }
 
-  .filter-pill {
-     display: inline-flex; align-items: center;
-     padding: 0.25rem 0.8rem; border-radius: 16px;
-     font-size: 0.8rem; font-weight: 500; line-height: 1.4;
-     white-space: nowrap; cursor: default; border: 1px solid transparent;
-  }
-
    /* Píldora default "All Tools" */
    .filter-pill.default-pill {
      background-color: #FEF3C7; /* Amarillo claro - AJUSTA COLOR */
@@ -176,37 +226,31 @@ const ratingOptions = ['All', '4+ stars', '3+ stars'];
      font-style: normal; /* Sin itálica */
    }
    .filter-pill.default-pill[hidden] { display: none;}
-   /* Píldora activa (Filtro seleccionado) */
-
-  .filter-pill.active-pill {
-     background-color: #f30d20; /* Lavanda/Azul claro - AJUSTA COLOR */
-     color: #3730A3; /* Azul/Índigo oscuro - AJUSTA COLOR */
-     border-color: #C7D2FE; /* Lavanda/Azul más oscuro - AJUSTA COLOR */
-  }
-
-  .remove-pill {
-     margin-left: 0.4rem; padding: 0; background: none; border: none;
-     cursor: pointer; line-height: 0.8; opacity: 0.6; color: inherit;
-     font-size: 1.4em; font-weight: bold;
-  }
-   .remove-pill:hover { opacity: 1; }
 
    .clear-all-filters {
-   /* Quitamos margin-left: auto;  */
-   font-size: 0.85rem;
-   color: var(--text-light, --secondary-color) !important; /* Color gris como antes */
-   text-decoration: underline;
-   cursor: pointer;
-   padding: 0.25rem 0.5rem; /* Añadimos un poco de padding */
-   border: 1px solid transparent; /* Borde invisible para alinear altura */
-   border-radius: 4px; /* Opcional: redondear un poco */
-   transition: color 0.2s, background-color 0.2s;
-   margin-left: 0.5rem; /* Pequeño margen a la izquierda para separarlo del último chip */
+    font-size: 0.85rem;
+    font-weight: 500;
+    /* Un color rojo/rosa suave pero distintivo */
+    color: #f43f5e; /* Tailwind rose-500 */
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.3rem 0.5rem;
+    margin-left: 0.75rem;
+    border-radius: 4px;
+    transition: color 0.2s, text-decoration 0.2s, background-color 0.2s;
 }
- .clear-all-filters:hover {
-   color: var(--text-dark);
-   background-color: #f3f4f6; /* Fondo gris claro al pasar */
- }
+
+.clear-all-filters:hover {
+    /* Rojo más intenso al pasar */
+    color: #be123c; /* Tailwind rose-700 */
+    text-decoration: underline;
+    /* Opcional: fondo muy sutil rojo claro */
+    background-color: #fff1f2; /* Tailwind rose-50 */
+}
+
+/* Ocultar cuando no hay filtros activos */
  .clear-all-filters[hidden] { display: none; }
 
   .dropdown-menu {

@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (menu?.id === 'rating-filter-options') filterType = 'rating';
 
             if (filterType) {
-                const selectedValue = dropdownOption.dataset.value === 'all' ? null : dropdownOption.dataset.value; // <-- ¡Esto ya está bien! null si es 'all'
+                const selectedValue = dropdownOption.dataset.value.toLowerCase() === 'all' ? null : dropdownOption.dataset.value;
                 console.log(`Filter Update: Type=${filterType}, Value=${selectedValue}`);
                 activeFilters[filterType] = selectedValue; // Asigna null si fue 'all'
                 applyFilters();
