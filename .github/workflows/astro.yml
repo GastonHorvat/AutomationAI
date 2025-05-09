@@ -24,6 +24,8 @@ env:
   BUILD_PATH: "." # default value when not using subfolders
   # BUILD_PATH: subfolder
 
+# ... (resto del workflow sin cambios arriba) ...
+
 jobs:
   build:
     name: Build
@@ -32,6 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect package manager
+        # ... (sin cambios en este paso) ...
         id: detect-package-manager
         run: |
           if [ -f "${{ github.workspace }}/yarn.lock" ]; then
@@ -63,10 +66,13 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build with Astro
-        # Añade el bloque 'env:' aquí, al mismo nivel que 'name' y 'run'
-        env:
+        env: # El bloque env: debe estar aquí
+          # Variables que ya tenías:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Variables NUEVAS para el chatbot:
+          PUBLIC_MAKE_WEBHOOK_URL: ${{ secrets.PUBLIC_MAKE_WEBHOOK_URL }}
+          PUBLIC_CHATBOT_SECRET_TOKEN: ${{ secrets.PUBLIC_CHATBOT_SECRET_TOKEN }}
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "${{ steps.pages.outputs.origin }}" \
