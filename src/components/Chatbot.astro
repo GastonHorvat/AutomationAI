@@ -1,0 +1,413 @@
+---
+import { Image } from 'astro:assets';
+import chatbotIcon from '../assets/images/chatbot.png';
+
+const webhookUrlFromEnv = import.meta.env.PUBLIC_MAKE_WEBHOOK_URL;
+const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN; // <--- NUEVO: Leer token
+---
+
+<div 
+  id="chatbot-container" 
+  data-webhook-url={webhookUrlFromEnv}
+  data-chatbot-token={chatbotTokenFromEnv}  
+>
+  {/* ... resto del HTML del div#chatbot-container sin cambios ... */}
+  <button id="chatbot-toggle-button" aria-label="Abrir chat de NahIA">
+    <Image src={chatbotIcon} alt="Abrir chat" width="48" height="48" />
+  </button>
+
+  <div id="chatbot-window" class="hidden">
+    <header id="chatbot-header">
+      <span id="chatbot-title">NahIA</span>
+      <button id="chatbot-close-button" aria-label="Cerrar chat">×</button>
+    </header>
+    <div id="chatbot-messages">
+      {/* Los mensajes se insertarán aquí por JS */}
+    </div>
+    <form id="chatbot-form">
+      <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje..." autocomplete="off" />
+      <button type="submit" id="chatbot-send-button" aria-label="Enviar mensaje">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // --- DOM Elements ---
+  const chatbotContainer = document.getElementById('chatbot-container') as HTMLDivElement | null;
+  const chatbotToggleButton = document.getElementById('chatbot-toggle-button') as HTMLButtonElement | null;
+  // ... (otros elementos DOM sin cambios)
+  const chatbotWindow = document.getElementById('chatbot-window') as HTMLDivElement | null;
+  const chatbotCloseButton = document.getElementById('chatbot-close-button') as HTMLButtonElement | null;
+  const chatbotMessages = document.getElementById('chatbot-messages') as HTMLDivElement | null;
+  const chatbotForm = document.getElementById('chatbot-form') as HTMLFormElement | null;
+  const chatbotInput = document.getElementById('chatbot-input') as HTMLInputElement | null;
+
+
+  // Leer la URL y el Token desde los data attributes
+  const MAKE_WEBHOOK_URL = chatbotContainer?.dataset.webhookUrl || '';
+  const CHATBOT_SECRET_TOKEN = chatbotContainer?.dataset.chatbotToken || ''; // <--- NUEVO: Leer token
+
+  // ... (variables isChatOpen, hasWelcomed, WELCOME_MESSAGE sin cambios)
+  let isChatOpen = false;
+  let hasWelcomed = false;
+  const WELCOME_MESSAGE = "¡Hola! Soy NahIA. ¿Listo para descubrir cómo la inteligencia artificial puede transformar tu negocio? ¡Pregúntame lo que quieras!";
+  
+
+  // --- Functions ---
+  // ... (toggleChatWindow y addMessageToChat sin cambios)
+  function toggleChatWindow() {
+    if (!chatbotWindow || !chatbotToggleButton || !chatbotInput) return;
+
+    isChatOpen = !isChatOpen;
+    chatbotWindow.classList.toggle('hidden');
+    if (chatbotToggleButton) { 
+      chatbotToggleButton.setAttribute('aria-expanded', String(isChatOpen));
+    }
+    
+    if (isChatOpen && !hasWelcomed) {
+      addMessageToChat(WELCOME_MESSAGE, 'bot');
+      hasWelcomed = true;
+    }
+    if (isChatOpen && chatbotInput) {
+        chatbotInput.focus();
+    }
+  }
+
+  function addMessageToChat(text: string, sender: 'user' | 'bot' | 'bot-thinking'): HTMLDivElement | undefined {
+    if (!chatbotMessages) return undefined;
+
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chatbot-message', `chatbot-message-${sender}`);
+    
+    const messageBubble = document.createElement('p');
+    messageBubble.textContent = text;
+    messageElement.appendChild(messageBubble);
+    
+    chatbotMessages.appendChild(messageElement);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    return messageElement;
+  }
+
+
+  async function handleSendMessage(event: Event) {
+    event.preventDefault();
+    
+    if (!MAKE_WEBHOOK_URL) {
+      // ... (manejo de error de URL sin cambios)
+      console.error("Error: La URL del webhook no está configurada o no se pudo cargar desde data-webhook-url.");
+      if(chatbotInput) addMessageToChat("Error de configuración: No se puede contactar a NahIA.", 'bot');
+      return;
+    }
+    if (!CHATBOT_SECRET_TOKEN) { // <--- NUEVO: Comprobación del token
+      console.error("Error: El token secreto del chatbot no está configurado.");
+      if(chatbotInput) addMessageToChat("Error de configuración de seguridad. Contacte al administrador.", 'bot');
+      return;
+    }
+    if (!chatbotInput) { 
+      // ... (manejo de error de input sin cambios)
+      console.error("Chatbot input no está disponible.");
+      return;
+    }
+
+    const userMessage = chatbotInput.value.trim();
+
+    if (userMessage) {
+      // ... (lógica de añadir mensaje de usuario y 'pensando' sin cambios)
+      addMessageToChat(userMessage, 'user');
+      const currentMessageValue = chatbotInput.value; 
+      if(chatbotInput) chatbotInput.value = ''; 
+
+      const thinkingMessage = addMessageToChat("NahIA está pensando...", 'bot-thinking');
+
+
+      try {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            source: 'NahIA Chatbot',
+            userMessage: userMessage,
+            chatbot_token: CHATBOT_SECRET_TOKEN,
+          }),
+        });
+
+        // ... (resto del manejo de respuesta y errores sin cambios)
+        if (thinkingMessage && thinkingMessage.parentElement === chatbotMessages && chatbotMessages) {
+            chatbotMessages.removeChild(thinkingMessage);
+        }
+
+        if (!response.ok) {
+          // Si la respuesta es 401 o 403, podría ser un problema de token
+          if (response.status === 401 || response.status === 403) {
+             addMessageToChat(`Error de autenticación con NahIA. Por favor, verifique la configuración.`, 'bot');
+          } else {
+            let errorDetail = "No se pudo obtener más información del error.";
+            try {
+                const errorData = await response.text();
+                errorDetail = errorData || errorDetail;
+            } catch (e) {
+                console.warn("No se pudo parsear el cuerpo del error como texto.");
+            }
+            addMessageToChat(`Hubo un problema conectando con NahIA (Error: ${response.status}). Detalles: ${errorDetail}`, 'bot');
+          }
+          if(chatbotInput) chatbotInput.value = currentMessageValue;
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data && data.botResponse) {
+          addMessageToChat(data.botResponse, 'bot');
+        } else {
+          console.error('Respuesta de Make.com no tiene el formato esperado:', data);
+          addMessageToChat('NahIA no pudo procesar la respuesta correctamente esta vez.', 'bot');
+        }
+
+      } catch (error) {
+         if (thinkingMessage && thinkingMessage.parentElement === chatbotMessages && chatbotMessages) {
+            chatbotMessages.removeChild(thinkingMessage);
+        }
+        console.error('Error al enviar mensaje a Make.com:', error);
+        addMessageToChat('Error de conexión con NahIA. Por favor, intenta de nuevo.', 'bot');
+        if(chatbotInput) chatbotInput.value = currentMessageValue;
+      }
+    }
+  }
+
+  // --- Event Listeners ---
+  // ... (sin cambios)
+  if (chatbotToggleButton) {
+    chatbotToggleButton.addEventListener('click', toggleChatWindow);
+    chatbotToggleButton.setAttribute('aria-expanded', 'false');
+    chatbotToggleButton.setAttribute('aria-controls', 'chatbot-window');
+  }
+
+  if (chatbotCloseButton) {
+    chatbotCloseButton.addEventListener('click', toggleChatWindow);
+  }
+
+  if (chatbotForm) {
+    chatbotForm.addEventListener('submit', handleSendMessage);
+  }
+</script>
+
+<style is:global>
+  /* 
+    Usamos is:global temporalmente para los estilos principales del contenedor y botón flotante
+    para asegurar que se apliquen correctamente, especialmente si hay estilos globales muy específicos.
+    Lo ideal a largo plazo sería encapsular todo o usar capas CSS.
+    Para este desafío rápido, esto nos da más control.
+  */
+
+  :root {
+    /* Define tus colores aquí si no están ya globales, o usa los que tienes.
+       Estos son ejemplos, ajústalos a tus --primary-color y --secondary-color */
+    --chatbot-primary-color: var(--primary-color, #0052cc); /* Azul por defecto si --primary-color no está */
+    --chatbot-secondary-color: var(--secondary-color, #DE350B); /* Rojo por defecto si --secondary-color no está */
+    --chatbot-text-color: #333;
+    --chatbot-bg-light: #ffffff;
+    --chatbot-bg-user-message: #e6f2ff; /* Un azul claro para mensajes de usuario */
+    --chatbot-bg-bot-message: #f0f0f0; /* Un gris claro para mensajes de bot */
+    --chatbot-border-color: #e0e0e0;
+    --chatbot-header-text-color: #ffffff !important; /* AÑADIDO: Color para el texto del header */
+  }
+
+  #chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  #chatbot-toggle-button {
+    background-color: var(--chatbot-primary-color);
+    color: white; /* El color del texto por si acaso, pero la imagen es lo principal */
+    border: none;
+    border-radius: 50%;
+    width: 72px; /* AUMENTADO: Tamaño del botón */
+    height: 72px; /* AUMENTADO: Tamaño del botón */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Sombra un poco más pronunciada */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  #chatbot-toggle-button:hover {
+    transform: scale(1.08); /* Un poco menos de zoom para un botón más grande */
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  #chatbot-toggle-button img {
+    width: 48px; /* AUMENTADO: Tamaño de la imagen interna */
+    height: 48px; /* AUMENTADO: Tamaño de la imagen interna */
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* NUEVO: Intenta hacer la imagen blanca */
+  }
+
+  #chatbot-window {
+    background-color: var(--chatbot-bg-light);
+    border: 1px solid var(--chatbot-border-color);
+    border-radius: 10px; /* Un poco más de radio */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2); /* Sombra más notoria para la ventana */
+    width: 340px; /* Un poco más ancho si es necesario */
+    max-height: 80vh; 
+    display: flex;
+    flex-direction: column;
+    position: absolute; 
+    bottom: 95px; /* Ajustar si el botón es más grande: 72px + 20px (espacio) + un poco más */
+    right: 0;
+    overflow: hidden; 
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  #chatbot-window.hidden {
+    display: none;
+  }
+
+#chatbot-header {
+  background-color: var(--chatbot-primary-color);
+  color: var(--chatbot-header-text-color, #ffffff); /* Color base para el header */
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px; 
+  border-top-right-radius: 10px;
+}
+
+#chatbot-title { /* NUEVO SELECTOR PARA EL TÍTULO */
+  font-size: 1.2em; /* O el tamaño que prefieras */
+  font-weight: 600; /* O el peso que prefieras */
+  /* No necesita 'color: inherit;' porque el padre #chatbot-header ya tiene el color blanco */
+  /* y 'span' por defecto hereda el color. Si usaras un 'div' podrías ser más explícito. */
+}
+
+#chatbot-close-button {
+  background: none;
+  border: none;
+  color: inherit; /* Debería heredar de #chatbot-header */
+  font-size: 1.9em;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+  #chatbot-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    min-height: 200px; /* Altura mínima para que se vea algo aun sin mensajes */
+    max-height: calc(80vh - 120px); /* Ajusta según header y form */
+    background-color: #f9f9f9; /* Un fondo ligeramente diferente para el área de mensajes */
+  }
+
+  .chatbot-message {
+    margin-bottom: 12px;
+    display: flex;
+  }
+
+  .chatbot-message p {
+    padding: 10px 14px;
+    border-radius: 18px;
+    max-width: 80%;
+    margin: 0;
+    line-height: 1.4;
+    word-wrap: break-word; /* Para que los textos largos se rompan */
+  }
+
+  .chatbot-message-user {
+    justify-content: flex-end; /* Alinea a la derecha */
+  }
+  .chatbot-message-user p {
+    background-color: var(--chatbot-bg-user-message); /* Azul claro */
+    color: var(--chatbot-text-color);
+    border-bottom-right-radius: 4px; /* Estilo "burbuja" */
+  }
+
+  .chatbot-message-bot {
+    justify-content: flex-start; /* Alinea a la izquierda */
+  }
+  .chatbot-message-bot p {
+    background-color: var(--chatbot-bg-bot-message); /* Gris claro */
+    color: var(--chatbot-text-color);
+    border-bottom-left-radius: 4px; /* Estilo "burbuja" */
+  }
+
+
+  #chatbot-form {
+    display: flex;
+    padding: 10px 15px;
+    border-top: 1px solid var(--chatbot-border-color);
+    background-color: var(--chatbot-bg-light);
+  }
+
+  #chatbot-input {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    font-size: 0.95em;
+    outline: none;
+  }
+  #chatbot-input:focus {
+    border-color: var(--chatbot-primary-color);
+    box-shadow: 0 0 0 2px var(--chatbot-primary-color, #0052cc)33; /* Un suave outline al hacer focus */
+  }
+
+  #chatbot-send-button {
+    background-color: var(--chatbot-primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0; /* Para que no se encoja */
+  }
+  #chatbot-send-button:hover {
+    opacity: 0.9;
+  }
+  #chatbot-send-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+.chatbot-message-bot-thinking p { /* Estilo para el mensaje de "pensando" */
+  background-color: var(--chatbot-bg-bot-message);
+  color: #777; /* Un color más tenue */
+  font-style: italic;
+}
+
+  /* Media query para pantallas más pequeñas (ej. móviles) */
+ @media (max-width: 480px) {
+    #chatbot-window {
+      width: calc(100vw - 30px); 
+      max-width: 320px; /* Máximo para móviles */
+      bottom: 85px; /* Ajustar si el botón flotante es más grande en móvil */
+      right: 5px; 
+      left: auto;
+    }
+    #chatbot-toggle-button {
+      width: 64px; /* Ajustar si es necesario para móvil */
+      height: 64px;
+      bottom: 15px;
+      right: 15px;
+    }
+    #chatbot-toggle-button img {
+      width: 40px; /* Ajustar para el botón de móvil */
+      height: 40px;
+    }
+  }
+
+</style>

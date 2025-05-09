@@ -12,7 +12,7 @@
     "@iconify-json/simple-icons": "^1.2.33",
     "@supabase/supabase-js": "^2.49.4",
     "airtable": "^0.12.2",
-    "astro": "^5.7.5",
+    "astro": "^5.7.12",
     "astro-icon": "^1.1.5",
     "marked": "^15.0.8"
   },

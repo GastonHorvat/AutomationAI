@@ -2,6 +2,7 @@
 // src/layouts/Layout.astro
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Chatbot from '../components/Chatbot.astro'; // <--- 1. IMPORTA EL CHATBOT
 import '../styles/global.css'; // Importamos los estilos globales
 
 // Definimos qué 'props' (propiedades) puede recibir este Layout
@@ -37,6 +38,7 @@ const { title } = Astro.props;
 
     {/* Aquí usamos el componente Footer */}
 		<Footer />
+
+    <Chatbot /> {/* <--- 2. AÑADE EL COMPONENTE CHATBOT AQUÍ */}
 	</body>
 </html>
-
