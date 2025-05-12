@@ -1,0 +1,656 @@
+---
+// No necesitas frontmatter de Astro aquí si todo es HTML estático
+// Si quisieras usar componentes de Astro o lógica de servidor, aquí iría.
+// Para este caso, como es HTML puro, puedes dejarlo vacío o incluso omitir los ---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | AutomationAI Solutions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --background-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --accent-color: #ff4081;
+            --game-bg: #0d0d17;
+            --border-color: #333; /* For game elements */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container-404 {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start; /* Align items to the top */
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .text-content {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+
+        .game-section {
+            flex: 1.5; /* Give game section a bit more space */
+            display: flex;
+            gap: 20px;
+            min-width: 320px; /* Ensure enough space for game + info */
+        }
+
+        .game-container {
+            flex: 2; /* Main game area */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: var(--game-bg);
+            border-radius: 10px;
+        }
+        
+        #tetris-canvas {
+            border: 2px solid var(--primary-color);
+            background-color: #000;
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .game-info {
+            flex: 1; /* Side info: score, next piece */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            background-color: var(--game-bg);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+
+        .game-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        #score-display, #high-score-display {
+            background-color: #111;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+        #current-score, #today-high-score {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        #next-piece-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #111;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+        #next-piece-canvas {
+            background-color: #000;
+            border: 1px solid var(--primary-color);
+        }
+
+
+        .controls-info {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            margin-top: 15px;
+        }
+        .controls-info strong { color: var(--text-color); }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        h3 { /* For game title */
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-color);
+            margin-top: 0;
+        }
+
+        p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 5px 15px rgba(var(--accent-color-rgb, 255, 64, 129), 0.4);
+            margin-bottom: 20px;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            background-color: #ff60a1;
+        }
+
+        .home-link {
+            display: inline-block;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .home-link:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        @media (max-width: 992px) { /* Adjust breakpoint for game section layout */
+            .game-section {
+                flex-direction: column;
+                width: 100%;
+                max-width: 450px; /* Limit width of game area on smaller screens */
+                margin: 0 auto;
+            }
+            .game-info {
+                flex-direction: row; /* Score and Next piece side-by-side */
+                justify-content: space-around;
+                align-items: center;
+            }
+            #next-piece-container{
+                flex-grow: 1; /* Allow it to take space */
+            }
+        }
+
+
+        @media (max-width: 768px) {
+            .container-404 {
+                flex-direction: column;
+                align-items: center; /* Center items when stacked */
+            }
+            .text-content, .game-section {
+                width: 100%;
+                max-width: 450px;
+            }
+             .game-info { /* Stack score and next piece vertically on very small screens */
+                flex-direction: column;
+            }
+            h1 { font-size: 4rem; }
+            h2 { font-size: 1.8rem; }
+        }
+
+        #tetris-canvas-container {
+            width: 100%;
+            max-width: 300px; 
+            margin: 0 auto;
+        }
+        #tetris-canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container-404">
+        <div class="text-content">
+            <h1>404</h1>
+            <h2>Oops! You've ventured into the unknown.</h2>
+            <p>The page you're looking for seems to have gotten lost in the vastness of cyberspace. But don't worry, we've got something to keep you entertained while you decide your next move!</p>
+            
+            <a href="https://automationai.solutions/solutions/" class="cta-button">
+                🚀 Discover Our AI Solutions
+            </a>
+            <br>
+            <a href="https://automationai.solutions/" class="home-link">
+                🏠 Back to Home
+            </a>
+        </div>
+
+        <div class="game-section">
+            <div class="game-container">
+                <h3>Need a break? Play Tetris!</h3>
+                <div id="tetris-canvas-container">
+                    <canvas id="tetris-canvas"></canvas>
+                </div>
+                <div class="controls-info">
+                    Use <strong>arrow keys</strong> to move & rotate. <br>
+                    <strong>Space</strong> for fast drop.
+                </div>
+            </div>
+
+            <div class="game-info">
+                <div id="score-display">
+                    <h4>Score</h4>
+                    <span id="current-score">0</span>
+                </div>
+                <div id="high-score-display">
+                    <h4>Today's High</h4>
+                    <span id="today-high-score">0</span>
+                </div>
+                <div id="next-piece-container">
+                    <h4>Next Piece</h4>
+                    <canvas id="next-piece-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script is:inline>
+    // Simple Tetris Game by Jakes Gordon - MIT Licensed
+    // Modified for this 404 page
+
+    /** @type {HTMLCanvasElement | null} */
+    let canvas = null;
+    /** @type {CanvasRenderingContext2D | null} */
+    let ctx = null;
+    /** @type {number} */
+    let block_w = 0;
+    /** @type {number} */
+    let block_h = 0;
+    /** @type {(number[])[]} */ 
+    let board = [];
+    /** @type {number[][]} */ 
+    let current_piece_shape; // Se inicializa en new_piece, TS debería inferir luego.
+    /** @type {number} */
+    let current_piece_type_idx = 0;
+    /** @type {number[][] | null} */
+    let next_piece_shape = null;
+    /** @type {number} */
+    let next_piece_type_idx = 0;
+    /** @type {number} */
+    let current_x = 0;
+    /** @type {number} */
+    let current_y = 0;
+    /** @type {boolean} */
+    let lose = false;
+    /** @type {number | undefined} */ 
+    let interval = undefined;
+    /** @type {number} */
+    let score = 0;
+    /** @type {HTMLElement | null} */
+    let score_element = null;
+    /** @type {HTMLElement | null} */
+    let today_high_score_element = null;
+    /** @type {HTMLCanvasElement | null} */
+    let next_canvas = null;
+    /** @type {CanvasRenderingContext2D | null} */
+    let next_ctx = null;
+    /** @type {number} */
+    let next_block_size = 0;
+
+    const COLS = 10, ROWS = 20;
+    const EMPTY = -1; 
+
+    /** @type {number[][][]} */ 
+    const pieces = [
+        [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], // I
+        [[1,0,0],[1,1,1],[0,0,0]],                 // J
+        [[0,0,1],[1,1,1],[0,0,0]],                 // L
+        [[1,1],[1,1]],                             // O
+        [[0,1,1],[1,1,0],[0,0,0]],                 // S
+        [[0,1,0],[1,1,1],[0,0,0]],                 // T
+        [[1,1,0],[0,1,1],[0,0,0]]                  // Z
+    ];
+    /** @type {string[]} */
+    const colors = ['cyan', 'blue', 'orange', 'yellow', 'green', 'purple', 'red'];
+
+    function init_board() {
+        board = [];
+        for (let y = 0; y < ROWS; ++y) {
+            board[y] = [];
+            for (let x = 0; x < COLS; ++x) {
+                board[y][x] = EMPTY;
+            }
+        }
+    }
+
+    /**
+     * @returns {{ shape: number[][], type_idx: number }}
+     */
+    function generate_random_piece() {
+        const type_idx = Math.floor(Math.random() * pieces.length);
+        return { shape: pieces[type_idx], type_idx: type_idx };
+    }
+    
+    function new_piece() {
+        if (!next_piece_shape) { 
+            const first_piece_data = generate_random_piece();
+            current_piece_shape = first_piece_data.shape;
+            current_piece_type_idx = first_piece_data.type_idx;
+        } else {
+            current_piece_shape = next_piece_shape;
+            current_piece_type_idx = next_piece_type_idx;
+        }
+        
+        const next_data = generate_random_piece();
+        next_piece_shape = next_data.shape;
+        next_piece_type_idx = next_data.type_idx;
+
+        draw_next_piece();
+
+        // current_piece_shape es ahora number[][]
+        current_x = Math.floor((COLS - current_piece_shape[0].length) / 2);
+        current_y = 0;
+        if (!valid_move(0, 0)) { 
+            lose = true;
+        }
+    }
+
+    /**
+     * @param {number} dx
+     * @param {number} dy
+     * @param {number[][] | undefined} [piece_to_check_shape_param]
+     * @returns {boolean}
+     */
+    function valid_move(dx, dy, piece_to_check_shape_param) {
+        const shape_to_use = piece_to_check_shape_param || current_piece_shape;
+        
+        const next_x_pos = current_x + dx;
+        const next_y_pos = current_y + dy;
+
+        for (let y_check = 0; y_check < shape_to_use.length; ++y_check) {
+            for (let x_check = 0; x_check < shape_to_use[y_check].length; ++x_check) {
+                if (shape_to_use[y_check][x_check]) {
+                    if (next_y_pos + y_check >= ROWS || 
+                        next_x_pos + x_check < 0 || 
+                        next_x_pos + x_check >= COLS || 
+                        (board[next_y_pos + y_check] && board[next_y_pos + y_check][next_x_pos + x_check] !== EMPTY)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    function freeze_piece() {
+        if (!current_piece_shape) return;
+        for (let y_freeze = 0; y_freeze < current_piece_shape.length; ++y_freeze) {
+            for (let x_freeze = 0; x_freeze < current_piece_shape[y_freeze].length; ++x_freeze) {
+                if (current_piece_shape[y_freeze][x_freeze]) {
+                    if (board[current_y + y_freeze]) {
+                       board[current_y + y_freeze][current_x + x_freeze] = current_piece_type_idx;
+                    }
+                }
+            }
+        }
+        clear_lines();
+        new_piece();
+    }
+
+    function clear_lines() {
+        let lines_cleared_this_turn = 0;
+        for (let y_clear = ROWS - 1; y_clear >= 0; --y_clear) {
+            let row_full = true;
+            for (let x_clear = 0; x_clear < COLS; ++x_clear) {
+                if (board[y_clear][x_clear] === EMPTY) {
+                    row_full = false;
+                    break;
+                }
+            }
+            if (row_full) {
+                lines_cleared_this_turn++;
+                for (let k_clear = y_clear; k_clear > 0; --k_clear) {
+                    for (let x_row_shift = 0; x_row_shift < COLS; ++x_row_shift) {
+                        board[k_clear][x_row_shift] = board[k_clear - 1][x_row_shift];
+                    }
+                }
+                y_clear++; 
+            }
+        }
+        if (lines_cleared_this_turn > 0) {
+            score += lines_cleared_this_turn * 100;
+            if (score_element) score_element.textContent = score.toString();
+        }
+    }
+
+    /**
+     * @param {number[][]} shape_param
+     * @returns {number[][]}
+     */
+    function rotate_piece(shape_param) { 
+        /** @type {number[][]} */
+        const new_shape = [];
+        for (let y_rotate = 0; y_rotate < shape_param.length; ++y_rotate) {
+            new_shape[y_rotate] = [];
+            for (let x_rotate = 0; x_rotate < shape_param[y_rotate].length; ++x_rotate) {
+                new_shape[y_rotate][x_rotate] = shape_param[shape_param[y_rotate].length - 1 - x_rotate][y_rotate];
+            }
+        }
+        return new_shape;
+    }
+
+    /**
+     * @param {CanvasRenderingContext2D} context_param
+     * @param {number} x_pos
+     * @param {number} y_pos
+     * @param {number} color_idx_param
+     * @param {number} block_width
+     * @param {number} block_height
+     */
+    function draw_block(context_param, x_pos, y_pos, color_idx_param, block_width, block_height) {
+        if (color_idx_param === EMPTY) return;
+        context_param.fillStyle = colors[color_idx_param];
+        context_param.fillRect(block_width * x_pos, block_height * y_pos, block_width -1 , block_height -1 );
+    }
+    
+    function draw_next_piece() {
+        if (!next_ctx || !next_canvas || !next_piece_shape) return;
+
+        next_ctx.clearRect(0,0, next_canvas.width, next_canvas.height);
+        
+        const piece_w = next_piece_shape[0].length * next_block_size;
+        
+        let actual_piece_h = 0;
+        for(let r=0; r < next_piece_shape.length; r++){
+            if(next_piece_shape[r].some(/** @param {number} cell */ cell => cell !== 0)) actual_piece_h++;
+        }
+        const piece_h = actual_piece_h * next_block_size;
+
+        const offset_x = (next_canvas.width - piece_w) / 2 / next_block_size;
+        const offset_y = (next_canvas.height - piece_h) / 2 / next_block_size;
+
+        for (let y_draw_next = 0; y_draw_next < next_piece_shape.length; ++y_draw_next) {
+            for (let x_draw_next = 0; x_draw_next < next_piece_shape[y_draw_next].length; ++x_draw_next) {
+                if (next_piece_shape[y_draw_next][x_draw_next]) {
+                    draw_block(next_ctx, x_draw_next + offset_x, y_draw_next + offset_y, next_piece_type_idx, next_block_size, next_block_size);
+                }
+            }
+        }
+    }
+
+    function render() {
+        if (!ctx || !canvas) return; 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let x_render = 0; x_render < COLS; ++x_render) {
+            for (let y_render = 0; y_render < ROWS; ++y_render) {
+                if (board[y_render] && board[y_render][x_render] !== EMPTY) {
+                    draw_block(ctx, x_render, y_render, board[y_render][x_render], block_w, block_h);
+                }
+            }
+        }
+        if (current_piece_shape) { // current_piece_shape puede ser undefined al inicio
+            for (let y_ = 0; y_ < current_piece_shape.length; ++y_) {
+                for (let x_ = 0; x_ < current_piece_shape[y_].length; ++x_) {
+                    if (current_piece_shape[y_][x_]) {
+                        draw_block(ctx, current_x + x_, current_y + y_, current_piece_type_idx, block_w, block_h);
+                    }
+                }
+            }
+        }
+    }
+
+    function tick() {
+        if (lose) {
+            if (!ctx || !canvas) return; 
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.fillRect(0, canvas.height / 2 - 30, canvas.width, 60);
+            ctx.font = '20px Orbitron';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2);
+            ctx.font = '14px Roboto';
+            ctx.fillText('Press R to Restart', canvas.width / 2, canvas.height / 2 + 22);
+            if (interval !== undefined) clearInterval(interval);
+            return;
+        }
+
+        if (valid_move(0, 1)) {
+            current_y++;
+        } else {
+            freeze_piece();
+        }
+        render();
+    }
+
+    function new_game() {
+        if (interval !== undefined) clearInterval(interval);
+        init_board();
+        next_piece_shape = null;
+        new_piece(); // current_piece_shape se define aquí
+        lose = false;
+        score = 0;
+        if (score_element) score_element.textContent = score.toString();
+        interval = window.setInterval(tick, 700); // Usar window.setInterval para claridad
+        render();
+        draw_next_piece();
+    }
+
+    /** @param {number} key_code */
+    function key_press(key_code) {
+        if (lose && key_code === 82) { // R to restart
+            new_game();
+            return;
+        }
+        if (lose || !current_piece_shape) return; // No procesar si no hay pieza actual
+
+        switch (key_code) {
+            case 37: // left
+                if (valid_move(-1, 0)) current_x--;
+                break;
+            case 39: // right
+                if (valid_move(1, 0)) current_x++;
+                break;
+            case 40: // down
+                if (valid_move(0, 1)) current_y++;
+                break;
+            case 38: // up (rotate clockwise)
+                const rotated = rotate_piece(current_piece_shape);
+                if (valid_move(0, 0, rotated)) current_piece_shape = rotated; 
+                break;
+            case 32: // space (drop)
+                while(valid_move(0,1)) { 
+                    current_y++;
+                }
+                tick(); // Forzar tick para congelar y renderizar
+                break;
+        }
+        render();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        canvas = /** @type {HTMLCanvasElement | null} */ (document.getElementById('tetris-canvas'));
+        if (canvas) {
+            ctx = canvas.getContext('2d');
+        }
+        score_element = document.getElementById('current-score');
+        today_high_score_element = document.getElementById('today-high-score');
+
+        next_canvas = /** @type {HTMLCanvasElement | null} */ (document.getElementById('next-piece-canvas'));
+        if (next_canvas) {
+            next_ctx = next_canvas.getContext('2d');
+        }
+
+        if (today_high_score_element) {
+            const minHigh = 3500;
+            const maxHigh = 9700;
+            const randomHighScore = Math.floor(Math.random() * (maxHigh - minHigh + 1)) + minHigh;
+            today_high_score_element.textContent = randomHighScore.toLocaleString();
+        }
+
+        const tetrisContainer = document.getElementById('tetris-canvas-container');
+        if (tetrisContainer && canvas && ctx) { 
+            const containerWidth = tetrisContainer.offsetWidth;
+            block_w = Math.floor(containerWidth / COLS);
+            block_h = block_w; 
+            
+            canvas.width = COLS * block_w;
+            canvas.height = ROWS * block_h;
+
+            next_block_size = Math.floor(block_w * 0.8) > 20 ? Math.floor(block_w * 0.8) : 20;
+            if (next_canvas && next_ctx) { 
+                next_canvas.width = 4 * next_block_size;
+                next_canvas.height = 4 * next_block_size;
+            }
+        } else {
+            if (!tetrisContainer) console.error("Tetris container not found!");
+            if (!canvas) console.error("Tetris canvas not found!");
+            // No podemos continuar si canvas o ctx son null
+            return; 
+        }
+
+
+        document.body.addEventListener('keydown', function(e) {
+            if ([32, 37, 38, 39, 40].includes(e.keyCode)) {
+                e.preventDefault();
+            }
+            key_press(e.keyCode);
+        });
+
+        document.documentElement.style.setProperty('--accent-color-rgb', '255, 64, 129');
+
+        new_game();
+    });
+</script>
+</body>
+</html>
