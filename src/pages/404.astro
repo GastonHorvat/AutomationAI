@@ -38,6 +38,25 @@
             overflow-x: hidden;
         }
 
+        /* Estilos para el contenedor del logo */
+        .logo-container-404 {
+            margin-bottom: 30px; /* Espacio debajo del logo */
+            /* El body ya centra los items, pero esto es por si acaso */
+            text-align: center; 
+        }
+
+        #header-logo-404 {
+            max-width: 250px; /* Ajusta el tamaño máximo según necesites */
+            height: auto;
+            /* Invierte los colores (negro a blanco) y añade una sutil sombra blanca */
+            filter: drop-shadow(0px 0px 2px white) drop-shadow(0px 0px 4px rgba(255, 255, 255, 1));
+            transition: transform 0.3s ease;
+        }
+        #header-logo-404:hover {
+            transform: scale(1.05);
+        }
+
+
         .container-404 {
             display: flex;
             flex-wrap: wrap;
@@ -224,6 +243,9 @@
             }
             h1 { font-size: 4rem; }
             h2 { font-size: 1.8rem; }
+            #header-logo-404 {
+                max-width: 200px; /* Más pequeño en móviles */
+            }
         }
 
         #tetris-canvas-container {
@@ -241,6 +263,14 @@
 </head>
 <body>
 
+    <!-- INICIO: Logo agregado -->
+    <div class="logo-container-404">
+        <a href="https://automationai.solutions/" aria-label="Volver a la página de inicio">
+            <img src="/img/AutomationAI_logo.png" alt="AutomationAI Solutions Logo" id="header-logo-404">
+        </a>
+    </div>
+    <!-- FIN: Logo agregado -->
+
     <div class="container-404">
         <div class="text-content">
             <h1>404</h1>
@@ -248,11 +278,11 @@
             <p>The page you're looking for seems to have gotten lost in the vastness of cyberspace. But don't worry, we've got something to keep you entertained while you decide your next move!</p>
             
             <a href="https://automationai.solutions/solutions/" class="cta-button">
-                🚀 Discover Our AI Solutions
+                Discover Our AI Solutions
             </a>
             <br>
             <a href="https://automationai.solutions/" class="home-link">
-                🏠 Back to Home
+                Back to Home
             </a>
         </div>
 
@@ -449,10 +479,22 @@
             }
         }
         if (lines_cleared_this_turn > 0) {
-            score += lines_cleared_this_turn * 100;
+            score += lines_cleared_this_turn * 100 * lines_cleared_this_turn; // Bonus for multiple lines
             if (score_element) score_element.textContent = score.toString();
+            update_high_score(score);
         }
     }
+    
+    function update_high_score(currentScore) {
+        const storedHighScore = parseInt(localStorage.getItem('tetrisHighScore404') || '0');
+        if (currentScore > storedHighScore) {
+            localStorage.setItem('tetrisHighScore404', currentScore.toString());
+            if (today_high_score_element) { // Re-using this element for simplicity
+                today_high_score_element.textContent = currentScore.toLocaleString();
+            }
+        }
+    }
+
 
     /**
      * @param {number[][]} shape_param
@@ -482,6 +524,9 @@
         if (color_idx_param === EMPTY) return;
         context_param.fillStyle = colors[color_idx_param];
         context_param.fillRect(block_width * x_pos, block_height * y_pos, block_width -1 , block_height -1 );
+        // Adding a subtle border to blocks
+        context_param.strokeStyle = 'rgba(255,255,255,0.1)';
+        context_param.strokeRect(block_width * x_pos, block_height * y_pos, block_width -1 , block_height -1 );
     }
     
     function draw_next_piece() {
@@ -561,6 +606,13 @@
         lose = false;
         score = 0;
         if (score_element) score_element.textContent = score.toString();
+        
+        const storedHighScore = parseInt(localStorage.getItem('tetrisHighScore404') || '0');
+        if (today_high_score_element) {
+            today_high_score_element.textContent = storedHighScore.toLocaleString();
+        }
+
+
         interval = window.setInterval(tick, 700); // Usar window.setInterval para claridad
         render();
         draw_next_piece();
@@ -604,18 +656,11 @@
             ctx = canvas.getContext('2d');
         }
         score_element = document.getElementById('current-score');
-        today_high_score_element = document.getElementById('today-high-score');
+        today_high_score_element = document.getElementById('today-high-score'); // Now used for actual high score
 
         next_canvas = /** @type {HTMLCanvasElement | null} */ (document.getElementById('next-piece-canvas'));
         if (next_canvas) {
             next_ctx = next_canvas.getContext('2d');
-        }
-
-        if (today_high_score_element) {
-            const minHigh = 3500;
-            const maxHigh = 9700;
-            const randomHighScore = Math.floor(Math.random() * (maxHigh - minHigh + 1)) + minHigh;
-            today_high_score_element.textContent = randomHighScore.toLocaleString();
         }
 
         const tetrisContainer = document.getElementById('tetris-canvas-container');
@@ -627,7 +672,7 @@
             canvas.width = COLS * block_w;
             canvas.height = ROWS * block_h;
 
-            next_block_size = Math.floor(block_w * 0.8) > 20 ? Math.floor(block_w * 0.8) : 20;
+            next_block_size = Math.floor(block_w * 0.8) > 20 ? Math.floor(block_w * 0.8) : 15; // reduced min size for next block
             if (next_canvas && next_ctx) { 
                 next_canvas.width = 4 * next_block_size;
                 next_canvas.height = 4 * next_block_size;
@@ -635,13 +680,12 @@
         } else {
             if (!tetrisContainer) console.error("Tetris container not found!");
             if (!canvas) console.error("Tetris canvas not found!");
-            // No podemos continuar si canvas o ctx son null
             return; 
         }
 
 
         document.body.addEventListener('keydown', function(e) {
-            if ([32, 37, 38, 39, 40].includes(e.keyCode)) {
+            if ([32, 37, 38, 39, 40, 82].includes(e.keyCode)) { // Added R (82)
                 e.preventDefault();
             }
             key_press(e.keyCode);
