@@ -5,8 +5,12 @@
     <a href="/" class="logo-link">
         <img src="/img/AutomationAI_logo.png" alt="AutomationAI Logo" class="logo-image"/> {/* <<< CAMBIA TU_LOGO.png Y EL ALT TEXT */}
     </a>
+    <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
+      <span class="sr-only">Menu</span>
+      <i class="ri-menu-line" aria-hidden="true"></i> {/* Icono de hamburguesa */}
+    </button>
     <nav>
-      <ul class="nav-list">
+      <ul class="nav-list nav-mobile-hidden" id="primary-navigation">
         <li><a href="/">Home</a></li>
         <li><a href="/solutions">Solutions</a></li>
         <li><a href="/approach">Approach</a></li>
@@ -36,6 +40,7 @@
   .logo-image {
     display: block; /* Evita espacio extra debajo de la imagen */
     width: auto; /* Mantiene la proporción */
+    max-height: 40px; /* Ajusta la altura máxima del logo si es necesario */
   }
   
   header {
@@ -57,6 +62,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative; /* Para el posicionamiento absoluto del menú móvil */
   }
 
   .logo {
@@ -64,6 +70,32 @@
     font-size: 1.5rem;
     color: #333;
     text-decoration: none;
+  }
+
+  .mobile-nav-toggle {
+    display: none; /* Oculto por defecto, se mostrará en mobile */
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .mobile-nav-toggle .ri-menu-line,
+  .mobile-nav-toggle .ri-close-line {
+    font-size: 1.8rem; /* Tamaño del icono */
+    color: #333;
+  }
+
+  .sr-only { /* Screen-reader only text */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   /* Estilos base para la lista de navegación */
@@ -139,8 +171,130 @@
     margin-left: 0.3em;
   }
 
+
+  /* Estilos para Mobile Nav */
+  @media (max-width: 768px) { /* Ajusta este breakpoint según necesites */
+    .mobile-nav-toggle {
+      display: block; /* Muestra el botón de hamburguesa */
+      z-index: 1001; /* Encima del menú */
+    }
+
+    .nav-list {
+      position: absolute;
+      top: 100%; /* Justo debajo del header */
+      left: 0;
+      right: 0;
+      background-color: white;
+      flex-direction: column;
+      padding: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      gap: 0.5rem;
+      border-top: 1px solid #eee;
+    }
+
+    .nav-list.nav-mobile-hidden {
+      display: none;
+    }
+
+    .nav-list li a {
+      padding: 0.75rem 1rem; /* Más padding para tap */
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .nav-list li:last-child a {
+      border-bottom: none;
+    }
+
+    .dropdown-menu {
+      position: static; /* El dropdown se integra en el flujo normal */
+      display: none; /* Oculto por defecto, se mostrará con JS */
+      border: none;
+      box-shadow: none;
+      padding-left: 1rem; /* Indentación para items de submenú */
+      background-color: #f9f9f9; /* Ligero fondo para distinguir */
+    }
+    
+    .nav-item.dropdown:hover .dropdown-menu {
+      display: none; /* Desactivar hover en mobile */
+    }
+
+    .nav-item.dropdown.open > .dropdown-menu {
+      display: block; /* Mostrar con clase 'open' */
+    }
+
+    .nav-item.dropdown > a::after {
+      transition: transform 0.2s ease-in-out;
+    }
+    .nav-item.dropdown.open > a::after {
+      transform: rotate(180deg); /* Gira la flecha */
+    }
+  }
+
 </style>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const navToggle = document.querySelector('.mobile-nav-toggle');
+    const primaryNav = document.getElementById('primary-navigation');
+    const dropdownItems = document.querySelectorAll('.nav-item.dropdown > a');
+
+    if (navToggle && primaryNav) {
+      navToggle.addEventListener('click', () => {
+        const isVisible = primaryNav.classList.contains('nav-mobile-hidden');
+        primaryNav.classList.toggle('nav-mobile-hidden', !isVisible);
+        navToggle.setAttribute('aria-expanded', isVisible.toString());
+        
+        // Cambiar icono de hamburguesa a cierre y viceversa
+        const icon = navToggle.querySelector('i');
+        if (icon) {
+          if (isVisible) {
+            icon.classList.remove('ri-menu-line');
+            icon.classList.add('ri-close-line');
+          } else {
+            icon.classList.remove('ri-close-line');
+            icon.classList.add('ri-menu-line');
+            // También cerrar todos los dropdowns abiertos cuando se cierra el menú principal
+            dropdownItems.forEach(item => {
+              const parentLi = item.parentElement;
+              if (parentLi && parentLi.classList.contains('open')) {
+                parentLi.classList.remove('open');
+                item.setAttribute('aria-expanded', 'false');
+              }
+            });
+          }
+        }
+      });
+    }
+
+    dropdownItems.forEach(item => {
+      item.addEventListener('click', (event) => {
+        // Solo activar para mobile, o si el menú principal está visible (mobile)
+        const isMobileMenuVisible = primaryNav ? !primaryNav.classList.contains('nav-mobile-hidden') : false;
+        
+        if (window.innerWidth <= 768) { // Aplicar solo en mobile
+          event.preventDefault(); // Prevenir navegación si es solo para abrir/cerrar
+          const parentLi = item.parentElement;
+          if (parentLi) {
+            const isOpen = parentLi.classList.toggle('open');
+            item.setAttribute('aria-expanded', isOpen.toString());
+
+            // Cerrar otros dropdowns abiertos
+            if (isOpen) {
+              dropdownItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                  const otherParentLi = otherItem.parentElement;
+                  if (otherParentLi && otherParentLi.classList.contains('open')) {
+                    otherParentLi.classList.remove('open');
+                    otherItem.setAttribute('aria-expanded', 'false');
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    });
+  });
+</script>
  {
  /* Podríamos añadir JavaScript aquí para manejar clicks/taps */
  /*

@@ -320,11 +320,15 @@ async function handleSendMessage(event: Event) {
   border-top-right-radius: 10px;
 }
 
-#chatbot-title { /* NUEVO SELECTOR PARA EL TÍTULO */
-  font-size: 1.2em; /* O el tamaño que prefieras */
-  font-weight: 600; /* O el peso que prefieras */
-  /* No necesita 'color: inherit;' porque el padre #chatbot-header ya tiene el color blanco */
-  /* y 'span' por defecto hereda el color. Si usaras un 'div' podrías ser más explícito. */
+#chatbot-title { 
+  font-size: 1.2em; 
+  font-weight: 600; 
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden;    /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis if too long */
+  flex-grow: 1; /* Allow it to take available space */
+  min-width: 0; /* Important for flex item truncation */
+  margin-right: 10px; /* Space before close button */
 }
 
 #chatbot-close-button {
@@ -335,6 +339,7 @@ async function handleSendMessage(event: Event) {
   line-height: 1;
   cursor: pointer;
   padding: 0 5px;
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
   #chatbot-messages {
@@ -357,7 +362,11 @@ async function handleSendMessage(event: Event) {
     max-width: 80%;
     margin: 0;
     line-height: 1.4;
-    word-wrap: break-word; /* Para que los textos largos se rompan */
+    overflow-wrap: break-word; /* Standard property */
+    word-break: normal;      /* Default, but explicit */
+    white-space: normal;     /* Default, but explicit */
+    display: block;          /* Ensure block behavior */
+    width: auto;             /* Ensure it's not constrained by default */
   }
 
   .chatbot-message-user {
