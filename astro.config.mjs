@@ -5,6 +5,11 @@ import icon from "astro-icon"; // Importa la integración
 
 // https://astro.build/config
 export default defineConfig({
+  devToolbar: {
+    enabled: false, // La toolbar está habilitada en general
+    // Puedes definir en qué condiciones se muestra
+  },
+  
   output: 'static', // Correcto para GitHub Pages
   
   // --- Propiedad 'site' para tu dominio personalizado ---
