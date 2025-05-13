@@ -323,12 +323,11 @@ async function handleSendMessage(event: Event) {
 #chatbot-title { 
   font-size: 1.2em; 
   font-weight: 600; 
-  white-space: nowrap; /* Prevent wrapping */
-  overflow: hidden;    /* Hide overflow */
-  text-overflow: ellipsis; /* Add ellipsis if too long */
-  flex-grow: 1; /* Allow it to take available space */
-  min-width: 0; /* Important for flex item truncation */
   margin-right: 10px; /* Space before close button */
+  /* Allow title to wrap if needed, remove fixed width behavior from previous attempt */
+  white-space: normal; 
+  overflow: visible; /* Ensure it's not hidden if it wraps */
+  text-overflow: clip; /* Default, no ellipsis if wrapping */
 }
 
 #chatbot-close-button {
@@ -351,22 +350,21 @@ async function handleSendMessage(event: Event) {
     background-color: #f9f9f9; /* Un fondo ligeramente diferente para el área de mensajes */
   }
 
-  .chatbot-message {
+  #chatbot-messages .chatbot-message { /* Increased specificity */
     margin-bottom: 12px;
     display: flex;
+    width: 100%; /* Ensure this flex container takes full width */
   }
 
-  .chatbot-message p {
+  #chatbot-messages .chatbot-message p { /* Increased specificity */
     padding: 10px 14px;
     border-radius: 18px;
     max-width: 80%;
     margin: 0;
     line-height: 1.4;
-    overflow-wrap: break-word; /* Standard property */
-    word-break: normal;      /* Default, but explicit */
-    white-space: normal;     /* Default, but explicit */
-    display: block;          /* Ensure block behavior */
-    width: auto;             /* Ensure it's not constrained by default */
+    overflow-wrap: break-word;
+    display: inline-block; /* Allows max-width and fits content */
+    text-align: left;      /* Explicit text alignment */
   }
 
   .chatbot-message-user {
