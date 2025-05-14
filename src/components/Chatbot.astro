@@ -3,20 +3,19 @@ import { Image } from 'astro:assets';
 import chatbotIcon from '../assets/images/chatbot.png';
 
 const webhookUrlFromEnv = import.meta.env.PUBLIC_MAKE_WEBHOOK_URL;
-const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN; 
-const SESSION_ID_KEY = 'nahia_session_id';
+const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
 ---
 
-<div 
-  id="chatbot-container" 
+<div
+  id="chatbot-container"
   data-webhook-url={webhookUrlFromEnv}
-  data-chatbot-token={chatbotTokenFromEnv}  
+  data-chatbot-token={chatbotTokenFromEnv}
 >
   <button id="chatbot-toggle-button" aria-label="Abrir chat de NahIA">
     <Image src={chatbotIcon} alt="Abrir chat" width="48" height="48" />
   </button>
 
-  <div id="chatbot-window" class="hidden">
+  <div id="chatbot-window" class="hidden"> {/* Empieza oculto por defecto */}
     <header id="chatbot-header">
       <span id="chatbot-title">NahIA</span>
       <button id="chatbot-close-button" aria-label="Cerrar chat">×</button>
@@ -35,7 +34,6 @@ const SESSION_ID_KEY = 'nahia_session_id';
 
 <script>
   // --- 1. OBTENCIÓN DE ELEMENTOS DOM ---
-  // (Idealmente dentro de DOMContentLoaded o al menos leídos antes de ser usados extensivamente)
   const chatbotContainer = document.getElementById('chatbot-container') as HTMLDivElement | null;
   const chatbotToggleButton = document.getElementById('chatbot-toggle-button') as HTMLButtonElement | null;
   const chatbotWindow = document.getElementById('chatbot-window') as HTMLDivElement | null;
@@ -45,119 +43,180 @@ const SESSION_ID_KEY = 'nahia_session_id';
   const chatbotInput = document.getElementById('chatbot-input') as HTMLInputElement | null;
 
   // --- 2. CONSTANTES Y VARIABLES DE ESTADO GLOBALES DEL SCRIPT ---
-  // (Estas pueden ir aquí arriba)
   const WELCOME_MESSAGE = "¡Hola! Soy NahIA. ¿Listo para descubrir cómo la inteligencia artificial puede transformar tu negocio? ¡Pregúntame lo que quieras!";
-  let isChatOpen = false;
-  let hasWelcomed = false;
+  let isChatOpen = false; // Estado inicial en memoria, se sincronizará con localStorage
 
-  // --- 3. CONFIGURACIÓN Y LÓGICA DE SESIÓN/THREAD ---
-  // (También pueden ir aquí arriba, ya que se usan globalmente en el script)
+  // --- 3. CONFIGURACIÓN Y LÓGICA DE SESIÓN/HISTORIAL/ESTADO ---
   const MAKE_WEBHOOK_URL = chatbotContainer?.dataset.webhookUrl || '';
   const CHATBOT_SECRET_TOKEN = chatbotContainer?.dataset.chatbotToken || '';
-  const SESSION_ID_KEY = 'nahia_session_id'; // Clave para localStorage
+  const SESSION_ID_KEY = 'nahia_session_id';
+  const CHAT_HISTORY_KEY_PREFIX = 'nahia_chat_history_';
+  const CHAT_OPEN_STATE_KEY = 'nahia_chat_open_state'; // Nueva clave para el estado abierto/cerrado
 
-function generateUUIDv4(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+  interface ChatMessage {
+    text: string;
+    sender: 'user' | 'bot';
+    timestamp: string;
+  }
 
-  function getSessionId() {
+  function generateUUIDv4(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function getSessionId(): string {
     let sessionId = localStorage.getItem(SESSION_ID_KEY);
     if (!sessionId) {
       sessionId = generateUUIDv4();
       localStorage.setItem(SESSION_ID_KEY, sessionId);
-      console.log('Nueva sessionId generada y guardada:', sessionId); // Para depuración
+      console.log('Nueva sessionId generada y guardada:', sessionId);
+      localStorage.removeItem(getChatHistoryKey(sessionId)); // Limpiar historial para nueva sesión
+      localStorage.setItem(CHAT_OPEN_STATE_KEY, 'false'); // Nueva sesión empieza cerrada
     }
     return sessionId;
   }
-
+  
+  // Hacemos que getChatHistoryKey acepte un sessionId opcional para la limpieza inicial
+  function getChatHistoryKey(sessionId: string = currentSessionId): string {
+    return CHAT_HISTORY_KEY_PREFIX + sessionId;
+  }
+  
   let currentSessionId = getSessionId(); // Obtener/generar al cargar el script
-  console.log('Current sessionId al cargar:', currentSessionId); // Para depuración
+  console.log('Current sessionId al cargar:', currentSessionId);
 
-  // --- 4. DEFINICIÓN DE FUNCIONES PRINCIPALES ---
-  // (El orden de definición de funciones no importa tanto mientras estén definidas antes de ser llamadas por los event listeners)
 
-  function addMessageToChat(text: string, sender: 'user' | 'bot' | 'bot-thinking'): HTMLDivElement | undefined {
+  // --- 4. FUNCIONES DE MANEJO DE HISTORIAL EN LOCALSTORAGE ---
+  function loadChatHistory(): ChatMessage[] {
+    if (!chatbotMessages) return [];
+    chatbotMessages.innerHTML = '';
+    const historyKey = getChatHistoryKey();
+    const storedHistory = localStorage.getItem(historyKey);
+    if (storedHistory) {
+      try {
+        const messages: ChatMessage[] = JSON.parse(storedHistory);
+        messages.forEach(msg => addMessageToChatDOM(msg.text, msg.sender));
+        console.log(`Historial cargado para la sesión ${currentSessionId}:`, messages.length, "mensajes");
+        return messages;
+      } catch (e) {
+        console.error('Error al parsear el historial del chat desde localStorage:', e);
+        localStorage.removeItem(historyKey);
+        return [];
+      }
+    }
+    console.log(`No se encontró historial para la sesión ${currentSessionId}.`);
+    return [];
+  }
+
+  function saveMessageToHistory(text: string, sender: 'user' | 'bot') {
+    const historyKey = getChatHistoryKey();
+    let messages: ChatMessage[] = [];
+    const storedHistory = localStorage.getItem(historyKey);
+    if (storedHistory) {
+      try {
+        messages = JSON.parse(storedHistory);
+      } catch (e) {
+        console.error('Error al parsear historial existente antes de guardar, se resetea:', e);
+        messages = [];
+      }
+    }
+    
+    const newMessage: ChatMessage = { text, sender, timestamp: new Date().toISOString() };
+    messages.push(newMessage);
+
+    try {
+      localStorage.setItem(historyKey, JSON.stringify(messages));
+    } catch (e) {
+      console.error('Error al guardar mensaje en localStorage (posiblemente lleno):', e);
+    }
+  }
+
+  // --- 5. FUNCIONES PRINCIPALES DEL CHATBOT ---
+  function addMessageToChatDOM(text: string, sender: 'user' | 'bot' | 'bot-thinking'): HTMLDivElement | undefined {
     if (!chatbotMessages) return undefined;
-
     const messageElement = document.createElement('div');
     messageElement.classList.add('chatbot-message', `chatbot-message-${sender}`);
-    
     const messageBubble = document.createElement('p');
     messageBubble.textContent = text;
     messageElement.appendChild(messageBubble);
-    
     chatbotMessages.appendChild(messageElement);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     return messageElement;
   }
 
-  function toggleChatWindow() {
+  /**
+   * Actualiza la UI y localStorage para el estado abierto/cerrado del chat.
+   * @param {boolean} open - True para abrir, false para cerrar.
+   * @param {boolean} [isInitialLoad=false] - True si es la carga inicial para evitar doble lógica.
+   */
+  function setChatOpenState(open: boolean, isInitialLoad = false) {
     if (!chatbotWindow || !chatbotToggleButton || !chatbotInput) return;
 
-    isChatOpen = !isChatOpen;
-    chatbotWindow.classList.toggle('hidden');
-    if (chatbotToggleButton) { 
-      chatbotToggleButton.setAttribute('aria-expanded', String(isChatOpen));
-    }
+    isChatOpen = open;
+    chatbotWindow.classList.toggle('hidden', !open); // Añade 'hidden' si !open, quita si open
+    chatbotToggleButton.setAttribute('aria-expanded', String(open));
     
-    if (isChatOpen && !hasWelcomed) {
-      addMessageToChat(WELCOME_MESSAGE, 'bot');
-      hasWelcomed = true;
+    if (!isInitialLoad) { // Solo guardar en localStorage si no es la carga inicial (evita sobreescribir antes de leer)
+        localStorage.setItem(CHAT_OPEN_STATE_KEY, String(open));
     }
-    if (isChatOpen && chatbotInput) {
-        chatbotInput.focus();
+
+    if (open) {
+      // La carga del historial y el mensaje de bienvenida se manejan aquí
+      // para asegurar que sucedan solo cuando el chat se abre explícitamente o se carga abierto.
+      const loadedMessages = loadChatHistory();
+      if (loadedMessages.length === 0) {
+        addMessageToChatDOM(WELCOME_MESSAGE, 'bot');
+        saveMessageToHistory(WELCOME_MESSAGE, 'bot');
+      }
+      chatbotInput.focus();
     }
+    console.log(`Chat window state set to: ${open ? 'open' : 'closed'}. Initial load: ${isInitialLoad}`);
   }
 
-async function handleSendMessage(event: Event) {
-    event.preventDefault();
-    
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // currentSessionId es la variable global del script, ya debería tener su valor.
+  function toggleChatWindow() {
+    // El nuevo estado será el opuesto al actual
+    setChatOpenState(!isChatOpen); 
+  }
 
-    if (!MAKE_WEBHOOK_URL) {
-      console.error("Chatbot Config Error: La URL del webhook no está definida.");
-      if(chatbotInput) addMessageToChat("Error de configuración interna. No se puede contactar a NahIA.", 'bot');
+  async function handleSendMessage(event: Event) {
+    event.preventDefault();
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    if (!MAKE_WEBHOOK_URL || !CHATBOT_SECRET_TOKEN) {
+      console.error("Chatbot Config Error: Webhook URL o Token no definido.");
+      addMessageToChatDOM("Error de configuración. No se puede contactar a NahIA.", 'bot');
       return;
     }
-    if (!CHATBOT_SECRET_TOKEN) {
-      console.error("Chatbot Config Error: El token secreto no está definido.");
-      if(chatbotInput) addMessageToChat("Error de configuración de seguridad interna. Contacte al administrador.", 'bot');
+    if (!chatbotInput || chatbotInput.value.trim() === '') {
+      if (!chatbotInput) console.error("Chatbot Error: Input no encontrado.");
       return;
-    }
-    if (!chatbotInput || chatbotInput.value.trim() === '') { 
-      // Si no hay input o el mensaje está vacío (después de trim)
-      if (!chatbotInput) console.error("Chatbot Error: El campo de input no se encontró.");
-      return; // No enviar mensaje vacío
     }
 
     const userMessage = chatbotInput.value.trim();
-    addMessageToChat(userMessage, 'user');
-    const currentMessageValue = chatbotInput.value; // Guardar por si hay que restaurar
-    if(chatbotInput) chatbotInput.value = ''; // Limpiar input
+    addMessageToChatDOM(userMessage, 'user');
+    saveMessageToHistory(userMessage, 'user');
 
-    const thinkingMessage = addMessageToChat("NahIA está pensando...", 'bot-thinking');
+    const currentMessageValue = chatbotInput.value;
+    if(chatbotInput) chatbotInput.value = '';
+
+    const thinkingMessage = addMessageToChatDOM("NahIA está pensando...", 'bot-thinking');
 
     try {
       const response = await fetch(MAKE_WEBHOOK_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           timestamp: new Date().toISOString(),
-          userTimezone: userTimezone, 
+          userTimezone: userTimezone,
           source: 'NahIA Chatbot',
           userMessage: userMessage,
-          sessionId: currentSessionId, 
-          chatbot_token: CHATBOT_SECRET_TOKEN 
+          sessionId: currentSessionId,
+          chatbot_token: CHATBOT_SECRET_TOKEN
         }),
       });
-      
+
       if (thinkingMessage && thinkingMessage.parentElement === chatbotMessages && chatbotMessages) {
           chatbotMessages.removeChild(thinkingMessage);
       }
@@ -166,60 +225,65 @@ async function handleSendMessage(event: Event) {
         let errorDetail = `Status: ${response.status}`;
         try {
           const errorBodyText = await response.text();
-          if (errorBodyText) errorDetail += ` - ${errorBodyText.substring(0, 200)}`; // Muestra parte del error
-        } catch (e) { /* Ignorar si no se puede leer el cuerpo del error */ }
+          if (errorBodyText) errorDetail += ` - ${errorBodyText.substring(0, 200)}`;
+        } catch (e) { /* Ignorar */ }
         
         console.error('Error desde Make.com:', errorDetail);
-        if (response.status === 401 || response.status === 403) {
-           addMessageToChat(`Error de autenticación con NahIA. Verifique la configuración.`, 'bot');
-        } else {
-          addMessageToChat(`Hubo un problema con NahIA. (Error: ${response.status})`, 'bot');
-        }
-        if(chatbotInput) chatbotInput.value = currentMessageValue; // Restaurar mensaje
+        const displayError = response.status === 401 || response.status === 403
+          ? `Error de autenticación con NahIA. Verifique la configuración.`
+          : `Hubo un problema con NahIA. (Error: ${response.status})`;
+        addMessageToChatDOM(displayError, 'bot');
+        if(chatbotInput) chatbotInput.value = currentMessageValue;
         return;
       }
 
-      // Asumimos que Make.com ahora envía JSON bien formado y escapado
       const responseText = await response.text();
-      const data = JSON.parse(responseText); 
+      const data = JSON.parse(responseText);
 
       if (data && data.botResponse) {
-        addMessageToChat(data.botResponse, 'bot');
+        addMessageToChatDOM(data.botResponse, 'bot');
+        saveMessageToHistory(data.botResponse, 'bot');
       } else {
-        console.error('Respuesta de Make.com OK, pero sin data.botResponse esperado:', data);
-        addMessageToChat('NahIA tuvo un pequeño desliz al responder. Intenta de nuevo.', 'bot');
+        console.error('Respuesta OK, pero sin data.botResponse:', data);
+        addMessageToChatDOM('NahIA tuvo un pequeño desliz al responder. Intenta de nuevo.', 'bot');
       }
 
-    } catch (error) { // Captura errores de red o de JSON.parse()
+    } catch (error) {
        if (thinkingMessage && thinkingMessage.parentElement === chatbotMessages && chatbotMessages) {
           chatbotMessages.removeChild(thinkingMessage);
       }
       let errorMessage = 'Error de conexión con NahIA. Intenta de nuevo más tarde.';
       if (error instanceof Error) {
-          errorMessage = `Error al procesar la respuesta de NahIA: ${error.message.substring(0, 100)}`; // Acortar mensaje de error si es muy largo
+          errorMessage = `Error al procesar la respuesta de NahIA: ${error.message.substring(0, 100)}`;
       }
       console.error('Catch block error en handleSendMessage:', error);
-      addMessageToChat(errorMessage, 'bot');
-      if(chatbotInput) chatbotInput.value = currentMessageValue; // Restaurar mensaje
+      addMessageToChatDOM(errorMessage, 'bot');
+      if(chatbotInput) chatbotInput.value = currentMessageValue;
     }
-}
+  }
 
-  // --- 5. ASIGNACIÓN DE EVENT LISTENERS ---
-  // (Esto debe ir después de que los elementos DOM y las funciones handler estén definidos)
-  // (Idealmente, también dentro de DOMContentLoaded o asegurar que el DOM esté listo)
-
-  // Envolver en DOMContentLoaded es una buena práctica para asegurar que todos los elementos DOM existen.
+  // --- 6. ASIGNACIÓN DE EVENT LISTENERS E INICIALIZACIÓN ---
   document.addEventListener('DOMContentLoaded', () => {
-    // Re-seleccionar elementos aquí es más seguro si el script no está al final del body,
-    // pero si Chatbot.astro se inserta al final del <body> en Layout.astro, los elementos ya deberían existir.
-    // Sin embargo, para la lógica de `MAKE_WEBHOOK_URL` que depende de `chatbotContainer`, ya lo hacemos arriba.
-    // Los event listeners pueden adjuntarse aquí o fuera si los elementos ya están definidos.
+    currentSessionId = getSessionId(); // Asegurar que tenemos el ID de sesión correcto
+
+    // Leer el estado de apertura guardado y aplicar
+    const savedOpenState = localStorage.getItem(CHAT_OPEN_STATE_KEY);
+    // Convertimos el string 'true'/'false' a booleano. Si es null (primera vez), por defecto es false (cerrado).
+    const shouldBeOpen = savedOpenState === 'true'; 
+    
+    if (shouldBeOpen) {
+        // Usamos el parámetro isInitialLoad para evitar que se guarde de nuevo en localStorage en este punto
+        setChatOpenState(true, true); 
+    } else {
+        // Aseguramos que el estado visual y en memoria coincidan con localStorage (cerrado)
+        // Si el HTML por defecto es 'hidden', esto podría no ser estrictamente necesario
+        // pero es bueno para la consistencia.
+        setChatOpenState(false, true); 
+    }
 
     if (chatbotToggleButton) {
       chatbotToggleButton.addEventListener('click', toggleChatWindow);
-      // Los atributos ARIA iniciales pueden establecerse aquí o directamente si el elemento existe
-      chatbotToggleButton.setAttribute('aria-expanded', 'false');
-      chatbotToggleButton.setAttribute('aria-controls', 'chatbot-window');
+      // El aria-expanded se setea dentro de setChatOpenState
     }
 
     if (chatbotCloseButton) {
@@ -229,7 +293,7 @@ async function handleSendMessage(event: Event) {
     if (chatbotForm) {
       chatbotForm.addEventListener('submit', handleSendMessage);
     }
-    console.log('Event listeners adjuntados.'); // Para depuración
+    console.log('Event listeners adjuntados y script de chatbot inicializado.');
   });
 </script>
 
