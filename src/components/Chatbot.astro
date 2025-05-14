@@ -146,23 +146,23 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
     const messageElement = document.createElement('div');
     messageElement.classList.add('chatbot-message', `chatbot-message-${sender}`);
     
-    // Usamos un div como 'burbuja' para que el HTML del bot tenga un contenedor propio
-    // que no sea un <p> por si el HTML ya contiene párrafos.
-    const messageBubble = document.createElement('div');
-    messageBubble.classList.add('message-bubble-content'); // Clase para estilizar si es necesario
+    const messageBubble = document.createElement('div'); // Sigue siendo un div
+    messageBubble.classList.add('message-bubble-content'); // Clase para estilizar la burbuja en sí
     
     if (sender === 'bot') {
-      // Sanitizar el HTML del bot antes de insertarlo
-      messageBubble.innerHTML = DOMPurify.sanitize(content, {
-          USE_PROFILES: { html: true } // Permite etiquetas HTML comunes y seguras
-          // Puedes configurar DOMPurify más a fondo si necesitas:
-          // ALLOWED_TAGS: ['p', 'b', 'i', 'u', 'a', 'ul', 'li', 'br', 'span', 'img', 'strong', 'em'],
-          // ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'style'] // Cuidado con 'style' si permites mucho
-      });
-    } else {
-      // Para mensajes del usuario y "pensando", usar textContent para seguridad
-      // (y porque no deberían ser HTML).
-      // Envolvemos el texto del usuario en un <p> para consistencia visual si el bot usa <p>.
+      messageBubble.innerHTML = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } });
+    } else if (sender === 'user') {
+      // Para el usuario, el 'content' es texto plano. Lo ponemos directamente.
+      // El div 'messageBubble' ya tendrá padding y estilos de burbuja.
+      // Si quieres que el texto del usuario siempre esté dentro de un <p> por consistencia con el bot,
+      // podrías hacer: messageBubble.innerHTML = `<p>${DOMPurify.sanitize(content, { USE_PROFILES: { html: false } })}</p>`;
+      // pero usar textContent es más simple si no necesitas un <p> explícito para el usuario.
+      // Vamos a mantener la creación de un <p> para el usuario para que los estilos de "burbuja"
+      // se apliquen consistentemente al <p>
+      const p = document.createElement('p');
+      p.textContent = content;
+      messageBubble.appendChild(p); // El <p> del usuario sigue igual
+    } else { // bot-thinking
       const p = document.createElement('p');
       p.textContent = content;
       messageBubble.appendChild(p);
@@ -313,24 +313,15 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
 </script>
 
 <style is:global>
-  /* 
-    Usamos is:global temporalmente para los estilos principales del contenedor y botón flotante
-    para asegurar que se apliquen correctamente, especialmente si hay estilos globales muy específicos.
-    Lo ideal a largo plazo sería encapsular todo o usar capas CSS.
-    Para este desafío rápido, esto nos da más control.
-  */
-
   :root {
-    /* Define tus colores aquí si no están ya globales, o usa los que tienes.
-       Estos son ejemplos, ajústalos a tus --primary-color y --secondary-color */
-    --chatbot-primary-color: var(--primary-color, #0052cc); /* Azul por defecto si --primary-color no está */
-    --chatbot-secondary-color: var(--secondary-color, #DE350B); /* Rojo por defecto si --secondary-color no está */
+    --chatbot-primary-color: var(--primary-color, #0052cc);
+    --chatbot-secondary-color: var(--secondary-color, #DE350B);
     --chatbot-text-color: #333;
     --chatbot-bg-light: #ffffff;
-    --chatbot-bg-user-message: #e6f2ff; /* Un azul claro para mensajes de usuario */
-    --chatbot-bg-bot-message: #f0f0f0; /* Un gris claro para mensajes de bot */
+    --chatbot-bg-user-message: #e6f2ff;
+    --chatbot-bg-bot-message: #f0f0f0;
     --chatbot-border-color: #e0e0e0;
-    --chatbot-header-text-color: #ffffff !important; /* AÑADIDO: Color para el texto del header */
+    --chatbot-header-text-color: #ffffff !important;
   }
 
   #chatbot-container {
@@ -342,43 +333,43 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
 
   #chatbot-toggle-button {
     background-color: var(--chatbot-primary-color);
-    color: white; /* El color del texto por si acaso, pero la imagen es lo principal */
+    color: white;
     border: none;
     border-radius: 50%;
-    width: 72px; /* AUMENTADO: Tamaño del botón */
-    height: 72px; /* AUMENTADO: Tamaño del botón */
+    width: 72px;
+    height: 72px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Sombra un poco más pronunciada */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
 
   #chatbot-toggle-button:hover {
-    transform: scale(1.08); /* Un poco menos de zoom para un botón más grande */
+    transform: scale(1.08);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
   }
 
   #chatbot-toggle-button img {
-    width: 48px; /* AUMENTADO: Tamaño de la imagen interna */
-    height: 48px; /* AUMENTADO: Tamaño de la imagen interna */
+    width: 48px;
+    height: 48px;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* NUEVO: Intenta hacer la imagen blanca */
+    filter: brightness(0) invert(1);
   }
 
   #chatbot-window {
     background-color: var(--chatbot-bg-light);
     border: 1px solid var(--chatbot-border-color);
-    border-radius: 10px; /* Un poco más de radio */
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4); /* Sombra más notoria para la ventana */
-    width: 90vw;    /* 90% del ancho del viewport */
-    max-width: 450px; /* Pero no más de 450px */
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    width: 90vw;
+    max-width: 450px;
     max-height: 80vh; 
     display: flex;
     flex-direction: column;
     position: absolute; 
-    bottom: 85px; /* Ajustar si el botón es más grande: 72px + 20px (espacio) + un poco más */
+    bottom: 95px; /* Ajustado ligeramente por si el botón es de 72px + ~20px de espacio */
     right: 0;
     overflow: hidden; 
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -388,80 +379,122 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
     display: none;
   }
 
-#chatbot-header {
-  background-color: var(--chatbot-primary-color);
-  color: var(--chatbot-header-text-color, #ffffff); /* Color base para el header */
-  padding: 14px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 10px; 
-  border-top-right-radius: 10px;
-}
+  #chatbot-header {
+    background-color: var(--chatbot-primary-color);
+    color: var(--chatbot-header-text-color, #ffffff);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 10px; 
+    border-top-right-radius: 10px;
+  }
 
-#chatbot-title { 
-  font-size: 1.2em; 
-  font-weight: 600; 
-  margin-right: 10px; /* Space before close button */
-  /* Allow title to wrap if needed, remove fixed width behavior from previous attempt */
-  white-space: normal; 
-  overflow: visible; /* Ensure it's not hidden if it wraps */
-  text-overflow: clip; /* Default, no ellipsis if wrapping */
-}
+  #chatbot-title { 
+    font-size: 1.2em; 
+    font-weight: 600; 
+    margin-right: 10px;
+    white-space: normal; 
+    overflow: visible;
+    text-overflow: clip;
+  }
 
-#chatbot-close-button {
-  background: none;
-  border: none;
-  color: inherit; /* Debería heredar de #chatbot-header */
-  font-size: 1.9em;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 5px;
-  flex-shrink: 0; /* Prevent button from shrinking */
-}
+  #chatbot-close-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.9em;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 5px;
+    flex-shrink: 0;
+  }
 
   #chatbot-messages {
     flex-grow: 1;
-    padding: 15px;
+    padding: 15px; /* Padding para el contenedor general de mensajes */
     overflow-y: auto;
-    min-height: 200px; /* Altura mínima para que se vea algo aun sin mensajes */
+    min-height: 200px;
     max-height: calc(80vh - 120px); /* Ajusta según header y form */
-    background-color: #f9f9f9; /* Un fondo ligeramente diferente para el área de mensajes */
+    background-color: #f9f9f9;
   }
 
-  #chatbot-messages .chatbot-message { /* Increased specificity */
+  /* Contenedor de cada mensaje individual (user o bot) */
+  #chatbot-messages .chatbot-message {
     margin-bottom: 12px;
-    display: flex;
-    width: 100%; /* Ensure this flex container takes full width */
+    display: flex; /* Para permitir alinear la burbuja a la izq/der */
+    width: 100%;
   }
 
-  #chatbot-messages .chatbot-message p { /* Increased specificity */
-    padding: 10px 14px;
+  /* La burbuja de contenido (el div .message-bubble-content) */
+  #chatbot-messages .chatbot-message .message-bubble-content {
+    padding: 10px 14px; /* Padding DENTRO de la burbuja */
     border-radius: 18px;
-    max-width: 80%;
-    margin: 0;
+    max-width: 80%; /* Máximo ancho de la burbuja */
     line-height: 1.4;
-    overflow-wrap: break-word;
-    display: inline-block; /* Allows max-width and fits content */
-    text-align: left;      /* Explicit text alignment */
+    overflow-wrap: break-word; /* Para que el texto largo se rompa */
+    display: inline-block; /* Para que se ajuste al contenido pero respete max-width */
+    text-align: left; /* Texto dentro de la burbuja alineado a la izquierda por defecto */
   }
 
+  /* Estilos para los <p> que vienen DENTRO del HTML del bot */
+  .chatbot-message-bot .message-bubble-content p {
+    margin-top: 0.6em;  /* Espacio entre párrafos del bot */
+    margin-bottom: 0.6em; /* Espacio entre párrafos del bot */
+  }
+  /* Quitar margen superior del primer párrafo del bot y margen inferior del último */
+  .chatbot-message-bot .message-bubble-content p:first-child {
+    margin-top: 0;
+  }
+  .chatbot-message-bot .message-bubble-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* --- NUEVO: Estilos para listas <ul> y <li> dentro del contenido del bot --- */
+.chatbot-message-bot .message-bubble-content ul,
+.chatbot-message-bot .message-bubble-content ol { /* Aplicar también a listas ordenadas si las usas */
+  margin-top: 0.6em;    /* Margen superior para la lista completa */
+  margin-bottom: 0.6em; /* Margen inferior para la lista completa */
+  padding-left: 20px; /* <<--- ESTO ES CLAVE: Añade padding a la izquierda para los bullets/números */
+                      /* Ajusta este valor (20px) según cuánto quieres que se tabulen */
+}
+  
+  /* Estilos para el <p> que creamos para el mensaje del usuario y "pensando"
+     (si en tu JS sigues envolviendo el texto del usuario en un <p>) */
+  .chatbot-message-user .message-bubble-content p,
+  .chatbot-message-bot-thinking .message-bubble-content p {
+    margin: 0; /* Los <p> del usuario y "pensando" no necesitan márgenes internos ya que son una sola línea */
+  }
+
+  /* Alineación y estilos de fondo para mensajes de USUARIO */
   .chatbot-message-user {
-    justify-content: flex-end; /* Alinea a la derecha */
+    justify-content: flex-end; /* Alinea la burbuja del usuario a la derecha */
   }
-  .chatbot-message-user p {
-    background-color: var(--chatbot-bg-user-message); /* Azul claro */
+  .chatbot-message-user .message-bubble-content {
+    background-color: var(--chatbot-bg-user-message);
     color: var(--chatbot-text-color);
-    border-bottom-right-radius: 4px; /* Estilo "burbuja" */
+    border-bottom-right-radius: 4px; /* Esquina para estilo "burbuja" */
   }
 
+  /* Alineación y estilos de fondo para mensajes de BOT */
   .chatbot-message-bot {
-    justify-content: flex-start; /* Alinea a la izquierda */
+    justify-content: flex-start; /* Alinea la burbuja del bot a la izquierda */
   }
-  .chatbot-message-bot p {
-    background-color: var(--chatbot-bg-bot-message); /* Gris claro */
+  .chatbot-message-bot .message-bubble-content {
+    background-color: var(--chatbot-bg-bot-message);
     color: var(--chatbot-text-color);
-    border-bottom-left-radius: 4px; /* Estilo "burbuja" */
+    border-bottom-left-radius: 4px; /* Esquina para estilo "burbuja" */
+  }
+
+  /* Estilos para el mensaje de "pensando..." */
+  .chatbot-message-bot-thinking { /* Asegurar que también se alinee a la izquierda */
+     justify-content: flex-start;
+  }
+  .chatbot-message-bot-thinking .message-bubble-content {
+    background-color: var(--chatbot-bg-bot-message);
+    color: #777;
+    font-style: italic;
+    border-bottom-left-radius: 4px;
   }
 
 
@@ -483,7 +516,7 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
   }
   #chatbot-input:focus {
     border-color: var(--chatbot-primary-color);
-    box-shadow: 0 0 0 2px var(--chatbot-primary-color, #0052cc)33; /* Un suave outline al hacer focus */
+    box-shadow: 0 0 0 2px var(--chatbot-primary-color, #0052cc)33;
   }
 
   #chatbot-send-button {
@@ -497,7 +530,7 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    flex-shrink: 0; /* Para que no se encoja */
+    flex-shrink: 0;
   }
   #chatbot-send-button:hover {
     opacity: 0.9;
@@ -507,60 +540,44 @@ const chatbotTokenFromEnv = import.meta.env.PUBLIC_CHATBOT_SECRET_TOKEN;
     height: 20px;
   }
 
-.chatbot-message-bot-thinking p { /* Estilo para el mensaje de "pensando" */
-  background-color: var(--chatbot-bg-bot-message);
-  color: #777; /* Un color más tenue */
-  font-style: italic;
-}
-
   /* Media query para pantallas más pequeñas (ej. móviles) */
- @media (max-width: 480px) {
-    /* Default state for mobile window (when hidden or not explicitly fullscreen) */
+  @media (max-width: 480px) {
     #chatbot-window {
-      /* These might be overridden by :not(.hidden) below if chat is open */
       width: calc(100vw - 30px); 
       max-width: 95%;
-      bottom: 85px; 
+      bottom: 85px; /* Ajustado por botón de 72px */
       right: 5px; 
       left: auto;
     }
 
-    /* Full height (below site header) styles when chat window is open on mobile */
-  #chatbot-window:not(.hidden) { /* Fullscreen when open on mobile */
-    position: fixed; /* Crucial change */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%; /* Or 100vw */
-    height: 100%; /* Or 100vh */
-    max-width: none;
-    max-height: none;
-    border-radius: 0;
-    z-index: 2000; /* Ensure it's above other elements, including the toggle button if container is lower z-index */
-  }
+    #chatbot-window:not(.hidden) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+      z-index: 2000;
+    }
 
-    /* Adjust messages area max-height for the new layout */
-  #chatbot-window:not(.hidden) #chatbot-messages {
-    /* max-height: calc(80vh - 120px); -- Old value */
-    /* New calculation: 100vh - header_height - form_height */
-    /* Assuming header is ~50-60px, form is ~50-60px. */
-    /* Let flex-grow handle it mostly, but a max-height is still good. */
-    /* min-height will be more important if content is short */
-    max-height: calc(100vh - 110px); /* Approximate, adjust if header/form heights are known */
-  }
+    #chatbot-window:not(.hidden) #chatbot-messages {
+      max-height: calc(100vh - 110px); 
+    }
     
     #chatbot-toggle-button {
       width: 64px; 
       height: 64px;
-      bottom: 15px;
+      bottom: 15px; /* Pegado más abajo y a la derecha en móviles */
       right: 15px;
-      z-index: 2001; /* Ensure toggle button is accessible if window logic changes */
+      z-index: 2001; /* Encima de la ventana del chat cuando está full screen */
     }
     #chatbot-toggle-button img {
       width: 40px; 
       height: 40px;
     }
   }
-
 </style>
