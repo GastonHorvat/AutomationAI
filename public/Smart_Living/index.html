@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía: Proyecto Piloto "Sede Central"</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .kpi-card {
+            background-color: #0d47a1;
+            color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .kpi-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+        .flow-step {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1976d2;
+        }
+        .arrow {
+            color: #1976d2;
+            font-size: 2rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-[#0d47a1] text-white p-6 md:p-10 text-center shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-black mb-2">Proyecto Piloto "Sede Central"</h1>
+        <p class="text-xl md:text-2xl font-light">Rethinking Home Sweet Home: Un Nuevo Paradigma de Vivienda y Comunidad</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="crisis-vivienda" class="mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#0d47a1] mb-4 text-center">El Desafío: La Crisis de Vivienda en España</h2>
+                <p class="text-lg text-center mb-8 max-w-3xl mx-auto">El acceso a la vivienda es una crisis total. Precios exorbitantes y salarios estancados crean una brecha de asequibilidad insostenible, especialmente para los jóvenes y las familias trabajadoras.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    
+                    <div class="kpi-card bg-[#1565c0]">
+                        <div class="kpi-title">Aumento del Precio de la Vivienda</div>
+                        <div class="kpi-value">+12.2%</div>
+                        <div class="text-sm opacity-80">(Anual, Q1 2025)</div>
+                    </div>
+
+                    <div class="kpi-card bg-[#1976d2]">
+                        <div class="kpi-title">Jóvenes con Dificultad para Emanciparse</div>
+                        <div class="kpi-value">8 de cada 10</div>
+                        <div class="text-sm opacity-80">(Menores de 30 años)</div>
+                    </div>
+
+                    <div class="kpi-card bg-[#1e88e5] md:col-span-2 lg:col-span-1">
+                        <div class="kpi-title">Inversión Institucional</div>
+                        <div class="kpi-value">17%</div>
+                        <div class="text-sm opacity-80">Del total del mercado residencial</div>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-white p-6 rounded-lg shadow-inner">
+                        <h3 class="text-2xl font-bold text-[#0d47a1] mb-4 text-center">Brecha de Asequibilidad: Ingresos vs. Coste de Vivienda</h3>
+                        <p class="text-center text-gray-600 mb-6">En los últimos años, los precios de compra y alquiler han superado con creces el crecimiento de los ingresos de los hogares, reduciendo drásticamente la capacidad de acceso a una vivienda digna.</p>
+                        <div class="chart-container h-96">
+                            <canvas id="affordabilityGapChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="propuesta-valor" class="mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#0d47a1] mb-6 text-center">Nuestra Solución: Una Propuesta de Valor Integral</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="text-6xl text-[#1976d2] mb-3">🏠</div>
+                        <h3 class="text-2xl font-bold mb-2">Vivienda Accesible</h3>
+                        <p>Un modelo de Alquiler con Opción a Compra Social que elimina barreras financieras y dignifica el acceso a un hogar.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-6xl text-[#1976d2] mb-3">👵🏽🤝👨🏻‍💻</div>
+                        <h3 class="text-2xl font-bold mb-2">Comunidad Intergeneracional</h3>
+                        <p>Conectamos la experiencia de los mayores con la energía digital de los jóvenes para crear un ecosistema de apoyo mutuo.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-6xl text-[#1976d2] mb-3">💡</div>
+                        <h3 class="text-2xl font-bold mb-2">Tecnología con Propósito</h3>
+                        <p>Integramos IA y "Smart Living" para optimizar el confort, la eficiencia y la sostenibilidad al servicio del bienestar comunitario.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="modelo-financiero" class="mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#0d47a1] mb-6 text-center">El Modelo Financiero: Alquiler con Opción a Compra Social</h2>
+                <p class="text-lg text-center mb-8 max-w-3xl mx-auto">Un sistema disruptivo que convierte el 100% del alquiler en capital para la compra, eliminando intereses y construyendo un camino real hacia la propiedad.</p>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="w-full md:w-1/2">
+                         <div class="flow-step p-6 rounded-lg shadow-md mb-4">
+                            <div class="font-bold text-xl text-[#0d47a1] mb-2">Paso 1: Acceso Simplificado</div>
+                            <p>Entrada inicial de solo <strong>5.000€</strong> y una cuota mensual accesible de <strong>500€</strong>.</p>
+                        </div>
+                        <div class="text-center my-2"><div class="arrow">⬇️</div></div>
+                         <div class="flow-step p-6 rounded-lg shadow-md mb-4">
+                            <div class="font-bold text-xl text-[#0d47a1] mb-2">Paso 2: Capitalización del Alquiler</div>
+                            <p>El <strong>100% de cada cuota</strong> de alquiler se descuenta directamente del precio final de la vivienda.</p>
+                        </div>
+                        <div class="text-center my-2"><div class="arrow">⬇️</div></div>
+                         <div class="flow-step p-6 rounded-lg shadow-md">
+                            <div class="font-bold text-xl text-[#0d47a1] mb-2">Paso 3: Propiedad sin Deuda Bancaria</div>
+                            <p>Se alcanza la propiedad total sin los intereses abusivos del sistema tradicional, con plazos adaptados a cada perfil.</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-1/2 chart-container h-[400px]">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+                 <p class="text-center text-gray-600 mt-6 text-sm">El gráfico de la derecha ilustra la proyección de retorno para los inversores, combinando un rendimiento financiero competitivo con un impacto social medible.</p>
+            </div>
+        </section>
+
+        <section id="tecnologia-comunidad" class="mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#0d47a1] mb-6 text-center">"Smart Living Hub": Tecnología al Servicio de la Comunidad</h2>
+                <p class="text-lg text-center mb-8 max-w-3xl mx-auto">La "Sede Central" será un edificio inteligente que utiliza la IA para crear un entorno más eficiente, seguro y conectado, potenciando la vida comunitaria.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-[#1565c0]">Beneficios de la Integración de IA</h3>
+                         <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-blue-500 mr-3">✅</span> <strong>Mantenimiento Predictivo:</strong> Reduce costes y averías anticipando reparaciones.</li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-3">✅</span> <strong>Optimización Energética:</strong> Minimiza el consumo y la huella de carbono.</li>
+                             <li class="flex items-start"><span class="text-blue-500 mr-3">✅</span> <strong>Seguridad Inteligente:</strong> Aumenta la protección con sistemas proactivos.</li>
+                             <li class="flex items-start"><span class="text-blue-500 mr-3">✅</span> <strong>Gestión Comunitaria:</strong> Facilita la comunicación y la organización entre residentes.</li>
+                        </ul>
+                    </div>
+                     <div class="chart-container h-80">
+                        <canvas id="techBenefitsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="sostenibilidad" class="mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#0d47a1] mb-6 text-center">Compromiso con la Sostenibilidad y la Agenda 2030</h2>
+                <p class="text-lg text-center mb-8 max-w-3xl mx-auto">Nuestro proyecto está intrínsecamente alineado con un futuro sostenible, abordando objetivos clave de desarrollo social, ambiental y económico.</p>
+                 <div class="chart-container h-96">
+                    <canvas id="sustainabilityChart"></canvas>
+                </div>
+                 <p class="text-center text-gray-600 mt-6 text-sm">Este gráfico de radar muestra nuestra alineación con Objetivos de Desarrollo Sostenible (ODS) clave, demostrando un enfoque holístico que va más allá de la vivienda.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#0d47a1] text-white p-6 text-center mt-12">
+        <p>"Madrid a la cara por los barrios"</p>
+        <p class="text-sm opacity-80 mt-2">Una iniciativa para transformar el urbanismo y la comunidad a través de la innovación social y tecnológica.</p>
+    </footer>
+
+    <script>
+        const brilliantBluesPalette = {
+            primary: '#0d47a1',
+            secondary: '#1976d2',
+            accent: '#42a5f5',
+            light: '#e3f2fd',
+            highlight: '#ffab40'
+        };
+
+        function wrapLabels(label) {
+            const maxLen = 16;
+            if (label.length <= maxLen) {
+                return label;
+            }
+            const words = label.split(' ');
+            let currentLine = '';
+            const lines = [];
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxLen) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine += ' ' + word;
+                }
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            } else {
+                return label;
+            }
+        };
+
+        const defaultChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#333'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: { color: '#333' },
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                },
+                x: {
+                    ticks: { color: '#333' },
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                }
+            }
+        };
+
+        const affordabilityGapCtx = document.getElementById('affordabilityGapChart').getContext('2d');
+        new Chart(affordabilityGapCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Crecimiento de Ingresos de los Hogares', 'Aumento Precios de Compra', 'Aumento Precios de Alquiler'],
+                datasets: [{
+                    label: 'Incremento Porcentual en los Últimos Años (%)',
+                    data: [33, 47, 57],
+                    backgroundColor: [brilliantBluesPalette.accent, brilliantBluesPalette.secondary, brilliantBluesPalette.primary],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: { ...defaultChartOptions, indexAxis: 'y' }
+        });
+
+        const roiCtx = document.getElementById('roiChart').getContext('2d');
+        new Chart(roiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Retorno para el Inversor (ROI)', 'Impacto Social (Reinversión)'],
+                datasets: [{
+                    data: [20, 80],
+                    backgroundColor: [brilliantBluesPalette.highlight, brilliantBluesPalette.primary],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                 maintainAspectRatio: false,
+                 responsive: true,
+                 plugins: {
+                    legend: { position: 'top', labels: { color: '#333' } },
+                    title: { display: true, text: 'Proyección de Retorno a 20 Años', color: '#333', font: { size: 16 } },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+
+        const techBenefitsCtx = document.getElementById('techBenefitsChart').getContext('2d');
+        new Chart(techBenefitsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Reducción de Costes Operativos', 'Mejora de la Eficiencia Energética', 'Aumento de la Seguridad', 'Optimización de la Gestión Comunitaria'].map(wrapLabels),
+                datasets: [{
+                    data: [30, 25, 25, 20],
+                    backgroundColor: [brilliantBluesPalette.primary, brilliantBluesPalette.secondary, brilliantBluesPalette.accent, '#64b5f6'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                 maintainAspectRatio: false,
+                 responsive: true,
+                 plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Impacto de la IA y Smart Living', color: '#333', font: { size: 16 } },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+
+        const sustainabilityCtx = document.getElementById('sustainabilityChart').getContext('2d');
+        new Chart(sustainabilityCtx, {
+            type: 'radar',
+            data: {
+                labels: ['ODS 11: Ciudades Sostenibles', 'ODS 1: Fin de la Pobreza', 'ODS 10: Reducción Desigualdades', 'ODS 8: Trabajo Decente', 'ODS 17: Alianzas'].map(wrapLabels),
+                datasets: [{
+                    label: 'Alineación del Proyecto (Puntuación de 1 a 5)',
+                    data: [5, 4, 5, 4, 5],
+                    fill: true,
+                    backgroundColor: 'rgba(25, 118, 210, 0.2)',
+                    borderColor: brilliantBluesPalette.secondary,
+                    pointBackgroundColor: brilliantBluesPalette.secondary,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: brilliantBluesPalette.secondary
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                        pointLabels: { font: { size: 12 }, color: '#333' },
+                        ticks: {
+                            color: '#333',
+                            backdropColor: 'rgba(255, 255, 255, 0.75)',
+                            stepSize: 1
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
