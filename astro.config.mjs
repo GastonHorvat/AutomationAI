@@ -13,7 +13,7 @@ export default defineConfig({
   output: 'static', // Correcto para GitHub Pages
   
   // --- Propiedad 'site' para tu dominio personalizado ---
-  site: 'https://automationai.solutions',
+  site: 'https://automationai.com.ar',
 
   // --- Integraciones ---
   integrations: [
