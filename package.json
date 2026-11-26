@@ -11,15 +11,10 @@
   "dependencies": {
     "@iconify-json/simple-icons": "^1.2.33",
     "@supabase/supabase-js": "^2.49.4",
-    "airtable": "^0.12.2",
     "astro": "^5.7.12",
-    "astro-icon": "^1.1.5",
-    "dompurify": "^3.2.5",
-    "marked": "^15.0.8"
+    "astro-icon": "^1.1.5"
   },
   "devDependencies": {
-    "@iconify-json/mdi": "^1.2.3",
-    "@types/dompurify": "^3.0.5",
-    "@types/marked": "^5.0.2"
+    "@iconify-json/mdi": "^1.2.3"
   }
 }
