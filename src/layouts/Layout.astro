@@ -13,14 +13,19 @@ export interface Props {
 }
 
 // Obtenemos el valor de la prop 'title' que nos pasará la página
+const DEFAULT_DESCRIPTION =
+	'AutomationAI Solutions designs and builds custom AI and automation for small and medium-sized businesses.';
+// Si la página no manda descripción (o manda una vacía, como un post sin
+// post_description), va la del sitio.
 const { title } = Astro.props;
+const description = Astro.props.description?.trim() || DEFAULT_DESCRIPTION;
 ---
 
 <!doctype html>
 <html lang="en"> {}
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" /> {/* TODO: Añadir descripción por defecto o pasarla como prop */}
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.ico" /> {/* Asegúrate de tener un favicon.ico en /public */}
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
