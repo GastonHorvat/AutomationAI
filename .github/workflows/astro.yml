@@ -70,9 +70,6 @@ jobs:
           # Variables que ya tenías:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          # Variables NUEVAS para el chatbot:
-          PUBLIC_MAKE_WEBHOOK_URL: ${{ secrets.PUBLIC_MAKE_WEBHOOK_URL }}
-          PUBLIC_CHATBOT_SECRET_TOKEN: ${{ secrets.PUBLIC_CHATBOT_SECRET_TOKEN }}
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "${{ steps.pages.outputs.origin }}" \
